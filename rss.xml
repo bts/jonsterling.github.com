@@ -296,7 +296,7 @@ x}\\
     <guid>http://www.jonmsterling.com//posts/2013-06-09-isomorphism-implies-equality-for-finite-sets.html</guid>
 </item>
 <item>
-    <title>Combinatory Categorical Grammar for Ancient Greek</title>
+    <title>Combinatory Categorial Grammar for Ancient Greek</title>
     <link>http://www.jonmsterling.com//posts/2013-05-20-combinatory-categorial-grammar-for-greek.html</link>
     <description><![CDATA[<p>This is the first in a series I intend to write in regard to the syntax of Ancient Greek hyperbaton, and what can be done about it formally using a combinatory categorial grammar<sup><a href="#fn1" class="footnoteRef" id="fnref1">1</a></sup>. We will begin with a pathological example of <span class="math">\(Y_1\)</span> hyperbaton from Sophocles’ <em>Trachinian Women</em>:</p>
 <div class="gloss">
