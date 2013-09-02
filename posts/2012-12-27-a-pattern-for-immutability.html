@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="readability-verification" content="cG3MqZcEVveKZ6mnEFkePAL3Ug79Jxxp5Fn27CM7" />
+<title>JS ⊢ A Pattern for Lightweight Immutability in Objective-C</title>
+<link rel="stylesheet" type="text/css" href="../css/screen.css" />
+<link rel="stylesheet" type="text/css" href="../css/syntax.css" />
+<link rel="stylesheet" type="text/css" href="../css/coqdoc.css" />
+<style type="text/css">
+    @import url(http://nmashton.ca/css/gloss-0.0.1.css);
+</style>
+<script type="text/javascript" src="http://code.jquery.com/jquery-1.8.3.min.js"></script>
+<script type="text/javascript" src="http://nmashton.ca/js/gloss-0.0.1.js"></script>
+<link rel="alternate" type="application/rss+xml" title="Jonathan Sterling" href="../rss.xml" />
+
+
+<!--[if IE]>
+  <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+<!--[if lte IE 7]>
+  <script src="js/IE8.js" type="text/javascript"></script><![endif]-->
+<!--[if lt IE 7]>
+<link rel="stylesheet" type="text/css" media="all" href="css/ie6.css"/><![endif]-->
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+MathJax.Hub.Config({
+  'HTML-CSS': {
+    availableFonts: [],
+    webFont: 'TeX'
+  }
+});
+</script>
+</head>
+<body>
+
+<header>
+<h1><a href="../index.html"><span class="title">A Pattern for Lightweight Immutability in Objective-C.</span></a></h1>
+</header>
+
+<section class="post">
+<article><p>Today, I hope to introduce a more lightweight approach to immutable objects in Objective-C that sidesteps some of the problems with class clusters (such as hostility to subclassing) by making some trade-offs. The class cluster approach provides the following fronts of protection against illegal mutation:</p>
+<ol style="list-style-type: decimal">
+<li>Mutation methods only occur in the interfaces for the mutable variants. This protects us when types are preserved.</li>
+<li>Sending a mutation message to an immutable object results in an exception.</li>
+</ol>
+<p>I’m going to argue that the first force of protection (that of types) is far more important than the second (that of runtime exceptions), and that if we are willing to give it up, we can have a vastly simpler notion of immutability and mutability. Finally, I’ll discuss ways we can recover runtime exceptions in the case of an unsafe cast, and finally how we can recover the functionality of <code>-mutableCopy</code> in a subclass-friendly fashion.</p>
+<!--more-->
+
+<h3 id="immutability-axioms-for-a-minimal-implementation">Immutability: Axioms for a Minimal Implementation</h3>
+<p>Let us agree on the following axioms (that is to say, the extent to which you find this article valuable will vary with the extent to which you stipulate the following):</p>
+<ol style="list-style-type: decimal">
+<li><p>Objects should be immutable; no shared object should ever have its state changed underneath from another object. If multiple objects need to share the changing state of another object, it should be represented as a reactive event stream.</p></li>
+<li><p>It should be trivial to make an updated <em>copy</em> of an object; it should be trivial to update multiple aspects of an object in whichever order you wish.</p></li>
+<li><p>We need not code defensively against unsafe casting. If API consumers perform a downward cast, they objectively deserve every bit of bizarre and confusing behavior they are rewarded with.</p></li>
+</ol>
+<p>And so from <strong>Axiom 3</strong>, we can dispatch the issue of whether it is necessary to have both static and runtime assurances about immutability. If API consumers agree not to perform any obviously unsafe casts, then we can rely on static immutability alone. Later we’ll discuss what is necessary if we wish to discard this last axiom.</p>
+<h3 id="implementation-example-an-ordered-dictionary">Implementation Example: An Ordered Dictionary</h3>
+<p>The key conceit of our plan is to provide a mutable and an immutable interface to an object; then, we limit access to the mutable interface to a few safe points in our code. That is, we will allow dictionaries to be built and updated imperativiely, but the mutations will be upon a <em>copy</em>. It should look something like this:</p>
+<pre class="sourceCode ObjectiveC"><code class="sourceCode objectivec">JSOrderedDictionary *updated = [oldDict update:^(id&lt;JSMutableOrderedDictionary&gt; dict) {
+    dict[<span class="st">@&quot;dogs&quot;</span>] = @[ <span class="st">@&quot;tucker&quot;</span>, <span class="st">@&quot;rover&quot;</span> ];
+    dict[<span class="st">@&quot;cats&quot;</span>] = @[ <span class="st">@&quot;emma&quot;</span> ];
+    [dict removeObjectForKey:<span class="st">@&quot;hamsters&quot;</span>];
+}];</code></pre>
+<p>Now, we can get started. First, we will define the immutable and mutable interfaces for an ordered dictionary; we expose the mutable one only in <code>-update:</code>. The mutable interface of course inherits all the immutable kit.</p>
+<table class="sourceCode ObjectiveC numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+</pre></td><td class="sourceCode"><pre><code class="sourceCode objectivec"><span class="kw">@protocol</span> JSMutableOrderedDictionary;
+<span class="kw">typedef</span> <span class="dt">void</span> (^JSOrderedDictionaryUpdate)(id&lt;JSMutableOrderedDictionary&gt; dict);
+
+<span class="kw">@protocol</span> JSOrderedDictionary &lt;NSFastEnumeration&gt;
+- (id)objectForKey:(id&lt;NSCopying&gt;)key;
+- (id)objectForKeyedSubscript:(id&lt;NSCopying&gt;)key;
+
+- (NSArray *)allKeys;
+- (NSArray *)allValues;
+- (NSUInteger)count;
+
+- (instancetype)update:(JSOrderedDictionaryUpdate)updateBlock;
+<span class="kw">@end</span>
+
+<span class="kw">@protocol</span> JSMutableOrderedDictionary &lt;JSOrderedDictionary&gt;
+- (<span class="dt">void</span>)setObject:(id)object forKey:(id&lt;NSCopying&gt;)key;
+- (<span class="dt">void</span>)setObject:(id)object forKeyedSubscript:(id&lt;NSCopying&gt;)key;
+- (<span class="dt">void</span>)removeObjectForKey:(id&lt;NSCopying&gt;)key;
+<span class="kw">@end</span>
+
+<span class="kw">@interface</span> JSOrderedDictionary : NSObject &lt;JSOrderedDictionary, NSCopying&gt;
+- (id)initWithOrderedDictionary:(id&lt;JSOrderedDictionary&gt;)dictionary;
+- (id)initWithObjects:(NSArray *)objects forKeys:(NSArray *)keys;
+<span class="kw">@end</span></code></pre></td></tr></table>
+<p>The implementation is quite straightforward:</p>
+<table class="sourceCode ObjectiveC numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+</pre></td><td class="sourceCode"><pre><code class="sourceCode objectivec"><span class="kw">@interface</span> JSOrderedDictionary (JSMutableOrderedDictionary) &lt;JSMutableOrderedDictionary&gt;
+<span class="kw">@end</span>
+
+<span class="kw">@implementation</span> JSOrderedDictionary {
+    NSMutableArray *_keys;
+    NSMutableDictionary *_dictionary;
+}
+
+<span class="ot">#pragma mark - Initializers</span>
+
+- (id)init {
+    <span class="kw">return</span> [<span class="kw">self</span> initWithObjects:@[ ] forKeys:@[ ]];
+}
+
+- (id)initWithOrderedDictionary:(id&lt;JSOrderedDictionary&gt;)dictionary {
+    <span class="kw">return</span> [<span class="kw">self</span> initWithObjects:dictionary.allValues forKeys:dictionary.allKeys];
+}
+
+- (id)initWithObjects:(NSArray *)objects forKeys:(NSArray *)keys {
+    <span class="kw">if</span> (<span class="kw">self</span> = [<span class="kw">super</span> init]) {
+        _keys = [keys mutableCopy];
+        _dictionary = [NSMutableDictionary dictionaryWithObjects:objects forKeys:keys];
+    }
+
+    <span class="kw">return</span> <span class="kw">self</span>;
+}
+
+<span class="ot">#pragma mark - NSCopying</span>
+
+- (id)copyWithZone:(NSZone *)zone {
+    <span class="kw">return</span> [[[<span class="kw">self</span> class] alloc] initWithOrderedDictionary:<span class="kw">self</span>];
+}
+
+<span class="ot">#pragma mark - NSFastEnumeration</span>
+
+- (NSUInteger)countByEnumeratingWithState:(NSFastEnumerationState *)state
+     objects:(__unsafe_unretained id [])buffer count:(NSUInteger)len {
+    <span class="kw">return</span> [_keys countByEnumeratingWithState:countByEnumeratingWithState:state objects:buffer count:len];
+}
+
+<span class="ot">#pragma mark - JSOrderedDictionary</span>
+
+- (id)objectForKey:(id&lt;NSCopying&gt;)key {
+    <span class="kw">return</span> [_dictionary objectForKey:key];
+}
+
+- (id)objectForKeyedSubscript:(id&lt;NSCopying&gt;)key {
+    <span class="kw">return</span> [<span class="kw">self</span> objectForKey:key];
+}
+
+- (NSArray *)allKeys {
+    <span class="kw">return</span> [_keys copy];
+}
+
+- (NSArray *)allValues {
+    NSMutableArray *values = [NSMutableArray arrayWithCapacity:<span class="kw">self</span>.count];
+    <span class="kw">for</span> (id&lt;NSCopying&gt; key in <span class="kw">self</span>) {
+        [values addObject:<span class="kw">self</span>[key]];
+    }
+
+    <span class="kw">return</span> [values copy];
+}
+
+- (NSUInteger)count {
+    <span class="kw">return</span> _keys.count;
+}
+
+- (instancetype)update:(JSOrderedDictionaryUpdate)updateBlock {
+    JSOrderedDictionary *copy = [<span class="kw">self</span> copy];
+    updateBlock(copy);
+    <span class="kw">return</span> copy;
+}
+
+<span class="kw">@end</span>
+
+<span class="kw">@implementation</span> JSOrderedDictionary (JSMutableOrderedDictionary)
+<span class="co">// The implementation is trivial.</span>
+<span class="kw">@end</span></code></pre></td></tr></table>
+<h2 id="fudging-the-axioms-what-can-we-recover">Fudging the Axioms: What can we recover?</h2>
+<p>Now that we’ve shown the Taliban approach, we can see what is necessary to recover some of the things we might miss.</p>
+<h3 id="recovering-exceptions">Recovering Exceptions</h3>
+<p>As explained above, the current model expresses the boundary between mutability and immutability using types. That is, we provide a mutable interface to our dictionary, exposed in such a way as to aggregate imperative updates and perform them safely on a copy. But we do nothing to prevent a user from casting <code>JSOrderedDictionary</code> to <code>id&lt;JSMutableOrderedDictionary&gt;</code>; if a dictionary object is shared, and one partaker unscrupulously (and unsafely) casts the dictionary to <code>id</code> or the mutable interface, this may represent a broken program that would be hard to debug.</p>
+<p>We can recover exceptions (which would provide a way to determine when a dictionary is being used unsafely) very simply by adding a private flag to the dictionary:</p>
+<table class="sourceCode ObjectiveC numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+</pre></td><td class="sourceCode"><pre><code class="sourceCode objectivec"><span class="kw">@implementation</span> JSOrderedDictionary {
+    BOOL _isMutable;
+    <span class="co">// ...</span>
+}
+
+- (instancetype)modify:(JSOrderedDictionaryUpdate)block {
+    JSOrderedDictionary *copy = [<span class="kw">self</span> copy];
+    copy-&gt;_isMutable = YES;
+    block(copy);
+    copy-&gt;_isMutable = NO;
+    <span class="kw">return</span> copy;
+}
+
+<span class="co">// ...</span>
+<span class="kw">@end</span>
+
+<span class="kw">@implementation</span> JSOrderedDictionary (JSMutableOrderedDictionary)
+
+- (<span class="dt">void</span>)assertMutableForSelector:(SEL)selector {
+    <span class="kw">if</span> (_isMutable) <span class="kw">return</span>;
+
+    NSString *reason = [NSString stringWithFormat:
+                        <span class="st">@&quot;Attempted to send -%@ to immutable object %@&quot;</span>,
+                        NSStringFromSelector(selector), <span class="kw">self</span>];
+    @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:reason userInfo:nil];
+}
+
+- (<span class="dt">void</span>)setObject:(id)object forKey:(id&lt;NSCopying&gt;)key {
+    NSParameterAssert(key != nil);
+    [<span class="kw">self</span> assertMutableForSelector:_cmd];
+
+    <span class="kw">if</span> (object == nil) [_keys removeObject:key];
+    <span class="kw">else</span> <span class="kw">if</span> (![_keys containsObject:key]) {
+        [_keys addObject:key];
+    }
+
+    [_dictionary setObject:object forKey:key];
+}
+
+<span class="co">// ...</span>
+
+<span class="kw">@end</span></code></pre></td></tr></table>
+<h3 id="mutability-unchained-omphales-revenge">Mutability Unchained: Omphale’s Revenge</h3>
+<p>We can even recover the last remaining thing that the class cluster approach gives us (to have a real mutable dictionary, at your own peril) by adding a bit more kit. Let’s wipe out what we did in the last section and refine it a bit. First, let’s adopt <code>&lt;NSMutableCopying&gt;</code> to our interface:</p>
+<table class="sourceCode ObjectiveC numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
+2
+3
+</pre></td><td class="sourceCode"><pre><code class="sourceCode objectivec"><span class="kw">@interface</span> JSOrderedDictionary : NSObject &lt;JSOrderedDictionary, NSCopying, NSMutableCopying&gt;
+<span class="co">// ...</span>
+<span class="kw">@end</span></code></pre></td></tr></table>
+<p>Now for some new kit:</p>
+<table class="sourceCode ObjectiveC numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+</pre></td><td class="sourceCode"><pre><code class="sourceCode objectivec"><span class="kw">typedef</span> <span class="kw">enum</span> {
+    JSMutabilityNone,
+    JSMutabilityTemporary,
+    JSMutabilityPermanent
+} JSMutabilityState;
+
+<span class="kw">@implementation</span> JSOrderedDictionary {
+    JSMutabilityState _mutabilityState;
+    <span class="co">// ...</span>
+}
+
+- (<span class="dt">void</span>)performWithTemporaryMutability:(JSOrderedDictionaryUpdate)block {
+    BOOL immutableByDefault = _mutabilityState != JSMutabilityPermanent;
+    <span class="kw">if</span> (immutableByDefault) _mutabilityState = JSMutabilityTemporary;
+    block(<span class="kw">self</span>);
+    <span class="kw">if</span> (immutableByDefault) _mutabilityState = JSMutabilityNone;
+}
+
+- (instancetype)modify:(JSOrderedDictionaryUpdate)block {
+    BOOL immutableByDefault = _mutabilityState != JSMutabilityPermanent;
+    JSOrderedDictionary *copy = immutableByDefault ? [<span class="kw">self</span> copy] : [<span class="kw">self</span> mutableCopy];
+    [copy performWithTemporaryMutability:^(id&lt;JSMutableOrderedDictionary&gt; dict) {
+        block(dict);
+    }];
+    <span class="kw">return</span> copy;
+}
+
+<span class="ot">#pragma mark - NSMutableCopying</span>
+
+- (id)mutableCopyWithZone:(NSZone *)zone {
+    JSOrderedDictionary *copy = [<span class="kw">self</span> copyWithZone:zone];
+    copy-&gt;_mutabilityState = JSMutabilityPermanent;
+    <span class="kw">return</span> copy;
+}
+
+<span class="kw">@end</span>
+
+<span class="kw">@implementation</span> JSOrderedDictionary (JSMutableOrderedDictionary)
+
+- (<span class="dt">void</span>)assertMutableForSelector:(SEL)selector {
+    <span class="kw">if</span> (_mutabilityState != JSMutabilityNone) <span class="kw">return</span>;
+    <span class="co">// ...</span>
+}
+
+<span class="kw">@end</span></code></pre></td></tr></table>
+<p>The beauty of this approach is that it is now possible to provide full mutability by adding only a tiny bit of code to the immutable implementation, in a way that is very friendly to subclasses.</p>
+<p>Whereas with class clusters, for a class cluster <span class="math">\(\{A_\text{mutable},A_\text{immutable}\}\)</span>, a subclass <span class="math">\(B\)</span> which wishes to provide correct behavior must provide <span class="math">\(\{B_\text{mutable} &lt; A_\text{mutable}, B_\text{immutable} &lt; A_\text{mutable}\}\)</span>; furthermore, methods having free ocurrences of <span class="math">\(A_\text{mutable}\)</span> must be rewritten in the subclass to use <span class="math">\(B_\text{mutable}\)</span> and so forth.</p>
+<p>Our approach sidesteps these problems quite nicely.</p>
+<h2 id="parting-notes">Parting Notes</h2>
+<p>I’m using this approach for ordered dictionaries in <a href="https://github.com/jonsterling/ReactiveFormlets/blob/master/iOS%20Formlets/RAFOrderedDictionary.h">ReactiveFormlets</a>. It seems sufficient for my purposes; I’m excited to see if it will do for more advanced ones.</p></article>
+<h1>Want to comment?</h1>
+<p> I’m @jonsterling on <a href="http://www.twitter.com/jonsterling">Twitter</a> and <a href="https://alpha.app.net/jonsterling">App.net</a>.</p>
+
+
+<script src="//static.getclicky.com/js" type="text/javascript"></script>
+<script type="text/javascript">try{ clicky.init(66625087);
+    }catch(e){}</script>
+<noscript><p><img alt="Clicky" width="1" height="1" src="//in.getclicky.com/66625087ns.gif" /></p></noscript>
+
+<a rel="me" href="http://twitter.com/jonsterling"></a>
+<a rel="me" href="https://alpha.app.net/jonsterling"></a>
+</body>
+</html>
+

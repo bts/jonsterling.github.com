@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="readability-verification" content="cG3MqZcEVveKZ6mnEFkePAL3Ug79Jxxp5Fn27CM7" />
+<title>JS ⊢ Unifying Monoids and Monads with Polymorphic Kinds</title>
+<link rel="stylesheet" type="text/css" href="../css/screen.css" />
+<link rel="stylesheet" type="text/css" href="../css/syntax.css" />
+<link rel="stylesheet" type="text/css" href="../css/coqdoc.css" />
+<style type="text/css">
+    @import url(http://nmashton.ca/css/gloss-0.0.1.css);
+</style>
+<script type="text/javascript" src="http://code.jquery.com/jquery-1.8.3.min.js"></script>
+<script type="text/javascript" src="http://nmashton.ca/js/gloss-0.0.1.js"></script>
+<link rel="alternate" type="application/rss+xml" title="Jonathan Sterling" href="../rss.xml" />
+
+
+<!--[if IE]>
+  <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+<!--[if lte IE 7]>
+  <script src="js/IE8.js" type="text/javascript"></script><![endif]-->
+<!--[if lt IE 7]>
+<link rel="stylesheet" type="text/css" media="all" href="css/ie6.css"/><![endif]-->
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+MathJax.Hub.Config({
+  'HTML-CSS': {
+    availableFonts: [],
+    webFont: 'TeX'
+  }
+});
+</script>
+</head>
+<body>
+
+<header>
+<h1><a href="../index.html"><span class="title">Unifying Monoids and Monads with Polymorphic Kinds.</span></a></h1>
+</header>
+
+<section class="post">
+<article><blockquote>
+A monad is just a monoid in the category of endofunctors, what’s the problem? — <a href="http://james-iry.blogspot.com/2009/05/brief-incomplete-and-mostly-wrong.html">James Iry</a>.
+</blockquote>
+
+<p>Building on the work of sigfpe’s <a href="http://blog.sigfpe.com/2008/11/from-monoids-to-monads.html">From Monoids to Monads</a> and monoidal’s <a href="http://monoidal.blogspot.com/2010/07/kind-polymorphism-in-action.html">Kind polymorphism in action</a> (which demonstrates kind polymorphism in the <a href="http://www.cs.uu.nl/wiki/UHC">Ultrecht Haskell Compiler</a>), we can unify Monoid and Monad under one type class in GHC 7.4.</p>
+<p><!--more--></p>
+<p>So, the quote at the beginning is true, but with a few qualifications. As most beginning functional programmers know it, the monoid is a structure that has an identity element <span class="math">\(id\)</span> and a binary operator <span class="math">\(\otimes\)</span>:</p>
+<p><span class="math">\(\begin{aligned} \text{class} &amp;\textbf{Monoid}\ (m : \star) \text{ where}\\ &amp; id: m\\ &amp; \otimes: m \to m \to m \end{aligned}\)</span></p>
+<p>For the monoid <span class="math">\(m\)</span> to be valid, the <span class="math">\(id\)</span> must be the identity with respect to the operator <span class="math">\(\otimes\)</span>, like <span class="math">\(0\)</span> is to <span class="math">\(+\)</span> on natural numbers, or <span class="math">\(1\)</span> to <span class="math">\(\times\)</span>, etc; the binary operator must also be associative:</p>
+<p><span class="math">\(\begin{aligned} \forall x &amp;: m.\ &amp;x\otimes id &amp;\equiv id\otimes x \equiv x\\ \forall a,b,c &amp;: m.\ &amp;(a\otimes b)\otimes c &amp;\equiv a\otimes (b\otimes c) \end{aligned}\)</span></p>
+<p>This kind of monoid does not bear the sort of abstraction required to unify it with Monad, which is rather different:</p>
+<p><span class="math">\(\begin{aligned} \text{class} &amp;\textbf{Functor}\ m \Rightarrow \textbf{Monad}\ (m : \star\to\star) \text{ where}\\ &amp; \eta: \forall\alpha:\star. (\textbf{Id}\ \alpha \to m\,\alpha) \\ &amp; \mu: \forall\alpha:\star. (m\, (m\,\alpha) \to m\,\alpha) \end{aligned}\)</span></p>
+<p>In fact, <span class="math">\(\eta\)</span> is a natural transformation<sup><a href="#fn1" class="footnoteRef" id="fnref1">1</a></sup> from the Identity functor to another functor <span class="math">\(m\)</span>; <span class="math">\(\mu\)</span> is a natural transformation from <span class="math">\(m^2\)</span> to <span class="math">\(m\)</span> (that is, from <span class="math">\(m\)</span> applied twice to <span class="math">\(m\)</span> applied once).</p>
+<h3 id="a-difference-of-kinds">A Difference of Kinds</h3>
+<p>You’ll note that our <span class="math">\(\textbf{Monad}\)</span> and <span class="math">\(\textbf{Monoid}\)</span> operate in totally different worlds: a difference of kinds. That is, an instance of the former is a type of values (<span class="math">\(m :\star\)</span>), whereas an instance of the latter is an arrow from one type to another (a type constructor, <span class="math">\(m :\star\to\star\)</span>). By analogy, then, the former’s functions should be natural transformations in the latter.</p>
+<p>This makes fine sense, but the question of what to do with <span class="math">\(id\)</span> remains: why does it have an input in <span class="math">\(\textbf{Monad}\)</span>, but not in <span class="math">\(\textbf{Monoid}\)</span>? If we are going to understand these functions as arrows between objects in a category, then <span class="math">\(id\)</span> must have an input. As a natural transformation in <span class="math">\(\textbf{Monad}\)</span>, its input is the identity functor; as a simple function in <span class="math">\(\textbf{Monoid}\)</span>, its input should be <span class="math">\(\varnothing\)</span>, nothing.</p>
+<p>If we uncurry <span class="math">\(\otimes\)</span>, then its type becomes (<span class="math">\(m\times m\to m\)</span>); this adjustment brings its type in line with that of <span class="math">\(\mu\)</span>. So, we can build the following (incomplete and flawed) generalization over an identity element <span class="math">\(id\)</span> and a type-operator <span class="math">\(\times\)</span>:</p>
+<p><span class="math">\(\begin{align} \text{class} &amp;\textbf{Monoid}\ (id: k)\ (\times : k\to k\to \star)\ (m : k)\ \text{ where}\\ &amp; id: id \to m\\ &amp; \otimes: m\times m \to m \end{align}\)</span></p>
+<p><span class="math">\(\begin{align} \text{instance} &amp;\textbf{Num}\ \alpha \Rightarrow \textbf{Monoid}\ \varnothing\ (\Lambda x\,y. (x,y))\ \alpha\ \text{ where}\\ &amp; id = const\ 0\\ &amp; \otimes = uncurry\ (+) \end{align}\)</span></p>
+<p><span class="math">\(\begin{align} \text{instance} &amp;\textbf{Monoid}\ \textbf{Id}\ (\Lambda f\,g\,\alpha. f\ (g\,\alpha))\ [\,]\ \text{ where}\\ &amp; id\ (\textbf{Id}\ x) = [x]\\ &amp; \otimes [xs] = xs \end{align}\)</span></p>
+<p>But this doesn’t work, since the type of <span class="math">\(id\)</span> for our second (monadic) instance reduces to <span class="math">\(Id\to []\)</span>, which doesn’t type-check: that is, the kind of <span class="math">\((\to)\)</span> is <span class="math">\(\star\to\star\to\star\)</span>, but the kind of each of its operands in <span class="math">\(id\)</span> is already (<span class="math">\(\star\to\star\)</span>). What this means is that for monadic instances of <span class="math">\(\textbf{Monoid}\)</span>, we need an arrow type constructor of kind <span class="math">\((\star\to\star)\to(\star\to\star)\to\star\)</span>. So we need to abstract over kind of arrow constructor:</p>
+<p><span class="math">\(\begin{align} \text{class} &amp;\textbf{Monoid}\ (\leadsto\;: k\to k\to\star)\ (id: k)\ (\times : k\to k\to \star)\ (m : k)\ \text{ where}\\ &amp; id: id \leadsto m\\ &amp; \otimes: m\times m \leadsto m \end{align}\)</span></p>
+<p>A normal monoid deals with function arrows and pairs:</p>
+<p><span class="math">\(\begin{align} \text{instance} &amp;\textbf{Num}\ \alpha \Rightarrow \textbf{Monoid}\ (\to)\ \varnothing\ (\Lambda x\,y. (x,y))\ \alpha\ \text{ where}\\ &amp; id = const\ 0\\ &amp; \otimes = uncurry\ (+) \end{align}\)</span></p>
+<p>A monadic monoid deals with natural transformations and composed functors:</p>
+<p><span class="math">\(\begin{align} \text{instance} &amp;\textbf{Monoid}\ (\Lambda f\,g\,\alpha. f\,\alpha\to g\,\alpha)\ \textbf{Id}\ (\Lambda f\,g\,\alpha. f\ (g\,\alpha))\ [\,]\ \text{ where}\\ &amp; id\ (\textbf{Id}\ x) = [x]\\ &amp; \otimes [xs] = xs \end{align}\)</span></p>
+<h3 id="the-haskell-version">The Haskell Version</h3>
+<p>We’ll need to turn on a bunch of GHC extensions.</p>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="ot">{-# LANGUAGE PolyKinds #-}</span>
+<span class="ot">&gt;</span> <span class="ot">{-# LANGUAGE MultiParamTypeClasses #-}</span>
+<span class="ot">&gt;</span> <span class="ot">{-# LANGUAGE FlexibleInstances, FlexibleContexts #-}</span>
+<span class="ot">&gt;</span> <span class="ot">{-# LANGUAGE UndecidableInstances #-}</span>
+<span class="ot">&gt;</span> <span class="ot">{-# LANGUAGE FunctionalDependencies #-}</span>
+<span class="ot">&gt;</span> <span class="ot">{-# LANGUAGE RankNTypes #-}</span>
+<span class="ot">&gt;</span> <span class="ot">{-# LANGUAGE TypeOperators #-}</span>
+<span class="ot">&gt;</span> <span class="ot">{-# LANGUAGE DeriveFunctor #-}</span>
+<span class="ot">&gt;</span> <span class="ot">{-# LANGUAGE UnicodeSyntax #-}</span></code></pre>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">module</span> <span class="dt">GeneralizedMonoid</span> <span class="kw">where</span>
+<span class="ot">&gt;</span> <span class="kw">import</span> Control.Monad (Monad(..))
+<span class="ot">&gt;</span> <span class="kw">import</span> Data.Monoid (Monoid(..))</code></pre>
+<p>First we define the type class <code>Monoidy</code>:</p>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">class</span> <span class="dt">Monoidy</span> (<span class="fu">~&gt;</span>) comp <span class="fu">id</span> m <span class="fu">|</span> m (<span class="fu">~&gt;</span>) <span class="ot">→</span> comp <span class="fu">id</span> <span class="kw">where</span>
+<span class="ot">&gt;   munit ::</span> <span class="fu">id</span> <span class="fu">~&gt;</span> m
+<span class="ot">&gt;   mjoin ::</span> m <span class="ot">`comp`</span> m <span class="fu">~&gt;</span> m</code></pre>
+<p>We use functional dependencies to help the typechecker understand that <code>m</code> and <code>~&gt;</code> uniquely determine <code>comp</code> (<span class="math">\(times\)</span>) and <code>id</code>.</p>
+<p>This kind of type class would not have been possible in previous versions of GHC; with the new kind system, however, we can abstract over kinds!<sup><a href="#fn2" class="footnoteRef" id="fnref2">2</a></sup> Now, let’s create types for the additive and multiplicative monoids over the natural numbers:</p>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">newtype</span> <span class="dt">Sum</span> a <span class="fu">=</span> <span class="dt">Sum</span> a <span class="kw">deriving</span> <span class="kw">Show</span>
+<span class="ot">&gt;</span> <span class="kw">newtype</span> <span class="dt">Product</span> a <span class="fu">=</span> <span class="dt">Product</span> a <span class="kw">deriving</span> <span class="kw">Show</span>
+<span class="ot">&gt;</span> <span class="kw">instance</span> <span class="kw">Num</span> a <span class="ot">⇒</span> <span class="dt">Monoidy</span> (<span class="ot">→</span>) (,) () (<span class="dt">Sum</span> a) <span class="kw">where</span>
+<span class="ot">&gt;</span>   munit _ <span class="fu">=</span> <span class="dt">Sum</span> <span class="dv">0</span>
+<span class="ot">&gt;</span>   mjoin (<span class="dt">Sum</span> x, <span class="dt">Sum</span> y) <span class="fu">=</span> <span class="dt">Sum</span> <span class="fu">$</span> x <span class="fu">+</span> y
+<span class="ot">&gt;</span> <span class="kw">instance</span> <span class="kw">Num</span> a <span class="ot">⇒</span> <span class="dt">Monoidy</span> (<span class="ot">→</span>) (,) () (<span class="dt">Product</span> a) <span class="kw">where</span>
+<span class="ot">&gt;</span>   munit _ <span class="fu">=</span> <span class="dt">Product</span> <span class="dv">1</span>
+<span class="ot">&gt;</span>   mjoin (<span class="dt">Product</span> x, <span class="dt">Product</span> y) <span class="fu">=</span> <span class="dt">Product</span> <span class="fu">$</span> x <span class="fu">*</span> y</code></pre>
+<p>It will be slightly more complicated to make a monadic instance with <code>Monoidy</code>. First, we need to define the identity functor, a type for natural transformations, and a type for functor composition:</p>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">newtype</span> <span class="dt">Id</span> α <span class="fu">=</span> <span class="dt">Id</span> {<span class="ot"> runId ::</span> α } <span class="kw">deriving</span> <span class="kw">Functor</span></code></pre>
+<p>A natural transformation (<span class="math">\(\Lambda f\,g\,\alpha. (f\,\alpha)\to(g\,\alpha)\)</span>) may be encoded in Haskell as follows:</p>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">newtype</span> <span class="dt">NT</span> f g <span class="fu">=</span> <span class="dt">NT</span> {<span class="ot"> runNT ::</span> <span class="ot">∀</span> α. f α <span class="ot">→</span> g α }</code></pre>
+<p>Functor composition (<span class="math">\(\Lambda f\,g\,\alpha. f\ (g\,\alpha)\)</span>) is encoded as follows:</p>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">newtype</span> <span class="dt">FC</span> f g α <span class="fu">=</span> <span class="dt">FC</span> {<span class="ot"> runFC ::</span> f (g α) }</code></pre>
+<p>Now, let us define some type <code>T</code> which should be a monad:</p>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">newtype</span> <span class="dt">Wrapper</span> a <span class="fu">=</span> <span class="dt">Wrapper</span> {<span class="ot"> runWrapper ::</span> a } <span class="kw">deriving</span> (<span class="kw">Show</span>, <span class="kw">Functor</span>)
+<span class="ot">&gt;</span> <span class="kw">instance</span> <span class="dt">Monoidy</span> <span class="dt">NT</span> <span class="dt">FC</span> <span class="dt">Id</span> <span class="dt">Wrapper</span> <span class="kw">where</span>
+<span class="ot">&gt;</span>   munit <span class="fu">=</span> <span class="dt">NT</span> <span class="fu">$</span> <span class="dt">Wrapper</span> <span class="fu">.</span> runId
+<span class="ot">&gt;</span>   mjoin <span class="fu">=</span> <span class="dt">NT</span> <span class="fu">$</span> runWrapper <span class="fu">.</span> runFC</code></pre>
+<p>With these defined, we can use them as follows:</p>
+<pre class="sourceCode haskell"><code class="sourceCode haskell">ghci<span class="fu">&gt;</span> mjoin (munit (), <span class="dt">Sum</span> <span class="dv">2</span>)
+      <span class="dt">Sum</span> <span class="dv">2</span>
+ghci<span class="fu">&gt;</span> mjoin (<span class="dt">Product</span> <span class="dv">2</span>, <span class="dt">Product</span> <span class="dv">3</span>)
+      <span class="dt">Product</span> <span class="dv">6</span>
+ghci<span class="fu">&gt;</span> runNT mjoin <span class="fu">$</span> <span class="dt">FC</span> <span class="fu">$</span> <span class="dt">Wrapper</span> (<span class="dt">Wrapper</span> <span class="st">&quot;hello, world&quot;</span>)
+      <span class="dt">Wrapper</span> {runWrapper <span class="fu">=</span> <span class="st">&quot;hello, world&quot;</span> }</code></pre>
+<p>We can even provide a special binary operator for the appropriate monoids as follows:</p>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt; (&lt;+&gt;) ::</span> <span class="dt">Monoidy</span> (<span class="ot">→</span>) (,) () m <span class="ot">⇒</span> m <span class="ot">→</span> m <span class="ot">→</span> m
+<span class="ot">&gt;</span> (<span class="fu">&lt;+&gt;</span>) <span class="fu">=</span> <span class="fu">curry</span> mjoin</code></pre>
+<pre class="sourceCode haskell"><code class="sourceCode haskell">ghci<span class="fu">&gt;</span> <span class="dt">Sum</span> <span class="dv">1</span> <span class="fu">&lt;+&gt;</span> <span class="dt">Sum</span> <span class="dv">2</span> <span class="fu">&lt;+&gt;</span> <span class="dt">Sum</span> <span class="dv">4</span>
+      <span class="dt">Sum</span> <span class="dv">7</span></code></pre>
+<p>Now, all the extra wrapping that Haskell requires for encoding this is rather cumbersome in actual use. So, we can give traditional <code>Monad</code> and <code>Monoid</code> instances for instances of <code>Monoidy</code>:</p>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">instance</span> <span class="dt">Monoidy</span> (<span class="ot">→</span>) (,) () m <span class="ot">⇒</span> <span class="dt">Monoid</span> m <span class="kw">where</span>
+<span class="ot">&gt;</span>   mempty <span class="fu">=</span> munit ()
+<span class="ot">&gt;</span>   mappend <span class="fu">=</span> <span class="fu">curry</span> mjoin</code></pre>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">instance</span> (<span class="kw">Functor</span> m, <span class="dt">Monoidy</span> <span class="dt">NT</span> <span class="dt">FC</span> <span class="dt">Id</span> m) <span class="ot">⇒</span> <span class="kw">Monad</span> m <span class="kw">where</span>
+<span class="ot">&gt;</span>   <span class="fu">return</span> x <span class="fu">=</span> runNT munit <span class="fu">$</span> <span class="dt">Id</span> x
+<span class="ot">&gt;</span>   x <span class="fu">&gt;&gt;=</span> f <span class="fu">=</span> runNT mjoin <span class="fu">$</span> <span class="dt">FC</span> (f <span class="ot">`fmap`</span> x)</code></pre>
+<p>And so the following works:</p>
+<pre class="sourceCode haskell"><code class="sourceCode haskell">ghci<span class="fu">&gt;</span> mappend mempty (<span class="dt">Sum</span> <span class="dv">2</span>)
+      <span class="dt">Sum</span> <span class="dv">2</span>
+ghci<span class="fu">&gt;</span> mappend (<span class="dt">Product</span> <span class="dv">2</span>) (<span class="dt">Product</span> <span class="dv">3</span>)
+      <span class="dt">Product</span> <span class="dv">6</span>
+ghci<span class="fu">&gt;</span> join <span class="fu">$</span> <span class="dt">Wrapper</span> <span class="fu">$</span> <span class="dt">Wrapper</span> <span class="st">&quot;hello&quot;</span>
+      <span class="dt">Wrapper</span> {runWrapper <span class="fu">=</span> <span class="st">&quot;hello&quot;</span> }
+ghci<span class="fu">&gt;</span> <span class="dt">Wrapper</span> <span class="st">&quot;hello, world&quot;</span> <span class="fu">&gt;&gt;=</span> <span class="fu">return</span>
+      <span class="dt">Wrapper</span> {runWrapper <span class="fu">=</span> <span class="st">&quot;hello, world&quot;</span> }</code></pre>
+<h3 id="if-you-got-this-far">If you got this far…</h3>
+<p>I hope you enjoyed that! I can’t express enough my thanks to the people who came before me and helped me indirectly to refine my ideas and understanding of the relationship between monads and monoids. Additionally, a shout-out to the GHC team for adding kind polymorphism!</p>
+<div class="footnotes">
+<hr />
+<ol>
+<li id="fn1"><p>A <em>natural transformation</em> is an arrow from one functor to another.<a href="#fnref1">↩</a></p></li>
+<li id="fn2"><p><em>Caveat</em>: you cannot use kind variables in annotations (like <code>m :: k</code>, as you can with type variables). Hopefully this will be fixed soon.<a href="#fnref2">↩</a></p></li>
+</ol>
+</div></article>
+<h1>Want to comment?</h1>
+<p> I’m @jonsterling on <a href="http://www.twitter.com/jonsterling">Twitter</a> and <a href="https://alpha.app.net/jonsterling">App.net</a>.</p>
+
+
+<script src="//static.getclicky.com/js" type="text/javascript"></script>
+<script type="text/javascript">try{ clicky.init(66625087);
+    }catch(e){}</script>
+<noscript><p><img alt="Clicky" width="1" height="1" src="//in.getclicky.com/66625087ns.gif" /></p></noscript>
+
+<a rel="me" href="http://twitter.com/jonsterling"></a>
+<a rel="me" href="https://alpha.app.net/jonsterling"></a>
+</body>
+</html>
+

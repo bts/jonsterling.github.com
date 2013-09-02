@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="readability-verification" content="cG3MqZcEVveKZ6mnEFkePAL3Ug79Jxxp5Fn27CM7" />
+<title>JS ⊢ Flexibly-Phased Constraints in Haskell</title>
+<link rel="stylesheet" type="text/css" href="../css/screen.css" />
+<link rel="stylesheet" type="text/css" href="../css/syntax.css" />
+<link rel="stylesheet" type="text/css" href="../css/coqdoc.css" />
+<style type="text/css">
+    @import url(http://nmashton.ca/css/gloss-0.0.1.css);
+</style>
+<script type="text/javascript" src="http://code.jquery.com/jquery-1.8.3.min.js"></script>
+<script type="text/javascript" src="http://nmashton.ca/js/gloss-0.0.1.js"></script>
+<link rel="alternate" type="application/rss+xml" title="Jonathan Sterling" href="../rss.xml" />
+
+
+<!--[if IE]>
+  <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+<!--[if lte IE 7]>
+  <script src="js/IE8.js" type="text/javascript"></script><![endif]-->
+<!--[if lt IE 7]>
+<link rel="stylesheet" type="text/css" media="all" href="css/ie6.css"/><![endif]-->
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+MathJax.Hub.Config({
+  'HTML-CSS': {
+    availableFonts: [],
+    webFont: 'TeX'
+  }
+});
+</script>
+</head>
+<body>
+
+<header>
+<h1><a href="../index.html"><span class="title">Flexibly-Phased Constraints in Haskell.</span></a></h1>
+</header>
+
+<section class="post">
+<article><p>Unfortunately, Haskell’s Prelude abounds with partial functions, like <code>head</code>, <code>tail</code>, <code>read</code>, etc. There have been some attempts to resolve this by replacing them with safe variants that return <code>Maybe a</code> rather than <code>a</code>. But what about when we can make static guarantees about data?</p>
+<p>Because Haskell doesn’t have real <span class="math">\(\prod\)</span>-types, we can’t bring those invariants into our program specifications in the same way a dependently-typed language could. But with GHC 7.4’s new <code>-XDataKinds</code> extension, many data types are automatically promoted into the kind-level; this means that we can maintain a static-dynamic phase distinction at the same time as having data structures mirrored into the kind level. Combined with phantom-types, this is enough to start encoding interesting invariants into the type system. <strong>But, reusing statically verified code for dynamic values can be problematic.</strong></p>
+<p><!--more--></p>
+<p>Let’s look back at our length-indexed vectors to see the problem first-hand:</p>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="ot">{-# LANGUAGE GADTs #-}</span>
+<span class="ot">&gt;</span> <span class="ot">{-# LANGUAGE DataKinds #-}</span>
+<span class="ot">&gt;</span> <span class="ot">{-# LANGUAGE KindSignatures #-}</span>
+<span class="ot">&gt;</span> <span class="ot">{-# LANGUAGE ExistentialQuantification #-}</span>
+<span class="ot">&gt;</span> <span class="ot">{-# LANGUAGE StandaloneDeriving #-}</span>
+<span class="ot">&gt;</span> <span class="ot">{-# LANGUAGE TypeFamilies #-}</span></code></pre>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">module</span> <span class="dt">PhasedConstraints</span> <span class="kw">where</span>
+<span class="ot">&gt;</span> <span class="kw">import</span> Control.Applicative ((&lt;$&gt;))</code></pre>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">data</span> <span class="dt">Nat</span> <span class="fu">=</span> <span class="dt">Z</span> <span class="fu">|</span> <span class="dt">S</span> <span class="dt">Nat</span>
+<span class="ot">&gt;</span> <span class="kw">infixr</span> <span class="fu">:&gt;</span>
+<span class="ot">&gt;</span> <span class="kw">data</span> <span class="dt">Vect</span><span class="ot"> ::</span> <span class="fu">*</span> <span class="ot">-&gt;</span> <span class="dt">Nat</span> <span class="ot">-&gt;</span> <span class="fu">*</span> <span class="kw">where</span>
+<span class="ot">&gt;</span>   <span class="dt">VNil</span><span class="ot"> ::</span> <span class="dt">Vect</span> a <span class="dt">Z</span>
+<span class="ot">&gt;   (:&gt;) ::</span> a <span class="ot">-&gt;</span> <span class="dt">Vect</span> a n <span class="ot">-&gt;</span> <span class="dt">Vect</span> a (<span class="dt">S</span> n)
+<span class="ot">&gt;</span> <span class="kw">deriving</span> <span class="kw">instance</span> <span class="kw">Show</span> a <span class="ot">=&gt;</span> <span class="kw">Show</span> (<span class="dt">Vect</span> a n)</code></pre>
+<p>It’s trivial to write safe <code>head</code> and <code>tail</code> functions now:</p>
+<pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">vhead ::</span> <span class="dt">Vect</span> a (<span class="dt">S</span> n) <span class="ot">-&gt;</span> a
+vhead (x <span class="fu">:&gt;</span> xs) <span class="fu">=</span> x</code></pre>
+<pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">vtail ::</span> <span class="dt">Vect</span> a (<span class="dt">S</span> n) <span class="ot">-&gt;</span> <span class="dt">Vect</span> a n
+vtail (x <span class="fu">:&gt;</span> xs) <span class="fu">=</span> xs</code></pre>
+<p>But what if we don’t statically know the size of our vector? For instance, if we are converting a plain old list to a vector, or if we are parsing some file. We’d presumably box up the vector and existentially quantify its length:</p>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">data</span> <span class="dt">EVect</span><span class="ot"> ::</span> <span class="fu">*</span> <span class="ot">-&gt;</span> <span class="fu">*</span> <span class="kw">where</span>
+<span class="ot">&gt;</span>   <span class="dt">EVect</span><span class="ot"> ::</span> <span class="dt">Vect</span> a n <span class="ot">-&gt;</span> <span class="dt">EVect</span> a
+<span class="ot">&gt;</span> <span class="kw">deriving</span> <span class="kw">instance</span> <span class="kw">Show</span> a <span class="ot">=&gt;</span> <span class="kw">Show</span> (<span class="dt">EVect</span> a)</code></pre>
+<p>Now we can marshall <span class="math">\([\alpha]\)</span> into <span class="math">\(\forall (\alpha:Set). \exists (n:\mathbb{N}). a^n\)</span>:</p>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt; fromList ::</span> [a] <span class="ot">-&gt;</span> <span class="dt">EVect</span> a
+<span class="ot">&gt;</span> fromList [] <span class="fu">=</span> <span class="dt">EVect</span> <span class="dt">VNil</span>
+<span class="ot">&gt;</span> fromList (x<span class="fu">:</span>xs) <span class="fu">=</span>
+<span class="ot">&gt;</span>   <span class="kw">case</span> fromList xs <span class="kw">of</span>
+<span class="ot">&gt;</span>     <span class="dt">EVect</span> v <span class="ot">-&gt;</span> <span class="dt">EVect</span> <span class="fu">$</span> x <span class="fu">:&gt;</span> v</code></pre>
+<p>But now, we’re in a bit of a pickle, since we cannot reuse our <code>vhead</code> and <code>vtail</code>. So, we can just write new ones that target <code>Maybe</code>:</p>
+<pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">evhead ::</span> <span class="dt">EVect</span> a <span class="ot">-&gt;</span> <span class="dt">Maybe</span> a
+evhead (<span class="dt">EVect</span> <span class="dt">VNil</span>)     <span class="fu">=</span> <span class="kw">Nothing</span>
+evhead (<span class="dt">EVect</span> (a <span class="fu">:&gt;</span> b)) <span class="fu">=</span> <span class="kw">Just</span> a</code></pre>
+<pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">evtail ::</span> <span class="dt">EVect</span> a <span class="ot">-&gt;</span> <span class="dt">Maybe</span> (<span class="dt">EVect</span> a)
+evtail (<span class="dt">EVect</span> <span class="dt">VNil</span>)     <span class="fu">=</span> <span class="kw">Nothing</span>
+evtail (<span class="dt">EVect</span> (a <span class="fu">:&gt;</span> b)) <span class="fu">=</span> <span class="kw">Just</span> (<span class="dt">EVect</span> b)</code></pre>
+<p>But this is certainly less-than-desirable. We haven’t reused any of our code. Imagine how unfortunate this would be for a function that is more complicated than <code>head</code> or <code>tail</code>… What we actually need is a way to marshall a function with static guarantees to a function with dynamic guarantees without rewriting everything, and without case analysis.</p>
+<h3>
+Types as Propositions
+</h3>
+
+<p>What if instead of restricting the type of the input of <code>vhead</code>, we just required a proof that it was a nonempty vector? Let’s try that. Under the Curry-Howard correspondance, types are propositions, and values are proofs. So, we can create a type that represents the proposition <em>greater-than-zero</em> for natural numbers:</p>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">data</span> <span class="dt">NotZero</span><span class="ot"> ::</span> <span class="dt">Nat</span> <span class="ot">-&gt;</span> <span class="fu">*</span> <span class="kw">where</span>
+<span class="ot">&gt;</span>   <span class="dt">NotZero</span><span class="ot"> ::</span> <span class="dt">NotZero</span> (<span class="dt">S</span> n)
+<span class="ot">&gt;</span> <span class="kw">deriving</span> <span class="kw">instance</span> <span class="kw">Show</span> (<span class="dt">NotZero</span> n)</code></pre>
+<p>Basically, excluding <em>bottom</em>, <code>NotZero n</code> does not have any inhabitants of type <code>NotZero Z</code>. So, forall natural numbers <code>n</code>, any value <code>NotZero n</code> is a proof that <code>n</code> is not zero. And we can just take this as a parameter in our new version of <code>vhead</code>:</p>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt; vhead ::</span> <span class="dt">Vect</span> a n <span class="ot">-&gt;</span> <span class="dt">NotZero</span> n <span class="ot">-&gt;</span> a
+<span class="ot">&gt;</span> vhead (x <span class="fu">:&gt;</span> xs) <span class="dt">NotZero</span> <span class="fu">=</span> x</code></pre>
+<p>To use <code>vhead</code>, just include the proof in the parameters:</p>
+<pre class="sourceCode haskell"><code class="sourceCode haskell">exampleVector <span class="fu">=</span> <span class="st">&quot;hello&quot;</span> <span class="fu">:&gt;</span> <span class="st">&quot;world&quot;</span> <span class="fu">:&gt;</span> <span class="dt">VNil</span>
+hello <span class="fu">=</span> vhead exampleVector <span class="dt">NotZero</span>
+<span class="co">-- typeError = vhead VNil NotZero</span></code></pre>
+<p>It’s a bit more complicated for <code>vtail</code>, since the length of its input must be universally quantified for it to be able to be applied to a vector with existentially quantified length; that is, behavior must not depend on the value of the index, since the index will just be a skolem type variable in the unpacked existential. So, we need to do subtraction in the right-hand side of the arrow, rather than structural recursion on the left side. To do this, we can use a type family:</p>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">type</span> family <span class="dt">Prev</span> (<span class="ot">n ::</span> <span class="dt">Nat</span>)<span class="ot"> ::</span> <span class="dt">Nat</span>
+<span class="ot">&gt;</span> <span class="kw">type</span> <span class="kw">instance</span> <span class="dt">Prev</span> (<span class="dt">S</span> n) <span class="fu">=</span> n</code></pre>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt; vtail ::</span> <span class="dt">Vect</span> a n <span class="ot">-&gt;</span> <span class="dt">NotZero</span> n <span class="ot">-&gt;</span> <span class="dt">Vect</span> a (<span class="dt">Prev</span> n)
+<span class="ot">&gt;</span> vtail (x <span class="fu">:&gt;</span> xs) <span class="dt">NotZero</span> <span class="fu">=</span> xs</code></pre>
+<p>Now, in order to make this work for vectors of unknown length, we need a function that can generate a <code>NotZero</code> proof for all vectors if applicable:</p>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt; notEmpty ::</span> <span class="dt">Vect</span> a n <span class="ot">-&gt;</span> <span class="dt">Maybe</span> (<span class="dt">NotZero</span> n)
+<span class="ot">&gt;</span> notEmpty <span class="dt">VNil</span> <span class="fu">=</span> <span class="kw">Nothing</span>
+<span class="ot">&gt;</span> notEmpty (x <span class="fu">:&gt;</span> xs) <span class="fu">=</span> <span class="kw">Just</span> <span class="dt">NotZero</span></code></pre>
+<p>And now, implementing <code>evhead</code> and <code>evtail</code> in terms of the originals is trivial, thanks to currying:</p>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt; evhead ::</span> <span class="dt">EVect</span> a <span class="ot">-&gt;</span> <span class="dt">Maybe</span> a
+<span class="ot">&gt;</span> evhead (<span class="dt">EVect</span> v) <span class="fu">=</span> vhead v <span class="fu">&lt;$&gt;</span> notEmpty v</code></pre>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt; evtail ::</span> <span class="dt">EVect</span> a <span class="ot">-&gt;</span> <span class="dt">Maybe</span> (<span class="dt">EVect</span> a)
+<span class="ot">&gt;</span> evtail (<span class="dt">EVect</span> v) <span class="fu">=</span> <span class="dt">EVect</span> <span class="fu">.</span> vtail v <span class="fu">&lt;$&gt;</span> notEmpty v</code></pre>
+<p>Gloriously, all the pattern matching and so forth is factored out into the proof generator. This is especially helpful if you have a whole family of functions that you want to be available to both your statically indexed values, and those whose indices are only known dynamically.</p>
+<h3>
+Taking a breath.
+</h3>
+
+<p>The reason we even bothered to do this is that there are more instances of statically verifiable computation in our programs than we like to think. For instance, any time we use a literal form for a data structure, rather than building it up inductively from IO, we are doing something that might benefit from static verification.</p>
+<p>But in the popular literature on dependent types (and faking-dependent-types-with-GADTs), there’s quite a bit of focus on building machinery to facilitate this static verification, but not a lot of details on how to make that machinery useful for dynamic data. By factoring constraints into explicit proofs, we can allow our constraints to be checked in different program phases (compilation or execution), according to the requirements of our data (static or dynamic). In a sense, we get to have our cake, and eat it too.</p></article>
+<h1>Want to comment?</h1>
+<p> I’m @jonsterling on <a href="http://www.twitter.com/jonsterling">Twitter</a> and <a href="https://alpha.app.net/jonsterling">App.net</a>.</p>
+
+
+<script src="//static.getclicky.com/js" type="text/javascript"></script>
+<script type="text/javascript">try{ clicky.init(66625087);
+    }catch(e){}</script>
+<noscript><p><img alt="Clicky" width="1" height="1" src="//in.getclicky.com/66625087ns.gif" /></p></noscript>
+
+<a rel="me" href="http://twitter.com/jonsterling"></a>
+<a rel="me" href="https://alpha.app.net/jonsterling"></a>
+</body>
+</html>
+

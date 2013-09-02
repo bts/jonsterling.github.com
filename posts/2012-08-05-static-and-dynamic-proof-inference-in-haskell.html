@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="readability-verification" content="cG3MqZcEVveKZ6mnEFkePAL3Ug79Jxxp5Fn27CM7" />
+<title>JS ⊢ Static and Dynamic Proof Inference in Haskell</title>
+<link rel="stylesheet" type="text/css" href="../css/screen.css" />
+<link rel="stylesheet" type="text/css" href="../css/syntax.css" />
+<link rel="stylesheet" type="text/css" href="../css/coqdoc.css" />
+<style type="text/css">
+    @import url(http://nmashton.ca/css/gloss-0.0.1.css);
+</style>
+<script type="text/javascript" src="http://code.jquery.com/jquery-1.8.3.min.js"></script>
+<script type="text/javascript" src="http://nmashton.ca/js/gloss-0.0.1.js"></script>
+<link rel="alternate" type="application/rss+xml" title="Jonathan Sterling" href="../rss.xml" />
+
+
+<!--[if IE]>
+  <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+<!--[if lte IE 7]>
+  <script src="js/IE8.js" type="text/javascript"></script><![endif]-->
+<!--[if lt IE 7]>
+<link rel="stylesheet" type="text/css" media="all" href="css/ie6.css"/><![endif]-->
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+MathJax.Hub.Config({
+  'HTML-CSS': {
+    availableFonts: [],
+    webFont: 'TeX'
+  }
+});
+</script>
+</head>
+<body>
+
+<header>
+<h1><a href="../index.html"><span class="title">Static and Dynamic Proof Inference in Haskell.</span></a></h1>
+</header>
+
+<section class="post">
+<article><p>Previously, I <a href="http://www.jonmsterling.com/posts/2012-07-22-flexibly-phased-constraints-in-haskell.html">discussed</a> using explicit proof parameters in combination with lifted proof generators in order to write code that can distribute its invariants across static and dynamic phases as appropriate. The major disadvantage to that approach is that it can sometimes be difficult and cumbersome to create proofs of certain properties manually. Today, I’ll discuss how to automate that using type classes.</p>
+<p><!--more--></p>
+<p>Before we begin, I’d like to further address the question of whether we even need to use explicit proof terms, as it would seem that we could simply use type classes to express our constraints. Let’s try that with a mirroring vector (an collection of an indexed type, where its value is mirrored in both the value and type levels). First, the usual boilerplate:</p>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="ot">{-# LANGUAGE GADTs, KindSignatures #-}</span>
+<span class="ot">&gt;</span> <span class="ot">{-# LANGUAGE DataKinds, PolyKinds #-}</span>
+<span class="ot">&gt;</span> <span class="ot">{-# LANGUAGE FlexibleInstances #-}</span>
+<span class="ot">&gt;</span> <span class="ot">{-# LANGUAGE FlexibleContexts #-}</span>
+<span class="ot">&gt;</span> <span class="ot">{-# LANGUAGE TypeOperators #-}</span>
+<span class="ot">&gt;</span> <span class="ot">{-# LANGUAGE TypeFamilies #-}</span>
+<span class="ot">&gt;</span> <span class="ot">{-# LANGUAGE MultiParamTypeClasses #-}</span>
+<span class="ot">&gt;</span> <span class="ot">{-# LANGUAGE OverlappingInstances #-}</span></code></pre>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">import</span> Control.Applicative</code></pre>
+<p>For some indexed type <code>f i</code>, there is a vector parameterized by a type-level list of <code>i</code>, holding a linked list of values <code>f i</code>.</p>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">infixr</span> <span class="fu">:&lt;</span>
+<span class="ot">&gt;</span> <span class="kw">data</span> <span class="dt">Vect</span> f is <span class="kw">where</span>
+<span class="ot">&gt;</span>   <span class="dt">VNil</span><span class="ot"> ::</span> <span class="dt">Vect</span> f <span class="ch">'[]</span>
+<span class="ot">&gt;   (:&lt;) ::</span> f i <span class="ot">-&gt;</span> <span class="dt">Vect</span> f is<span class="ot">-&gt;</span> <span class="dt">Vect</span> f (i <span class="ch">': is)</span></code></pre>
+<p>An example indexed type for the vector might be a natural number GADT:</p>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">data</span> <span class="dt">Nat</span> <span class="fu">=</span> <span class="dt">Z</span> <span class="fu">|</span> <span class="dt">S</span> <span class="dt">Nat</span>
+<span class="ot">&gt;</span> <span class="kw">data</span> <span class="dt">DNat</span> (<span class="ot">n ::</span> <span class="dt">Nat</span>) <span class="kw">where</span>
+<span class="ot">&gt;</span>   <span class="dt">DZ</span><span class="ot"> ::</span> <span class="dt">DNat</span> <span class="dt">Z</span>
+<span class="ot">&gt;</span>   <span class="dt">DS</span><span class="ot"> ::</span> <span class="dt">DNat</span> n <span class="ot">-&gt;</span> <span class="dt">DNat</span> (<span class="dt">S</span> n)</code></pre>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt; natToNum ::</span> <span class="kw">Num</span> a <span class="ot">=&gt;</span> <span class="dt">DNat</span> n <span class="ot">-&gt;</span> a
+<span class="ot">&gt;</span> natToNum <span class="dt">DZ</span> <span class="fu">=</span> <span class="dv">0</span>
+<span class="ot">&gt;</span> natToNum (<span class="dt">DS</span> n) <span class="fu">=</span> <span class="dv">1</span> <span class="fu">+</span> natToNum n</code></pre>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">instance</span> <span class="kw">Show</span> (<span class="dt">DNat</span> n) <span class="kw">where</span>
+<span class="ot">&gt;</span>   <span class="fu">show</span> <span class="fu">=</span> <span class="fu">show</span> <span class="fu">.</span> natToNum</code></pre>
+<p>We wish to have a function to get the index of an item that’s contained in the vector. For that to be safe, we need to be able to prove that the item is even contained in the vector.</p>
+<h3>
+An attempt without explicit witnesses
+</h3>
+
+<p>So, we’ll first try just using a type class. Since the values are guaranteed to be mirrored by the type-list, this is a reasonable way to do it:</p>
+<pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">class</span> <span class="dt">Elem'</span> i is
+<span class="kw">instance</span> <span class="dt">Elem'</span> i (i <span class="ch">': is)</span>
+<span class="kw">instance</span> <span class="dt">Elem'</span> i is <span class="ot">=&gt;</span> <span class="dt">Elem'</span> i (j <span class="ch">': is)</span></code></pre>
+<p>But you’ll quickly find that writing a function which uses this constraint is not a simple proposition. In fact, it would appear to be impossible for more than one reason. If we wish to use type classes in this way, we shall actually have to write an <code>IndexOf</code> type class:</p>
+<pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">class</span> <span class="dt">IndexOf</span> i is <span class="kw">where</span>
+<span class="ot">  indexOf ::</span> <span class="kw">Num</span> a <span class="ot">=&gt;</span> <span class="dt">Vect</span> f is <span class="ot">-&gt;</span> f i <span class="ot">-&gt;</span> a
+<span class="kw">instance</span> <span class="dt">IndexOf</span> i (i <span class="ch">': is) where</span>
+  indexOf (i <span class="fu">:&lt;</span> is) i' <span class="fu">=</span> <span class="dv">0</span>
+<span class="kw">instance</span> <span class="dt">IndexOf</span> i is <span class="ot">=&gt;</span> <span class="dt">IndexOf</span> i (j <span class="ch">': is) where</span>
+  indexOf (j <span class="fu">:&lt;</span> is) i <span class="fu">=</span> <span class="dv">1</span> <span class="fu">+</span> indexOf is i</code></pre>
+<p>And that class will do what we expect, but it <strong>complects constraint with behavior</strong>. This is a “bad” thing, since there may be other functions that require a similar constraint but quite different behavior. That smells of poor factoring. And so we must return to our explicit proof witness strategy.</p>
+<h3>
+An attempt with explicit witnesses
+</h3>
+
+<p>A witness that a value is an item of our mirrored vector is an instance of an inductive family. The base case is that the element lies at the beginning; if we have a proof that it lies somewhere in the vector’s tail, we also have a proof that the it is an element of the vector as a whole:</p>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">data</span> <span class="dt">Elem</span> a as <span class="kw">where</span>
+<span class="ot">&gt;</span>   <span class="dt">Here</span><span class="ot"> ::</span> <span class="dt">Elem</span> x (x <span class="ch">': xs)</span>
+<span class="ot">&gt;</span>   <span class="dt">There</span><span class="ot"> ::</span> <span class="dt">Elem</span> x xs <span class="ot">-&gt;</span> <span class="dt">Elem</span> x (y <span class="ch">': xs)</span></code></pre>
+<p>And so we implement <code>indexOf</code> by recursing through both the values <em>and</em> the layers of proofs!</p>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt; indexOf ::</span> <span class="kw">Num</span> a <span class="ot">=&gt;</span> <span class="dt">Vect</span> f is <span class="ot">-&gt;</span> f i <span class="ot">-&gt;</span> <span class="dt">Elem</span> i is <span class="ot">-&gt;</span> a
+<span class="ot">&gt;</span> indexOf (x <span class="fu">:&lt;</span> xs) x' <span class="dt">Here</span> <span class="fu">=</span> <span class="dv">0</span>
+<span class="ot">&gt;</span> indexOf (y <span class="fu">:&lt;</span> xs) x (<span class="dt">There</span> p) <span class="fu">=</span> <span class="dv">1</span> <span class="fu">+</span> indexOf xs x p</code></pre>
+<p>But, of course, this is absolutely useless at a glance, since in order to even use the function, the programmer has to type a chain of proofs isomorphic to the Peano encoding of the item’s index anyway!</p>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt; testVect ::</span> <span class="dt">Vect</span> <span class="dt">DNat</span> [<span class="dt">Z</span>, <span class="dt">S</span> (<span class="dt">S</span> <span class="dt">Z</span>), <span class="dt">S</span> <span class="dt">Z</span>]
+<span class="ot">&gt;</span> testVect <span class="fu">=</span> <span class="dt">DZ</span> <span class="fu">:&lt;</span> (<span class="dt">DS</span> (<span class="dt">DS</span> <span class="dt">DZ</span>)) <span class="fu">:&lt;</span> (<span class="dt">DS</span> <span class="dt">DZ</span>) <span class="fu">:&lt;</span> <span class="dt">VNil</span>
+<span class="ot">&gt;</span> noBueno <span class="fu">=</span> indexOf testVect (<span class="dt">DS</span> (<span class="dt">DS</span> <span class="dt">DZ</span>)) (<span class="dt">There</span> <span class="dt">Here</span>) <span class="co">-- 1</span></code></pre>
+<p>So, this is a total non-starter unless we can generate the proof term. Since only one term is needed to prove a proposition, we can make a very simple type class for proof inference:</p>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">class</span> <span class="dt">Infer</span> p <span class="kw">where</span>
+<span class="ot">&gt;   infer ::</span> p</code></pre>
+<p>And we can directly mirror the <code>Elem</code> family (but in the opposite direction):</p>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">instance</span> <span class="dt">Infer</span> (<span class="dt">Elem</span> x (x <span class="ch">': xs)) where</span>
+<span class="ot">&gt;</span>   infer <span class="fu">=</span> <span class="dt">Here</span>
+<span class="ot">&gt;</span> <span class="kw">instance</span> <span class="dt">Infer</span> (<span class="dt">Elem</span> x xs) <span class="ot">=&gt;</span> <span class="dt">Infer</span> (<span class="dt">Elem</span> x (y <span class="ch">': xs)) where</span>
+<span class="ot">&gt;</span>   infer <span class="fu">=</span> <span class="dt">There</span> infer</code></pre>
+<p>It’s trivial to write and use a variant of <code>indexOf</code> which uses our new proof inference class:</p>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> indexOf' xs x <span class="fu">=</span> indexOf xs x infer
+<span class="ot">&gt;</span> muchoBueno <span class="fu">=</span> testVect <span class="ot">`indexOf'`</span> (<span class="dt">DS</span> (<span class="dt">DS</span> <span class="dt">DZ</span>)) <span class="co">-- 1</span></code></pre>
+<h4>
+Another example: safe vector access
+</h4>
+
+<p>To access a vector at a given index, we need to make sure it’s within bounds. So, we first provide a way to get the length of a type-list:</p>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">type</span> family <span class="dt">Length</span><span class="ot"> xs ::</span> <span class="dt">Nat</span>
+<span class="ot">&gt;</span> <span class="kw">type</span> <span class="kw">instance</span> <span class="dt">Length</span> <span class="ch">'[] = Z</span>
+<span class="ot">&gt;</span> <span class="kw">type</span> <span class="kw">instance</span> <span class="dt">Length</span> (x <span class="ch">': xs) = S (Length xs)</span></code></pre>
+<p>We also need to provide a way to get an element from a type list using an index:</p>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">type</span> family <span class="dt">At</span> xs<span class="ot"> n ::</span> <span class="dt">Nat</span>
+<span class="ot">&gt;</span> <span class="kw">type</span> <span class="kw">instance</span> <span class="dt">At</span> (x <span class="ch">': xs) Z = x</span>
+<span class="ot">&gt;</span> <span class="kw">type</span> <span class="kw">instance</span> <span class="dt">At</span> (x <span class="ch">': xs) (S n) = At xs n</span></code></pre>
+<p>And now we need a type of less-than proofs:</p>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">data</span> <span class="kw">LT</span> (<span class="ot">l ::</span> <span class="dt">Nat</span>) (<span class="ot">r ::</span> <span class="dt">Nat</span>) <span class="kw">where</span>
+<span class="ot">&gt;</span>   <span class="dt">ZLT</span><span class="ot"> ::</span> <span class="kw">LT</span> <span class="dt">Z</span> (<span class="dt">S</span> n)
+<span class="ot">&gt;</span>   <span class="dt">SLT</span><span class="ot"> ::</span> <span class="kw">LT</span> n m <span class="ot">-&gt;</span> <span class="kw">LT</span> (<span class="dt">S</span> n) (<span class="dt">S</span> m)</code></pre>
+<p>The way we go about <code>at</code> is much the same as in the previous example, just a tiny bit more complicated in the types.</p>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt; at ::</span> <span class="dt">Vect</span> f is <span class="ot">-&gt;</span> <span class="dt">DNat</span> n <span class="ot">-&gt;</span> <span class="kw">LT</span> n (<span class="dt">Length</span> is) <span class="ot">-&gt;</span> f (<span class="dt">At</span> is n)
+<span class="ot">&gt;</span> at (x <span class="fu">:&lt;</span> xs) <span class="dt">DZ</span> <span class="dt">ZLT</span> <span class="fu">=</span> x
+<span class="ot">&gt;</span> at (y <span class="fu">:&lt;</span> xs) (<span class="dt">DS</span> n) (<span class="dt">SLT</span> lt) <span class="fu">=</span> at xs n lt</code></pre>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">instance</span> <span class="dt">Infer</span> (<span class="kw">LT</span> <span class="dt">Z</span> (<span class="dt">S</span> n)) <span class="kw">where</span>
+<span class="ot">&gt;</span>   infer <span class="fu">=</span> <span class="dt">ZLT</span></code></pre>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">instance</span> <span class="dt">Infer</span> (<span class="kw">LT</span> n m) <span class="ot">=&gt;</span> <span class="dt">Infer</span> (<span class="kw">LT</span> (<span class="dt">S</span> n) (<span class="dt">S</span> m)) <span class="kw">where</span>
+<span class="ot">&gt;</span>   infer <span class="fu">=</span> <span class="dt">SLT</span> infer</code></pre>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> v <span class="fu">@.</span> i <span class="fu">=</span> at v i infer</code></pre>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> hailMary <span class="fu">=</span> testVect <span class="fu">@.</span> (<span class="dt">DS</span> <span class="dt">DZ</span>) <span class="co">-- 2</span></code></pre>
+<h3>
+Inferring dynamic proofs
+</h3>
+
+<p>Dynamic proof inference is the same as static proof inference, except that it may fail:</p>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">class</span> <span class="dt">DynamicInfer</span> p <span class="kw">where</span>
+<span class="ot">&gt;   inferDynamic ::</span> <span class="dt">Maybe</span> p</code></pre>
+<p>We have to go through this little dance for each proof which we want to make available dynamically. The routine is repetitive enough that one could conceivably use Template Haskell to factor it out, though I’d certainly be pleased to learn if there was a more clean and succinct way of doing it.</p>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">instance</span> <span class="dt">DynamicInfer</span> (<span class="dt">Elem</span> x (x <span class="ch">': xs)) where</span>
+<span class="ot">&gt;</span>   inferDynamic <span class="fu">=</span> <span class="kw">Just</span> infer
+<span class="ot">&gt;</span> <span class="kw">instance</span> <span class="dt">DynamicInfer</span> (<span class="dt">Elem</span> x xs) <span class="ot">=&gt;</span> <span class="dt">DynamicInfer</span> (<span class="dt">Elem</span> x (y <span class="ch">': xs)) where</span>
+<span class="ot">&gt;</span>   inferDynamic <span class="fu">=</span> <span class="dt">There</span> <span class="fu">&lt;$&gt;</span> inferDynamic
+<span class="ot">&gt;</span> <span class="kw">instance</span> <span class="dt">DynamicInfer</span> (<span class="dt">Elem</span> x ys) <span class="kw">where</span>
+<span class="ot">&gt;</span>   inferDynamic <span class="fu">=</span> <span class="kw">Nothing</span></code></pre>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">instance</span> <span class="dt">DynamicInfer</span> (<span class="kw">LT</span> <span class="dt">Z</span> (<span class="dt">S</span> n)) <span class="kw">where</span>
+<span class="ot">&gt;</span>   inferDynamic <span class="fu">=</span> <span class="kw">Just</span> infer
+<span class="ot">&gt;</span> <span class="kw">instance</span> <span class="dt">DynamicInfer</span> (<span class="kw">LT</span> n m) <span class="ot">=&gt;</span> <span class="dt">DynamicInfer</span> (<span class="kw">LT</span> (<span class="dt">S</span> n) (<span class="dt">S</span> m)) <span class="kw">where</span>
+<span class="ot">&gt;</span>   inferDynamic <span class="fu">=</span> <span class="dt">SLT</span> <span class="fu">&lt;$&gt;</span> inferDynamic
+<span class="ot">&gt;</span> <span class="kw">instance</span> <span class="dt">DynamicInfer</span> (<span class="kw">LT</span> n m) <span class="kw">where</span>
+<span class="ot">&gt;</span>   inferDynamic <span class="fu">=</span> <span class="kw">Nothing</span></code></pre>
+<p>And now it is trivial to make dynamic versions of our functions:</p>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt; dynamicIndexOf ::</span> <span class="kw">Num</span> a <span class="ot">=&gt;</span> <span class="dt">Vect</span> f is <span class="ot">-&gt;</span> f i <span class="ot">-&gt;</span> <span class="dt">Maybe</span> a
+<span class="ot">&gt;</span> dynamicIndexOf xs x <span class="fu">=</span> indexOf xs x <span class="fu">&lt;$&gt;</span> inferDynamic</code></pre>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt; dynamicAt ::</span> <span class="dt">DynamicInfer</span> (<span class="kw">LT</span> n (<span class="dt">Length</span> is)) <span class="ot">=&gt;</span> <span class="dt">Vect</span> f is <span class="ot">-&gt;</span> <span class="dt">DNat</span> n <span class="ot">-&gt;</span> <span class="dt">Maybe</span> (f (<span class="dt">At</span> is n))
+<span class="ot">&gt;</span> dynamicAt xs i <span class="fu">=</span> at xs i <span class="fu">&lt;$&gt;</span> inferDynamic</code></pre></article>
+<h1>Want to comment?</h1>
+<p> I’m @jonsterling on <a href="http://www.twitter.com/jonsterling">Twitter</a> and <a href="https://alpha.app.net/jonsterling">App.net</a>.</p>
+
+
+<script src="//static.getclicky.com/js" type="text/javascript"></script>
+<script type="text/javascript">try{ clicky.init(66625087);
+    }catch(e){}</script>
+<noscript><p><img alt="Clicky" width="1" height="1" src="//in.getclicky.com/66625087ns.gif" /></p></noscript>
+
+<a rel="me" href="http://twitter.com/jonsterling"></a>
+<a rel="me" href="https://alpha.app.net/jonsterling"></a>
+</body>
+</html>
+

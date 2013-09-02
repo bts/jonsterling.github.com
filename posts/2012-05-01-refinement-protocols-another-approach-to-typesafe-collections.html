@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="readability-verification" content="cG3MqZcEVveKZ6mnEFkePAL3Ug79Jxxp5Fn27CM7" />
+<title>JS ⊢ Refinement Protocols: Another Approach to Typed Collections</title>
+<link rel="stylesheet" type="text/css" href="../css/screen.css" />
+<link rel="stylesheet" type="text/css" href="../css/syntax.css" />
+<link rel="stylesheet" type="text/css" href="../css/coqdoc.css" />
+<style type="text/css">
+    @import url(http://nmashton.ca/css/gloss-0.0.1.css);
+</style>
+<script type="text/javascript" src="http://code.jquery.com/jquery-1.8.3.min.js"></script>
+<script type="text/javascript" src="http://nmashton.ca/js/gloss-0.0.1.js"></script>
+<link rel="alternate" type="application/rss+xml" title="Jonathan Sterling" href="../rss.xml" />
+
+
+<!--[if IE]>
+  <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+<!--[if lte IE 7]>
+  <script src="js/IE8.js" type="text/javascript"></script><![endif]-->
+<!--[if lt IE 7]>
+<link rel="stylesheet" type="text/css" media="all" href="css/ie6.css"/><![endif]-->
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+MathJax.Hub.Config({
+  'HTML-CSS': {
+    availableFonts: [],
+    webFont: 'TeX'
+  }
+});
+</script>
+</head>
+<body>
+
+<header>
+<h1><a href="../index.html"><span class="title">Refinement Protocols: Another Approach to Typed Collections.</span></a></h1>
+</header>
+
+<section class="post">
+<article><blockquote>
+<p>In February, I <a href="2012-02-05-typed-collections-with-self-types-in-objective-c.html">wrote</a> about using <code>instancetype</code> to get semi-typesafe collections in Objective-C. After an email conversation with Patrick Beard, I’d like to present another approach.</p>
+</blockquote>
+<p>One sad consequence of protocols only being commonly used to encode delegation is that beginners frequently conflate protocols with delegation. Hence the proliferation of tutorials on how to “do delegates” in Objective-C; in fact, I had written one such tutorial a long time ago, and it became so popular that I deleted it, for it was feeding directly into this very conflation (which I deem damaging to learners).</p>
+<p>In this article, I’ll be showing a more interesting use of protocols: typesafe collections.</p>
+<!--more-->
+
+<h3 id="narrowing-static-type-with-refinement-protocols">Narrowing Static Type with Refinement Protocols</h3>
+<p>In a static-dynamic language like Objective-C, the static type of an object is distinct from its runtime type; in fact, because of mechanisms like forwarding, the runtime type of an object is really quite difficult to pin down (and may change over time)<sup><a href="#fn1" class="footnoteRef" id="fnref1">1</a></sup>.</p>
+<p>We can take advantage of this disparity by enforcing further restrictions on an object’s interface at compiletime, this eliminating some common sources of programmer error, as well as removing the need for downcasts in many cases.</p>
+<h3 id="a-protocol-for-dictionaries-of-numbers">A protocol for dictionaries of numbers</h3>
+<p>Take, for instance, the following protocols:</p>
+<pre class="sourceCode ObjectiveC"><code class="sourceCode objectivec"><span class="kw">@protocol</span> NSNumberDictionary &lt;NSObject&gt;
+- (NSNumber *)objectForKey:(NSString *)key;
+- (NSNumber *)objectForKeyedSubscript:(NSString *)key;
+<span class="kw">@end</span>
+
+<span class="kw">@protocol</span> NSNumberMutableDictionary &lt;NSNumberDictionary&gt;
+- (<span class="dt">void</span>)setObject:(NSNumber *)number forKey:(NSString *)key;
+- (<span class="dt">void</span>)setObject:(NSNumber *)number forKeyedSubscript:(NSString *)key;
+<span class="kw">@end</span>
+
+<span class="kw">@interface</span> NSDictionary (NSNumberDictionary) &lt;NSNumberDictionary&gt;
+<span class="kw">@end</span>
+<span class="kw">@interface</span> NSMutableDictionary (NSNumberMutableDictionary) &lt;NSNumberMutableDictionary&gt;
+<span class="kw">@end</span></code></pre>
+<p>Now, we can safely interact with a dictionary that is supposed to have only numbers as values:</p>
+<pre class="sourceCode ObjectiveC"><code class="sourceCode objectivec">id &lt;NSNumberMutableDictionary&gt; ages = [NSMutableDictionary new];
+ages[<span class="st">@&quot;jon&quot;</span>] = @<span class="dv">19</span>;
+ages[<span class="st">@&quot;dan&quot;</span>] = <span class="st">@&quot;53&quot;</span>; <span class="co">// &lt;--- Incompatible pointer types sending 'NSString *' to parameter of type 'NSNumber *'</span>
+
+<span class="co">// dot notation also works, because our types are fixed statically:</span>
+NSUInteger jonAge = ages[<span class="st">@&quot;jon&quot;</span>].unsignedIntegerValue;</code></pre>
+<p>Incidentally, due to what would seem to be a bug in Clang, even though our <code>&lt;NSNumberDictionary&gt;</code> protocol does <em>not</em> include a signature for <code>-setObject:forKeyedSubscript:</code>, the following code compiles with no complaint:</p>
+<pre class="sourceCode ObjectiveC"><code class="sourceCode objectivec"><span class="co">// this compiles, but it shouldn't:</span>
+id &lt;NSNumberDictionary&gt; immutableDictionary = [NSDictionary new];
+immutableDictionary[<span class="st">@&quot;key&quot;</span>] = @<span class="dv">45</span>;</code></pre>
+<p>Until this is fixed, we can work around it by providing an impossible signature in our immutable protocol:</p>
+<pre class="sourceCode ObjectiveC"><code class="sourceCode objectivec"><span class="kw">typedef</span> <span class="kw">struct</span> {} MutationUnavailableForImmutableObject;
+<span class="kw">@protocol</span> NSNumberDictionary &lt;NSObject&gt;
+- (NSNumber *)objectForKey:(NSString *)key;
+- (NSNumber *)objectForKeyedSubscript:(NSString *)key;
+- (<span class="dt">void</span>)setObject:(MutationUnavailableForImmutableObject)object forKeyedSubscript:(NSString *)key;
+<span class="kw">@end</span></code></pre>
+<pre class="sourceCode ObjectiveC"><code class="sourceCode objectivec">id &lt;NSNumberDictionary&gt; immutableDictionary = [NSDictionary new];
+immutableDictionary[<span class="st">@&quot;key&quot;</span>] = @<span class="dv">45</span>;
+<span class="co">// ^-- Method object parameter type 'MutationUnavailableForImmutableObject' is not object type</span></code></pre>
+<h1 id="generalizing-our-technique-with-macros">Generalizing our technique with macros</h1>
+<p>So far, our approach has involved making new refinement protocols for every possible element type. This is obviously untenable, but we can make things easier by encoding generic protocols as macros:</p>
+<p>First, let’s make a macro that handles the creation of any protocol and a dummy adopting category for a class:</p>
+<pre class="sourceCode ObjectiveC"><code class="sourceCode objectivec"><span class="ot">#define GenericProtocol(T,E,Name,...)\</span>
+<span class="kw">@protocol</span> E##Name &lt;NSObject&gt;\
+__VA_ARGS__\
+<span class="kw">@end</span>\
+<span class="kw">@interface</span> T (E##Name) &lt;E##Name&gt;\
+<span class="kw">@end</span></code></pre>
+<p>We’ll also need a macro for a mutable variant that depends on the immutable protocol:</p>
+<pre class="sourceCode ObjectiveC"><code class="sourceCode objectivec"><span class="ot">#define GenericMutableProtocol(T,E,Name,...)\</span>
+<span class="kw">@protocol</span> E##Mutable##Name &lt;E##Name&gt;\
+__VA_ARGS__\
+<span class="kw">@end</span>\
+<span class="kw">@interface</span> T (E##Mutable##Name) &lt;E##Mutable##Name&gt;\
+<span class="kw">@end</span></code></pre>
+<p>Now, if the immutable protocol includes a <code>-mutableCopy</code> method, it will have to return an object of the mutable variant. So, we need to provide forward declarations for the protocols:</p>
+<pre class="sourceCode ObjectiveC"><code class="sourceCode objectivec"><span class="ot">#define ForwardDeclareMutable(E,Name)\</span>
+protocol E##Mutable##Name</code></pre>
+<p>You probably noticed that we didn’t include the <code>@</code> before <code>protocol</code> in this macro; this is a little trick that will allow us to have our macros begin with the <code>@</code>-sign, just like real Objective-C directives. It’s not necessary, but it’s a nice little sleight of hand. And now, we can provide our generic dictionary macro:</p>
+<pre class="sourceCode ObjectiveC"><code class="sourceCode objectivec"><span class="ot">#define DictProtocol(E) ForwardDeclareMutable(E,Dictionary)\</span>
+GenericProtocol(NSDictionary, E, Dictionary,\
+  - (id &lt;E##Dictionary&gt;)copy;\
+  - (id &lt;E##Mutable##Dictionary&gt;)mutableCopy;\
+  - (E *)objectForKey:(NSString *)key;\
+  - (E *)objectForKeyedSubscript:(NSString *)key;\
+  - (<span class="dt">void</span>)setObject:(MutationUnavailableForImmutableObject)object forKeyedSubscript:(NSString *)key;\
+)\
+GenericMutableProtocol(NSMutableDictionary, E, Dictionary,\
+  - (<span class="dt">void</span>)setObject:(E *)object forKey:(NSString *)key;\
+  - (<span class="dt">void</span>)setObject:(E *)object forKeyedSubscript:(NSString *)key;\
+  - (<span class="dt">void</span>)addEntriesFromDictionary:(id &lt;E##Dictionary&gt;)otherDictionary;\
+  - (<span class="dt">void</span>)setDictionary:(id &lt;E##Dictionary&gt;)otherDictionary;
+)</code></pre>
+<p>Finally, we can instantiate typed dictionary protocols for various object types:<sup><a href="#fn2" class="footnoteRef" id="fnref2">2</a></sup></p>
+<pre class="sourceCode ObjectiveC"><code class="sourceCode objectivec">@DictProtocol(NSNumber);
+@DictProtocol(NSString);
+@DictProtocol(NSData);
+@DictProtocol(NSArray);</code></pre>
+<h2 id="the-downside-to-our-approach">The downside to our approach</h2>
+<h3 id="ambiguity-multiple-signatures-for-a-method">Ambiguity: multiple signatures for a method</h3>
+<p>The most glaring problem with this approach is that we are injecting multiple signatures for a single method into a single class (via our categories). So, the result is that it becomes impossible to interact with a non-pimped collection; the following code may fail:</p>
+<pre class="sourceCode ObjectiveC"><code class="sourceCode objectivec">NSMutableDictionary *plainDict = [NSMutableDictionary new];
+plainDict[<span class="st">@&quot;key&quot;</span>] = <span class="st">@&quot;a string&quot;</span>;
+<span class="co">// &lt;-- Compiler was expecting some other random type that we have instantiated,</span>
+<span class="co">//     like NSData or something. Oops.</span></code></pre>
+<p>So anywhere these refinement protocols and the associated categories are in scope, we are obliged to use them. For many people, that is too great a demand.</p>
+<p>We can instead just remove our categories can keep these method signatures scoped in their protocols. But then we have to do an unsafe downcast to <code>id</code> whenever we wish to instantiate a new typed dictionary. That’s rather close to beating the point.</p>
+<p>Lastly, literals can never be typesafe, since the signature of <code>+arrayWithObjects:count:</code> and friends is required to take a parameter no more precise than <code>id[]</code> for literal creation (if you don’t believe me, see <code>Sema::BuildObjCArrayLiteral</code> in <a href="http://clang.llvm.org/doxygen/SemaExprObjC_8cpp_source.html"><code>SemaExprObjC.cpp</code></a>). And even more important, the literal expression compiler of course does not abstract over the intended type of its result! So even if it were possible to have one of these methods with a more precise signature, the compiler would still have no way to disambiguate which method signature to follow in any given instance. This may be fixable, but would likely require a not insignificant amount of compiler rejiggering.</p>
+<h2 id="concluding-remarks">Concluding Remarks</h2>
+<p>It’s a rather nice idea for getting around Objective-C’s lack of type safety, and I thank Patrick for getting me to think about it a little more. It’s not perfect, however, and its necessary deficiencies will likely prevent its use in shipping code for now. If anyone has any ideas on how to improve this and make it work better, I’m all ears!</p>
+<div class="footnotes">
+<hr />
+<ol>
+<li id="fn1"><p>This is a <em>bad thing</em>, but we’re going to roll with it since it’s how the language works. Basically, in an ideal message-passing language, the set of messages an object is guaranteed to respond to (its structural type) should be invariant over time, whereas the way in which the object responds to those methods may change over time. (In this ideal world, we have a structurally typed language rather than a nominally typed one.)</p>
+<p>An example of this distinction is Futures: from the moment a future is created, it should be decorated with the protocol of its promised object, and is guaranteed to respond to messages that are meant to the object it encloses. When its promised object has not yet been created, the future will respond to messages by queuing them up for later; after the object has been created, the future should behave transparently as though it were the object itself.<a href="#fnref1">↩</a></p></li>
+<li id="fn2"><p>One limitation is that we can’t provide a contract for elements to be, for instance, of type <code>id &lt;UITextFieldDelegate&gt;</code> or something. We could extend our system to support this, but protocol names would have to be supplied rather than generated.<a href="#fnref2">↩</a></p></li>
+</ol>
+</div></article>
+<h1>Want to comment?</h1>
+<p> I’m @jonsterling on <a href="http://www.twitter.com/jonsterling">Twitter</a> and <a href="https://alpha.app.net/jonsterling">App.net</a>.</p>
+
+
+<script src="//static.getclicky.com/js" type="text/javascript"></script>
+<script type="text/javascript">try{ clicky.init(66625087);
+    }catch(e){}</script>
+<noscript><p><img alt="Clicky" width="1" height="1" src="//in.getclicky.com/66625087ns.gif" /></p></noscript>
+
+<a rel="me" href="http://twitter.com/jonsterling"></a>
+<a rel="me" href="https://alpha.app.net/jonsterling"></a>
+</body>
+</html>
+

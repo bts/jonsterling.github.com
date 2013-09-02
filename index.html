@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="readability-verification" content="cG3MqZcEVveKZ6mnEFkePAL3Ug79Jxxp5Fn27CM7" />
+<title>JS ⊢ Jonathan Sterling</title>
+<link rel="stylesheet" type="text/css" href="./css/screen.css" />
+<link rel="stylesheet" type="text/css" href="./css/syntax.css" />
+<link rel="stylesheet" type="text/css" href="./css/coqdoc.css" />
+<style type="text/css">
+    @import url(http://nmashton.ca/css/gloss-0.0.1.css);
+</style>
+<script type="text/javascript" src="http://code.jquery.com/jquery-1.8.3.min.js"></script>
+<script type="text/javascript" src="http://nmashton.ca/js/gloss-0.0.1.js"></script>
+<link rel="alternate" type="application/rss+xml" title="Jonathan Sterling" href="./rss.xml" />
+
+
+<!--[if IE]>
+  <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+<!--[if lte IE 7]>
+  <script src="js/IE8.js" type="text/javascript"></script><![endif]-->
+<!--[if lt IE 7]>
+<link rel="stylesheet" type="text/css" media="all" href="css/ie6.css"/><![endif]-->
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+MathJax.Hub.Config({
+  'HTML-CSS': {
+    availableFonts: [],
+    webFont: 'TeX'
+  }
+});
+</script>
+</head>
+<body>
+
+<header>
+<h1><a href="./index.html"><span class="title">Jonathan Sterling.</span></a></h1>
+</header>
+
+<section>
+<p>iOS Engineer at <a href="http://getyardsale.com" title="Yardsale Inc.">Yardsale</a>, dilettante type theorist, syntactician, and philologist. Student of Ancient Greek, Latin, Sumerian, Akkadian, Hittite, German, and Old English.</p>
+<p>I’m currently banging my head against a combinatory categorial grammar model for Ancient Greek, which will help us generate word order for Greek compositionally with minimal incidental structure. My more ambitious goal is to demonstrate a clear distinction between lexically mandated <strong>intrinsic structure</strong>, and the <strong>incidental structure</strong> which arises from an inexpressive theory.</p>
+</section>
+
+<section>
+
+    <article class="digest">
+
+    <h3>
+        <a href="./posts/2013-07-07-towards-univalent-ott.html">Towards Univalent Observational Type Theory: First Steps</a>
+        <span class="date">July  7, 2013</span>
+    </h3>
+    
+        <p>Last week I <a href="./posts/2013-06-30-terms-indexed-by-canonicity-admit-coercion-across-isomorphism.html">proposed</a> a way to embed non-canonical equality proofs in a type theory in such a way as to force that they are eliminated prior to evaluation. This approach has a few problems. Today, I shall reformulate equality internally after the manner of Altenkirch, McBride <em>et al</em>,<sup><a href="#fn1" class="footnoteRef" id="fnref1">1</a></sup> and again shy away from the problem of computing congruence or substitution over functions, which is quite a bit more difficult.<sup><a href="#fn2" class="footnoteRef" id="fnref2">2</a></sup></p>
+
+    
+
+    <div class="read_more">
+        <a href="./posts/2013-07-07-towards-univalent-ott.html">
+           more …
+        </a>
+    </div>
+    </article>
+
+    <article class="digest">
+
+    <h3>
+        <a href="./posts/2013-06-30-terms-indexed-by-canonicity-admit-coercion-across-isomorphism.html">Terms Indexed by Canonicity Admit Coercion Across Isomorphism</a>
+        <span class="date">June 30, 2013</span>
+    </h3>
+    
+        <p>Let <span class="math">\(\mathcal{U}\)</span> be an impredicative universe defined as follows with an empty set, a unit set, a boolean set, non-dependent functions, products, and some notion of equality which we will elaborate upon later:</p>
+<p><span class="math">\[\begin{align*}
+\mathcal{U} &amp;:\equiv \{`\text{Set}, `\mathbf{0}, `\mathbf{1}, `\mathbf{2},
+\cdot`\to\cdot, \cdot`\otimes\cdot, \cdot`\cong\cdot \}
+\end{align*}\]</span></p>
+<p><span class="math">\(\mathcal{U}\)</span> is embedded in Martin-Löf Type Theory with UIP and given with the following translation:</p>
+<p><span class="math">\[\begin{align*}
+⟦`\text{Set}⟧ &amp;\mapsto \color{blue}{\text{Set}}\\
+⟦`\mathbf{0}⟧,  ⟦`\mathbf{1}⟧, ⟦`\mathbf{2}⟧ &amp;\mapsto \color{blue}{\bot}, \color{blue}{\top},
+\color{blue}{\text{Bool}}\\
+⟦A\, `\to\, B⟧, ⟦A\, `\otimes\, B⟧ &amp;\mapsto \color{blue}{\prod_{x : ⟦A⟧} ⟦B⟧}, \color{blue}{\sum_{x : ⟦A⟧} ⟦B⟧}\\
+⟦A\, `\cong\, B⟧ &amp;\mapsto \color{blue}{⟦A⟧ \equiv ⟦B⟧}\\
+\end{align*}\]</span></p>
+<p>We define <span class="math">\(\mathcal{U}\)</span> together with a term language, and in a particularly egregious abuse of notation, conflate the interpreting functions <span class="math">\(⟦\cdot⟧\)</span> for the two.</p>
+
+    
+
+    <div class="read_more">
+        <a href="./posts/2013-06-30-terms-indexed-by-canonicity-admit-coercion-across-isomorphism.html">
+           more …
+        </a>
+    </div>
+    </article>
+
+    <article class="digest">
+
+    <h3>
+        <a href="./posts/2013-06-09-isomorphism-implies-equality-for-finite-sets.html">Isomorphism Implies Equality for Finite Sets</a>
+        <span class="date">June  9, 2013</span>
+    </h3>
+    
+        <p>In a sufficiently simple type theory, it’s trivial to demonstrate that adding an axiom that isomorphism implies equality is safe and computable. Today we demonstrate this for a universe of finite sets without induction. Perhaps will help some people start to feel why the Voevodsky’s Univalence Axiom is probably morally correct.</p>
+
+    
+
+    <div class="read_more">
+        <a href="./posts/2013-06-09-isomorphism-implies-equality-for-finite-sets.html">
+           more …
+        </a>
+    </div>
+    </article>
+
+    <article class="digest">
+
+    <h3>
+        <a href="./posts/2013-05-20-combinatory-categorial-grammar-for-greek.html">Combinatory Categorical Grammar for Ancient Greek</a>
+        <span class="date">May 20, 2013</span>
+    </h3>
+    
+        <p>This is the first in a series I intend to write in regard to the syntax of Ancient Greek hyperbaton, and what can be done about it formally using a combinatory categorial grammar<sup><a href="#fn1" class="footnoteRef" id="fnref1">1</a></sup>. We will begin with a pathological example of <span class="math">\(Y_1\)</span> hyperbaton from Sophocles’ <em>Trachinian Women</em>:</p>
+<div class="gloss">
+  <div class="aligned" language="gk">
+    
+τὴν Εὐρυτείαν οἶσθα δῆτα παρθένον;<br /> the-*acc* of-Eurytus-*acc* know-*2.sing* of-course girl-*acc*
+</div>
+  <div class="unaligned">
+    
+“You of course know the daughter of Eurytus…?” (<em>Trachinian Women</em>, l. 1219)
+</div>
+</div>
+
+
+    
+
+    <div class="read_more">
+        <a href="./posts/2013-05-20-combinatory-categorial-grammar-for-greek.html">
+           more …
+        </a>
+    </div>
+    </article>
+
+    <article class="digest">
+
+    <h3>
+        <a href="./posts/2013-05-19-derivative-and-novel-speeches-in-platos-symposium.html">Derivative and Novel Speeches in Plato’s <em>Symposium</em></a>
+        <span class="date">May 19, 2013</span>
+    </h3>
+    
+        <p>The six speeches of the <em>Symposium</em> may be divided into two sets: on the one hand, there is Phaedrus’s speech and those which are derivative of his, and on the other hand, there are the novel speeches; and these are the ones which reject the previous approaches and propose unique theories of Eros.</p>
+
+    
+
+    <div class="read_more">
+        <a href="./posts/2013-05-19-derivative-and-novel-speeches-in-platos-symposium.html">
+           more …
+        </a>
+    </div>
+    </article>
+
+    <article class="digest">
+
+    <h3>
+        <a href="./posts/2013-04-28-phrase-projectivity-in-antigone.html">A Survey of Phrase Projectivity in the <em>Antigone</em></a>
+        <span class="date">April 28, 2013</span>
+    </h3>
+    
+        <p>In this <a href="./pdfs/Antigone-Projectivity.pdf">paper</a>, I demonstrate how, and to what degree, phrase projectivity corresponds with register and meter in Sophocles’s <em>Antigone</em>, by developing a quantitative metric <span class="math">\(\wp\)</span> for projectivity and comparing it across lyrics, trimeters and anapaests using the data provided by the <a href="http://nlp.perseus.tufts.edu/syntax/treebank/greek.html">Perseus Ancient Greek Dependency Treebank</a>. In the appendices, the formal algorithm for the computations done herein is developed in Haskell.</p>
+
+    
+
+    <div class="read_more">
+        <a href="./posts/2013-04-28-phrase-projectivity-in-antigone.html">
+           more …
+        </a>
+    </div>
+    </article>
+
+    <article class="digest">
+
+    <h3>
+        <a href="./posts/2013-04-13-inferring-evidence-for-the-stlc-in-haskell.html">Inferring Typing Derivations for the STLC in Haskell</a>
+        <span class="date">April 13, 2013</span>
+    </h3>
+    
+        <p>We can define the STLC at the type-level in Haskell, and then provide a type of derivations (proofs of well-typedness) which is indexed by terms. Further, we can use Haskell’s type classes to infer typing derivations for well-typed terms in the STLC.</p>
+<p>
+    
+
+    <div class="read_more">
+        <a href="./posts/2013-04-13-inferring-evidence-for-the-stlc-in-haskell.html">
+           more …
+        </a>
+    </div>
+    </article>
+
+    <article class="digest">
+
+    <h3>
+        <a href="./posts/2013-04-06-vinyl-modern-records-for-haskell.html">Vinyl: Modern Records for Haskell</a>
+        <span class="date">April  6, 2013</span>
+    </h3>
+    
+        <p><a href="http://github.com/jonsterling/Vinyl/">Vinyl</a> is a general solution to the records problem in Haskell using type level strings and other modern GHC features, featuring static structural typing (with a subtyping relation), and automatic row-polymorphic lenses. All this is possible without Template Haskell.</p>
+<p>
+    
+
+    <div class="read_more">
+        <a href="./posts/2013-04-06-vinyl-modern-records-for-haskell.html">
+           more …
+        </a>
+    </div>
+    </article>
+
+
+<p>
+<a href="./archive.html">All posts…</a>
+</p>
+</section>
+
+
+
+<script src="//static.getclicky.com/js" type="text/javascript"></script>
+<script type="text/javascript">try{ clicky.init(66625087);
+    }catch(e){}</script>
+<noscript><p><img alt="Clicky" width="1" height="1" src="//in.getclicky.com/66625087ns.gif" /></p></noscript>
+
+<a rel="me" href="http://twitter.com/jonsterling"></a>
+<a rel="me" href="https://alpha.app.net/jonsterling"></a>
+</body>
+</html>
+

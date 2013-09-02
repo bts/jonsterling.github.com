@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="readability-verification" content="cG3MqZcEVveKZ6mnEFkePAL3Ug79Jxxp5Fn27CM7" />
+<title>JS ⊢ Dependent Types Today: Faking It With Style</title>
+<link rel="stylesheet" type="text/css" href="../css/screen.css" />
+<link rel="stylesheet" type="text/css" href="../css/syntax.css" />
+<link rel="stylesheet" type="text/css" href="../css/coqdoc.css" />
+<style type="text/css">
+    @import url(http://nmashton.ca/css/gloss-0.0.1.css);
+</style>
+<script type="text/javascript" src="http://code.jquery.com/jquery-1.8.3.min.js"></script>
+<script type="text/javascript" src="http://nmashton.ca/js/gloss-0.0.1.js"></script>
+<link rel="alternate" type="application/rss+xml" title="Jonathan Sterling" href="../rss.xml" />
+
+
+<!--[if IE]>
+  <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+<!--[if lte IE 7]>
+  <script src="js/IE8.js" type="text/javascript"></script><![endif]-->
+<!--[if lt IE 7]>
+<link rel="stylesheet" type="text/css" media="all" href="css/ie6.css"/><![endif]-->
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+MathJax.Hub.Config({
+  'HTML-CSS': {
+    availableFonts: [],
+    webFont: 'TeX'
+  }
+});
+</script>
+</head>
+<body>
+
+<header>
+<h1><a href="../index.html"><span class="title">Dependent Types Today: Faking It With Style.</span></a></h1>
+</header>
+
+<section class="post">
+<article><p>There have been various attempts at faking dependent types in Haskell, most notably Conor McBride’s <a href="https://personal.cis.strath.ac.uk/~conor/pub/she/">Strathclyde Haskell Enhancement</a>. Since its creation, several improvements to GHC have set the stage for some of SHE’s features to be implemented natively.</p>
+<p>Let’s see what’s necessary to fake dependent types with singletons in today’s GHC.</p>
+<p><!--more--></p>
+<p>First, the usual boilerplate:</p>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="ot">{-# LANGUAGE NoMonomorphismRestriction #-}</span>
+<span class="ot">&gt;</span> <span class="ot">{-# LANGUAGE ScopedTypeVariables #-}</span>
+<span class="ot">&gt;</span> <span class="ot">{-# LANGUAGE PolyKinds, DataKinds #-}</span>
+<span class="ot">&gt;</span> <span class="ot">{-# LANGUAGE TypeOperators #-}</span>
+<span class="ot">&gt;</span> <span class="ot">{-# LANGUAGE TypeFamilies, MultiParamTypeClasses #-}</span>
+<span class="ot">&gt;</span> <span class="ot">{-# LANGUAGE UndecidableInstances, IncoherentInstances #-}</span>
+<span class="ot">&gt;</span> <span class="ot">{-# LANGUAGE FlexibleContexts, FlexibleInstances #-}</span>
+<span class="ot">&gt;</span> <span class="ot">{-# LANGUAGE ViewPatterns, UnicodeSyntax #-}</span>
+<span class="ot">&gt;</span> <span class="ot">{-# LANGUAGE RankNTypes, GADTs #-}</span></code></pre>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">module</span> <span class="dt">FakingIt</span> <span class="kw">where</span></code></pre>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">import</span> Prelude <span class="kw">hiding</span> (lookup)
+<span class="ot">&gt;</span> <span class="kw">import</span> GHC.TypeLits</code></pre>
+<p>Now, in order to simulate dependent types, we need to allow data to exist in three forms:</p>
+<ol style="list-style-type: decimal">
+<li><p>Terms under types (we get this for free when we define data types).</p></li>
+<li><p>Terms under kinds (we also get this for free when <code>-XDataKinds</code> is turned on).</p></li>
+<li><p>Values that introduce indexed types (we must manually create or generate a GADT encoding of singleton sets). This is a sort of glue between the first two encodings.</p></li>
+</ol>
+<p>Let’s see how this works in practice! We’ll start, as always, with a type of dogs:</p>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">data</span> <span class="dt">Doggy</span> <span class="fu">=</span> <span class="dt">Tucker</span> <span class="fu">|</span> <span class="dt">Rover</span></code></pre>
+<p>We have introduced a type <code>Doggy</code> inhabited by two terms at the value-level; we have also introduced a kind <code>'Doggy</code> inhabited by two terms at the type level. Now, we could create the “glue” GADT as follows:</p>
+<pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">SDoggy</span><span class="ot"> ::</span> <span class="dt">Doggy</span> <span class="ot">→</span> <span class="fu">*</span> <span class="kw">where</span>
+  <span class="dt">STucker</span><span class="ot"> ::</span> <span class="dt">SDoggy</span> <span class="dt">Tucker</span>
+  <span class="dt">SRover</span><span class="ot">  ::</span> <span class="dt">SDoggy</span> <span class="dt">Rover</span></code></pre>
+<p>But GHC provides a <code>Sing</code> type family under which we should create our singleton sets; this allows us to use some built-in machinery, like <code>sing</code> which allows one to infer the right singleton value for a known type. So, we’ll do the following:</p>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">data</span> <span class="kw">instance</span> <span class="dt">Sing</span> (<span class="ot">d ::</span> <span class="dt">Doggy</span>) <span class="kw">where</span>
+<span class="ot">&gt;</span>   <span class="dt">STucker</span><span class="ot"> ::</span> <span class="dt">Sing</span> <span class="dt">Tucker</span>
+<span class="ot">&gt;</span>   <span class="dt">SRover</span><span class="ot">  ::</span> <span class="dt">Sing</span> <span class="dt">Rover</span></code></pre>
+<p>We’ll need to help out with the inference instances:</p>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">instance</span> <span class="dt">SingI</span> <span class="dt">Tucker</span> <span class="kw">where</span> sing <span class="fu">=</span> <span class="dt">STucker</span>
+<span class="ot">&gt;</span> <span class="kw">instance</span> <span class="dt">SingI</span> <span class="dt">Rover</span>  <span class="kw">where</span> sing <span class="fu">=</span> <span class="dt">SRover</span></code></pre>
+<p>And finally, we need to provide conversion from the singleton type to the plain-old-value type:</p>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">instance</span> <span class="dt">SingE</span> (<span class="dt">Kind</span><span class="ot"> ::</span> <span class="dt">Doggy</span>) <span class="dt">Doggy</span> <span class="kw">where</span>
+<span class="ot">&gt;</span>   fromSing <span class="dt">STucker</span> <span class="fu">=</span> <span class="dt">Tucker</span>
+<span class="ot">&gt;</span>   fromSing <span class="dt">SRover</span>  <span class="fu">=</span> <span class="dt">Rover</span></code></pre>
+<p>It’s clear what this does, but it might not be immediately obvious what the <code>(Kind :: Doggy)</code> business is. Basically, Haskell does not currently allow one to abstract over kinds in a straight-forward way. Since we’re basically trying to make a map from kinds to types (that is, from the kind which <code>-XDataKinds</code> generated to the type whence it arose), we need to pass the kind in as the annotation to a dummy type; in this case, we use <code>Kind</code>, which is provided by <code>GHC.TypeLits</code>, and has no actual meaning by itself.</p>
+<p>As you can see, all this boilerplate could in fact be generated with Template Haskell. In fact, the <a href="http://hackage.haskell.org/package/singletons">Singletons</a> package already does so, but it does not use GHC’s built-in kit, so there’s a bit of unhappiness there.</p>
+
+<blockquote>
+<strong>Update</strong>: The Singletons package has been updated, and is now compatible with TypeLits.
+</blockquote>
+
+
+<h2 id="singletons-for-higher-order-types">Singletons for Higher Order Types</h2>
+<p>Before we get started, now would be a good time to introduce some naughty little shorthands that will make our code a bit less noisy:</p>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">type</span> Π <span class="fu">=</span> <span class="dt">Sing</span>
+<span class="ot">&gt;</span> π <span class="fu">=</span> fromSing</code></pre>
+<p>The capital <code>Π</code> adds a bit of swagger to our dependent function types. Combined with <code>-XViewPatterns</code>, <code>π</code> lets us pattern match on singleton parameters.</p>
+<p>The procedure for higher order types (like lists, pairs, etc.) is basically the same as the above. Just a bit more involved; we’ll start with lists:</p>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">data</span> <span class="kw">instance</span> <span class="dt">Sing</span> (<span class="ot">xs ::</span> [k]) <span class="kw">where</span>
+<span class="ot">&gt;</span>   <span class="dt">SNil</span><span class="ot"> ::</span> <span class="dt">Sing</span> <span class="ch">'[]</span>
+<span class="ot">&gt;</span>   <span class="dt">SCons</span><span class="ot"> ::</span> Π (<span class="ot">x ::</span> k) <span class="ot">→</span> Π (<span class="ot">xs ::</span> [k]) <span class="ot">→</span> <span class="dt">Sing</span> (s <span class="ch">': xs)</span></code></pre>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">instance</span> <span class="dt">SingI</span> <span class="ch">'[] where sing = SNil</span>
+<span class="ot">&gt;</span> <span class="kw">instance</span> (<span class="dt">SingI</span> x, <span class="dt">SingI</span> xs) <span class="ot">⇒</span> <span class="dt">SingI</span> (x <span class="ch">': xs) where</span>
+<span class="ot">&gt;</span>   sing <span class="fu">=</span> <span class="dt">SCons</span> (<span class="ot">sing ::</span> <span class="dt">Sing</span> x) (<span class="ot">sing ::</span> <span class="dt">Sing</span> xs)</code></pre>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">instance</span> <span class="dt">SingE</span> (<span class="dt">Kind</span><span class="ot"> ::</span> k) r <span class="ot">⇒</span> <span class="dt">SingE</span> (<span class="dt">Kind</span><span class="ot"> ::</span> [k]) [r] <span class="kw">where</span>
+<span class="ot">&gt;</span>   fromSing <span class="dt">SNil</span> <span class="fu">=</span> []
+<span class="ot">&gt;</span>   fromSing (<span class="dt">SCons</span> x xs) <span class="fu">=</span> fromSing x <span class="fu">:</span> fromSing xs</code></pre>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">data</span> <span class="kw">instance</span> <span class="dt">Sing</span> (<span class="ot">p ::</span> (a,b)) <span class="kw">where</span>
+<span class="ot">&gt;</span>   <span class="dt">SPair</span><span class="ot"> ::</span> <span class="dt">Sing</span> a <span class="ot">→</span> <span class="dt">Sing</span> b <span class="ot">→</span> <span class="dt">Sing</span> <span class="ch">'(a,b)</span></code></pre>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">instance</span> (<span class="dt">SingE</span> (<span class="dt">Kind</span><span class="ot"> ::</span> a) x, <span class="dt">SingE</span> (<span class="dt">Kind</span><span class="ot"> ::</span> b) y) <span class="ot">⇒</span>
+<span class="ot">&gt;</span>          <span class="dt">SingE</span> (<span class="dt">Kind</span><span class="ot"> ::</span> (a,b)) (x,y) <span class="kw">where</span>
+<span class="ot">&gt;</span>   fromSing (<span class="dt">SPair</span> x y) <span class="fu">=</span> (fromSing x, fromSing y)
+<span class="ot">&gt;</span> <span class="kw">instance</span> (<span class="dt">SingI</span> k, <span class="dt">SingI</span> v) <span class="ot">⇒</span> <span class="dt">SingI</span> <span class="ch">'(k,v) where</span>
+<span class="ot">&gt;</span>   sing <span class="fu">=</span> <span class="dt">SPair</span> sing sing</code></pre>
+<h2 id="sigma-types-yes-we-can-to-a-point">Sigma Types: Yes, We Can (to a point)</h2>
+<p>Consider the following definition, adapted from <code>Data.Products</code> in the Agda standard library:</p>
+<pre class="sourceCode haskell"><code class="sourceCode haskell">record Σ {a b} (<span class="dt">A</span> <span class="fu">:</span> <span class="dt">Set</span> a) (<span class="dt">B</span> <span class="fu">:</span> <span class="dt">A</span> <span class="ot">→</span> <span class="dt">Set</span> b) <span class="fu">:</span> <span class="dt">Set</span> (a ⊔ b) <span class="kw">where</span>
+  construct _,_
+  field
+    proj₁ <span class="fu">:</span> <span class="dt">A</span>
+    proj₂ <span class="fu">:</span> <span class="dt">B</span> proj₁</code></pre>
+<p>This is the classic definition of a <a href="http://www.jonmsterling.com/posts/2012-09-07-pi-is-for-power-sigma-for-product.html">dependent sum</a> in Agda. Basically, the first field is a type of some sort, and the second field is a proof that that type satisfies some predicate. Minus the record accessor sugar, the constructor <code>_,_</code> comes out as the following:</p>
+<pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">data</span> Σ {a b} (<span class="dt">A</span> <span class="fu">:</span> <span class="dt">Set</span> a) (<span class="dt">B</span> <span class="fu">:</span> <span class="dt">A</span> <span class="ot">→</span> <span class="dt">Set</span> b) <span class="fu">:</span> <span class="dt">Set</span> (a ⊔ b) <span class="kw">where</span>
+  _,_ <span class="fu">:</span> (proj₁ <span class="fu">:</span> <span class="dt">A</span>) <span class="ot">→</span> <span class="dt">B</span> proj₁ <span class="ot">→</span> Σ <span class="dt">A</span> <span class="dt">B</span></code></pre>
+<p>We would hope to be able to create something analogous in Haskell under the limited encoding of dependent types possible using singletons.</p>
+<p>Now, as you can see, the Agda version is very flexible in terms of the sorts of things it can quantify, because of its use of <a href="http://www.jonmsterling.com/posts/2012-09-08-adding-universe-polymorphism.html">universe polymorphism</a>. Now, we can’t hope for anything quite as profound in Haskell; we’ll settle for having the second parameter be a predicate over terms of some kind, which is supplied in the first parameter.</p>
+<p>We can now create the following definition:</p>
+<pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">data</span> Σ (<span class="ot">kind ::</span> k) (<span class="fu">pred</span><span class="ot"> ::</span> k <span class="ot">→</span> <span class="fu">*</span>) <span class="kw">where</span>
+<span class="ot">  (:|-) ::</span> Π (<span class="ot">x ::</span> k) <span class="ot">→</span> <span class="fu">pred</span> x <span class="ot">→</span> Σ kind <span class="fu">pred</span></code></pre>
+<p>Note that this is equivalent to the following (minus our little <code>Π</code> shorthand which we use in the spirit of dependent types):</p>
+<pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">data</span> Σ (<span class="ot">kind ::</span> k) (<span class="fu">pred</span><span class="ot"> ::</span> k <span class="ot">→</span> <span class="fu">*</span>) <span class="kw">where</span>
+<span class="ot">  (:|-) ::</span> <span class="dt">Sing</span> x <span class="ot">→</span> <span class="fu">pred</span> x <span class="ot">→</span> Σ kind <span class="fu">pred</span></code></pre>
+<p>Last, we put the final touches on by making this into a record:</p>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">data</span> Σ (<span class="ot">kind ::</span> k) (<span class="fu">pred</span><span class="ot"> ::</span> k <span class="ot">→</span> <span class="fu">*</span>) <span class="kw">where</span>
+<span class="ot">&gt;   (:|-) ::</span> { proj₁ <span class="ot">::</span> Π (<span class="ot">x ::</span> k), proj₂ <span class="ot">::</span> <span class="fu">pred</span> x } <span class="ot">→</span> Σ kind <span class="fu">pred</span></code></pre>
+<p>Since in most cases, the kind over which the predicate operates is inferrable from the predicate itself, we provide the following convenience synonym:</p>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">type</span> <span class="dt">Exists</span> (<span class="fu">pred</span><span class="ot"> ::</span> k <span class="ot">→</span> <span class="fu">*</span>) <span class="fu">=</span> Σ <span class="dt">Kind</span> <span class="fu">pred</span></code></pre>
+<p>So, we could, for instance, make a function that takes a number which is not one:</p>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">data</span> <span class="dt">NotOne</span><span class="ot"> ::</span> <span class="dt">Nat</span> <span class="ot">→</span> <span class="fu">*</span> <span class="kw">where</span>
+<span class="ot">&gt;</span>   <span class="dt">NotOneZ</span><span class="ot"> ::</span> <span class="dt">NotOne</span> <span class="dv">0</span>
+<span class="ot">&gt;</span>   <span class="dt">NotOneSS</span><span class="ot"> ::</span> <span class="dt">NotOne</span> (n <span class="fu">+</span> <span class="dv">2</span>)</code></pre>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt; cantTakeOne ::</span> <span class="kw">Fractional</span> t <span class="ot">⇒</span> <span class="dt">Exists</span> <span class="dt">NotOne</span> <span class="ot">→</span> t
+<span class="ot">&gt;</span> cantTakeOne ((π <span class="ot">→</span> n) <span class="fu">:|-</span> _) <span class="fu">=</span> <span class="dv">10</span><span class="fu">.</span><span class="dv">0</span> <span class="fu">/</span> (<span class="fu">fromInteger</span> n <span class="fu">-</span> <span class="dv">1</span>)</code></pre>
+<p>We can also show that our Haskell encoding really is similar to the Agda version by providing our own version of the encoding of cartesian products (remember, a cartesian product arises when the predicate ignores its parameter).</p>
+<p>If it were possible to have type-level lambdas in Haskell, then this would be just as simple as in Agda:</p>
+<pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">type</span> x <span class="fu">&amp;</span> y <span class="fu">=</span> Σ x (λ _ <span class="ot">→</span> y)</code></pre>
+<p>Unfortunately, we must actually provide a little bit of indirection to get around this limitation:</p>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">type</span> x <span class="fu">&amp;</span> y <span class="fu">=</span> Σ x (<span class="dt">Const</span> y)
+<span class="ot">&gt;</span> <span class="kw">data</span> <span class="dt">Const</span><span class="ot"> ::</span> l <span class="ot">→</span> k <span class="ot">→</span> <span class="fu">*</span> <span class="kw">where</span>
+<span class="ot">&gt;</span>   <span class="dt">Const</span><span class="ot"> ::</span> Π (<span class="ot">x ::</span> l) <span class="ot">→</span> <span class="dt">Const</span> (<span class="dt">Kind</span><span class="ot"> ::</span> l) y</code></pre>
+<p>As such, to hide away the <code>Const</code> indirection, we’ll need to provide our own constructors and eliminators for products:</p>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt; (&amp;) ::</span> Π (<span class="ot">x ::</span> l) <span class="ot">→</span> Π (<span class="ot">y ::</span> k) <span class="ot">→</span> (<span class="dt">Kind</span><span class="ot"> ::</span> l) <span class="fu">&amp;</span> (<span class="dt">Kind</span><span class="ot"> ::</span> k)
+<span class="ot">&gt;</span> x <span class="fu">&amp;</span> y <span class="fu">=</span> x <span class="fu">:|-</span> <span class="dt">Const</span> y</code></pre>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt; prodElim ::</span> <span class="dt">SingI</span> pair <span class="ot">⇒</span> (<span class="dt">Kind</span><span class="ot"> ::</span> l) <span class="fu">&amp;</span> (<span class="dt">Kind</span><span class="ot"> ::</span> k) <span class="ot">→</span> <span class="dt">Sing</span> (<span class="ot">pair ::</span> (l,k))
+<span class="ot">&gt;</span> prodElim _ <span class="fu">=</span> sing</code></pre>
+<p>Looks like our kit should be sufficient to make a pair of dogs:</p>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> dawgFriends <span class="fu">=</span> <span class="dt">STucker</span> <span class="fu">&amp;</span> <span class="dt">SRover</span></code></pre>
+<h3>
+A dependent head function over lists
+</h3>
+
+<p>There are several common ways to make a safe <code>head</code> function, many of which I have discussed in the past. Some of these involve having the function operate on lists which are non-empty by construction (using a length-indexed vector, or a list type which has no nil). If our list, however, exists at both the value and the type levels, we can just predicate over it without changing the structure of the list itself. Consider the following <code>NonEmpty</code> predicate:</p>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">data</span> <span class="dt">NonEmpty</span><span class="ot"> ::</span> [k] <span class="ot">→</span> <span class="fu">*</span> <span class="kw">where</span>
+<span class="ot">&gt;</span>   <span class="dt">NonEmpty</span><span class="ot"> ::</span> <span class="dt">NonEmpty</span> (x <span class="ch">': xs)</span></code></pre>
+<p>We can provide this as the predicate to our dependent sum!</p>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt; safeHead ::</span> <span class="dt">SingE</span> (<span class="dt">Kind</span><span class="ot"> ::</span> k) r <span class="ot">⇒</span> Σ (<span class="dt">Kind</span><span class="ot"> ::</span> [k]) <span class="dt">NonEmpty</span> <span class="ot">→</span> r
+<span class="ot">&gt;</span> safeHead ((π <span class="ot">→</span> x <span class="fu">:</span> _) <span class="fu">:|-</span> _) <span class="fu">=</span> x</code></pre>
+<p>Note that we used a combination of <code>-XViewPatterns</code> and our little <code>π</code> shorthand to pattern match on the value-level reflection of the list. This definition is equivalent to the following:</p>
+<pre class="sourceCode haskell"><code class="sourceCode haskell">safeHead ((<span class="dt">SCons</span> x xs) <span class="fu">:|-</span> _) <span class="fu">=</span> fromSing x</code></pre>
+<h3>
+Safe Dictionary Lookup
+</h3>
+
+<p>We can do much the same thing with dictionaries:</p>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">data</span> <span class="dt">HasKey</span><span class="ot"> ::</span> l <span class="ot">→</span> [(l,k)] <span class="ot">→</span> <span class="fu">*</span> <span class="kw">where</span>
+<span class="ot">&gt;</span>   <span class="dt">KeyHere</span><span class="ot">  ::</span> <span class="dt">HasKey</span> k (<span class="ch">'(k, v) '</span><span class="fu">:</span> dict)
+<span class="ot">&gt;</span>   <span class="dt">KeyThere</span><span class="ot"> ::</span> <span class="dt">HasKey</span> k dict <span class="ot">→</span> <span class="dt">HasKey</span> k (pair <span class="ch">': dict)</span></code></pre>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt; lookup ::</span> (<span class="dt">SingE</span> (<span class="dt">Kind</span><span class="ot"> ::</span> k) k', <span class="dt">SingE</span> (<span class="dt">Kind</span><span class="ot"> ::</span> v) v') <span class="ot">⇒</span>
+<span class="ot">&gt;</span>           Π (<span class="ot">key ::</span> k) <span class="ot">→</span>
+<span class="ot">&gt;</span>           Σ (<span class="dt">Kind</span><span class="ot"> ::</span> [(k,v)]) (<span class="dt">HasKey</span> key) <span class="ot">→</span> v'
+<span class="ot">&gt;</span> <span class="fu">lookup</span> _ ((π <span class="ot">→</span> (_,x) <span class="fu">:</span> _) <span class="fu">:|-</span> <span class="dt">KeyHere</span>)     <span class="fu">=</span> x
+<span class="ot">&gt;</span> <span class="fu">lookup</span> k (<span class="dt">SCons</span> _ xs      <span class="fu">:|-</span> <span class="dt">KeyThere</span> hk) <span class="fu">=</span> <span class="fu">lookup</span> k (xs <span class="fu">:|-</span> hk)</code></pre>
+<p>Of course, we can use the same trick as we always do by providing implicit proof terms:</p>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">class</span> <span class="dt">Implicit</span> x <span class="kw">where</span>
+<span class="ot">&gt;   implicitly ::</span> x
+<span class="ot">&gt;</span> <span class="kw">instance</span> <span class="dt">Implicit</span> (<span class="dt">HasKey</span> k (<span class="ch">'(k,v) '</span><span class="fu">:</span> dict)) <span class="kw">where</span>
+<span class="ot">&gt;</span>   implicitly <span class="fu">=</span> <span class="dt">KeyHere</span>
+<span class="ot">&gt;</span> <span class="kw">instance</span> <span class="dt">Implicit</span> (<span class="dt">HasKey</span> k dict) <span class="ot">⇒</span> <span class="dt">Implicit</span> (<span class="dt">HasKey</span> k (pair <span class="ch">': dict)) where</span>
+<span class="ot">&gt;</span>   implicitly <span class="fu">=</span> <span class="dt">KeyThere</span> implicitly</code></pre>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> lookup' k dict <span class="fu">=</span> <span class="fu">lookup</span> k (dict <span class="fu">:|-</span> implicitly)</code></pre>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">type</span> <span class="dt">DogNamesMap</span> <span class="fu">=</span> [<span class="ch">'(Tucker, &quot;Tucker&quot;), '</span>(<span class="dt">Rover</span>, <span class="st">&quot;Rover&quot;</span>)]
+<span class="ot">&gt;</span> sDogNamesMap <span class="fu">=</span><span class="ot"> sing ::</span> <span class="dt">Sing</span> <span class="dt">DogNamesMap</span></code></pre>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> tuckersName <span class="fu">=</span> <span class="fu">lookup</span> <span class="dt">STucker</span> (sDogNamesMap <span class="fu">:|-</span> <span class="dt">KeyHere</span>)
+<span class="ot">&gt;</span> tuckersName' <span class="fu">=</span> lookup' <span class="dt">STucker</span> sDogNamesMap</code></pre>
+<h2 id="caveats">Caveats</h2>
+<p>That was fun! But this was mostly a demonstration to show that Σ-types are possible in Haskell, rather than a recommendation to use them. For one, it is a fair bit more complicated under this system to allow such functions to operate on dynamic data (which may or may not satisfy the static predicate), than under the system I proposed in <a href="http://www.jonmsterling.com/posts/2012-08-05-static-and-dynamic-proof-inference-in-haskell.html">my previous post</a>.</p>
+<p>Another thing which makes the singleton-encoding of dependent types rather unpleasant to use is the fact that whilst we can pretty easily reflect data up and down the ladder of universes, it’s rather more difficult to do the same with functions in a general way. So (at least today), you would have to write all your functions over such data as type families, and then reflect that down to the value level. This is probably possible, but it is indeed quite a lot to ask.</p>
+<p>I’m hoping that the situation will continue to improve, though! GHC 7.6 finally made it possible (though not particularly pleasant) to do non-trivial kind abstraction. It is of great interest to me to see what is improved next.</p>
+<p>Thanks for playing along!</p></article>
+<h1>Want to comment?</h1>
+<p> I’m @jonsterling on <a href="http://www.twitter.com/jonsterling">Twitter</a> and <a href="https://alpha.app.net/jonsterling">App.net</a>.</p>
+
+
+<script src="//static.getclicky.com/js" type="text/javascript"></script>
+<script type="text/javascript">try{ clicky.init(66625087);
+    }catch(e){}</script>
+<noscript><p><img alt="Clicky" width="1" height="1" src="//in.getclicky.com/66625087ns.gif" /></p></noscript>
+
+<a rel="me" href="http://twitter.com/jonsterling"></a>
+<a rel="me" href="https://alpha.app.net/jonsterling"></a>
+</body>
+</html>
+

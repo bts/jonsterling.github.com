@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="readability-verification" content="cG3MqZcEVveKZ6mnEFkePAL3Ug79Jxxp5Fn27CM7" />
+<title>JS ⊢ Combinatory Categorical Grammar for Ancient Greek</title>
+<link rel="stylesheet" type="text/css" href="../css/screen.css" />
+<link rel="stylesheet" type="text/css" href="../css/syntax.css" />
+<link rel="stylesheet" type="text/css" href="../css/coqdoc.css" />
+<style type="text/css">
+    @import url(http://nmashton.ca/css/gloss-0.0.1.css);
+</style>
+<script type="text/javascript" src="http://code.jquery.com/jquery-1.8.3.min.js"></script>
+<script type="text/javascript" src="http://nmashton.ca/js/gloss-0.0.1.js"></script>
+<link rel="alternate" type="application/rss+xml" title="Jonathan Sterling" href="../rss.xml" />
+
+
+<!--[if IE]>
+  <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+<!--[if lte IE 7]>
+  <script src="js/IE8.js" type="text/javascript"></script><![endif]-->
+<!--[if lt IE 7]>
+<link rel="stylesheet" type="text/css" media="all" href="css/ie6.css"/><![endif]-->
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+MathJax.Hub.Config({
+  'HTML-CSS': {
+    availableFonts: [],
+    webFont: 'TeX'
+  }
+});
+</script>
+</head>
+<body>
+
+<header>
+<h1><a href="../index.html"><span class="title">Combinatory Categorical Grammar for Ancient Greek.</span></a></h1>
+</header>
+
+<section class="post">
+<article><p>This is the first in a series I intend to write in regard to the syntax of Ancient Greek hyperbaton, and what can be done about it formally using a combinatory categorial grammar<sup><a href="#fn1" class="footnoteRef" id="fnref1">1</a></sup>. We will begin with a pathological example of <span class="math">\(Y_1\)</span> hyperbaton from Sophocles’ <em>Trachinian Women</em>:</p>
+<div class="gloss">
+  <div class="aligned" language="gk">
+    
+τὴν Εὐρυτείαν οἶσθα δῆτα παρθένον;<br /> the-*acc* of-Eurytus-*acc* know-*2.sing* of-course girl-*acc*
+</div>
+  <div class="unaligned">
+    
+“You of course know the daughter of Eurytus…?” (<em>Trachinian Women</em>, l. 1219)
+</div>
+</div>
+
+<!--more-->
+
+<h2 id="a-transformational-approach">A Transformational Approach</h2>
+<p>Using the null head modifier theory presented by Devine &amp; Stephens<sup><a href="#fn2" class="footnoteRef" id="fnref2">2</a></sup>, we can actually get a reasonable transformational representation of the sentence:</p>
+<p><img src="../graphics/ccg_greek/null_head_modifier.png" width="300px" /></p>
+<p>The central conceit is a DP can serve to provide additional information to something it adjoins to; intuitively, this is the same as when we say in English, “You know that dog, the crazed one…”. The null head modifier presentation jives very nicely with other peculiarities about Greek, including how modified DPs often surface with repeated determiners, as follows: <span lang="gk">τὰς παρθένους τὰς αἰχμαλώτους</span>.</p>
+<p>But there are a few problems which I can see with this approach: Devine &amp; Stephens fail to provide a convincing account for why a verb may take a bare noun as its argument, and how a null head modifier DP adjoining to <span class="math">\(V\prime\)</span> can be semantically associated to that noun. And so, whilst retaining the insight of the null head modifier presentation (that there is some way in which the <span lang="gk">τὴν Εὐρυτείαν</span> is on its own, but informs the interpretation of <span lang="gk">παρθένον</span>), we must move onto something else which allows for a more compositional approach, whence a sound semantic interpretation may be derived.</p>
+<h2 id="the-combinatory-approach">The Combinatory Approach</h2>
+<p>The ideal result is one which allows us to start with a somehow fully lexically licensed structure like this (bear with me):</p>
+<p><img src="../graphics/ccg_greek/ideal_structure.png" width="300px" /></p>
+<p>And then have this structure be translated to something like the following for semantic interpretation, using only the normal rules of the system and no special cases:</p>
+<p><img src="../graphics/ccg_greek/semantic_tree.png" width="350px" /></p>
+<h3 id="a-typed-lexicon">A Typed Lexicon</h3>
+<p>Let’s imagine a simple, parametric type system with a set of base categories <span class="math">\(N, D, V\)</span>. This should be sufficient to build up a lexicon:</p>
+<ul>
+<li><span lang="gk">δῆτα</span><span class="math">\(: \forall \alpha. (\alpha\to V)\to\alpha\to V\)</span></li>
+<li><span lang="gk">οἶσθα</span><span class="math">\(: D\to V\)</span></li>
+<li><span lang="gk">τήν</span><span class="math">\(: N\to D\)</span></li>
+<li><span lang="gk">Εὐρυτείαν</span><span class="math">\(: N\to N\)</span></li>
+<li><span lang="gk">παρθένον</span><span class="math">\(: N\)</span></li>
+</ul>
+<p>Those familiar with categorial grammar will note that for the moment I am eschewing the traditional notation for function types in favor of something a bit more familiar.</p>
+<h3 id="combinators-application-and-composition">Combinators: Application and Composition</h3>
+<p>We now introduce some primitive combinators, function application and function composition, in both the left and right directions:</p>
+<p><span class="math">\[\begin{align}
+    \frac{\vdash f : (\sigma\to\tau) \qquad \vdash x : \sigma}{\vdash (f &gt; x) : \tau}\tag{right-app}
+\end{align}\]</span></p>
+<p><span class="math">\[\begin{align}
+    \frac{\vdash f : (\sigma\to\tau) \qquad \vdash x : \sigma}{\vdash (f &gt; x) : \tau}\tag{left-app}
+\end{align}\]</span></p>
+<p><span class="math">\[\begin{align}
+    \frac{\vdash f : (\sigma\to\tau) \qquad \vdash g : (\rho\to\sigma)}{\vdash (f &gt;_B g) : (\rho\to\tau)}\tag{right-comp}
+\end{align}\]</span></p>
+<p><span class="math">\[\begin{align}
+    \frac{\vdash f : (\sigma\to\tau) \qquad \vdash g : (\rho\to\sigma)}{\vdash (g &lt;_B f) : (\rho\to\tau)}\tag{left-comp}
+\end{align}\]</span></p>
+<p>Function application corresponds to satisfying an argument on a head, whereas function composition corresponds to deferring the satisfaction of an argument; you will see why this is useful in a moment.</p>
+<p>These combinators, then, form a more sophisticated version of the familiar MERGE operation, which is used to combine two terms in order to project. By providing variants of our merge combinators in either direction, we are sure to have the theoretical power to express word order which is not uniformly left or right branching. In order to be sufficiently restrictive, though, (lest our theory generate word orders which are ungrammatical), we need to put some notion of direction into the arrow types that we are using for our lexicon. In fact, this is exactly what is done traditionally in CCGs, but for the purpose of simplicity in presentation, I omit it here.</p>
+<p>The combinators presented above suffice to construct our sentence as a well-typed term:</p>
+<p><img src="../graphics/ccg_greek/ccg_tree.png" width="300px" /></p>
+<h3 id="locality-for-semantics-by-normalization">Locality for Semantics by Normalization</h3>
+<p>It is nice that we can construct our sentence as a syntax tree without any crossing lines, but it is hardly in a state to be interpreted semantically node-by-node. We need to recover the locality of relations, which can be done by <em>normalizing</em> the tree, in the same way as one normalizes lambda expressions. The goal, then, is to transform such a derivation as above into a derivation which contains only lexical items and <span class="math">\(\textit{right-app}\)</span>: and this is normalization.</p>
+<h2 id="translation-into-logical-form">Translation into Logical Form</h2>
+<p>We can indeed normalize our tree into something that looks like this:</p>
+<p><img width="80%" src="../graphics/ccg_greek/normalized_syntax.png" /></p>
+<p>But for the purpose of syntax itself, there’s really no such need; locality is only useful for evaluating a sentence into a semantic proposition. And so prior to normalization, we should provide rewrite rules to translate syntactic derivations into semantic ones. In the style of Montague, we will use type <span class="math">\(e\)</span> to represent entities, <span class="math">\(t\)</span> to represent propositions, and <span class="math">\(\langle\alpha,\beta\rangle\)</span> to represent function types:</p>
+<p><span class="math">\[\begin{align}
+⟦N⟧ &amp;\mapsto \langle e,t \rangle\tag{NPs are properties}\\
+⟦D⟧ &amp;\mapsto e\tag{DPs are entities}\\
+⟦V⟧ &amp;\mapsto t\tag{VPs are propositions}\\
+⟦\sigma\to\tau⟧ &amp;\mapsto \langle ⟦\sigma⟧, ⟦\tau⟧\rangle
+\end{align}\]</span></p>
+<p>Next, we need to provide semantic denotations for our lexicon:</p>
+<p><span class="math">\[\begin{align}
+⟦\text{δητα}⟧      &amp;\mapsto \lambda x.\,x\\
+⟦\text{οισθα}⟧     &amp;\mapsto \lambda x.\,\text{“you know”}(x)\\
+⟦\text{την}⟧       &amp;\mapsto \lambda p.\,\iota z.\,p(z)\\
+⟦\text{Ευρυτειαν}⟧ &amp;\mapsto \lambda p.\,\lambda x.\, p(x) \land \text{“of Eurytus”}(x)\\
+⟦\text{παρθενον}⟧  &amp;\mapsto \lambda x.\,\text{“girl”}(x)
+\end{align}\]</span></p>
+<p>And finally, we give denotations to the merge combinators as follows:</p>
+<p><span class="math">\[\begin{align}
+⟦f &gt; x⟧   &amp;\mapsto ⟦f⟧(⟦x⟧)\\
+⟦x &lt; f⟧   &amp;\mapsto ⟦f⟧(⟦x⟧)\\
+⟦f &gt; _B g⟧ &amp;\mapsto \lambda x.\,⟦f⟧(⟦g⟧(x))\\
+⟦g &lt; _B g⟧ &amp;\mapsto \lambda x.\,⟦f⟧(⟦g⟧(x))\\
+\end{align}\]</span></p>
+<p>Using this program, we can evaluate our syntactic tree into the uninterpreted semantic one from above, which I reproduce below:</p>
+<p><img src="../graphics/ccg_greek/semantic_tree.png" width="350px" /></p>
+<p>If we normalize this construction, we get the logical form of our sentence:</p>
+<p><span class="math">\[\begin{align}
+\text{“you know”}(\iota z.\, \text{“girl”}(z) \land \text{“of
+Eurytus”}(z)) : t\tag{LF}
+\end{align}\]</span></p>
+<div class="footnotes">
+<hr />
+<ol>
+<li id="fn1"><p>A very nice (and short!) exposition to CCG is given by <a href="http://www.inf.ed.ac.uk/teaching/courses/nlg/readings/ccgintro.pdf">Mark Steedman</a>.<a href="#fnref1">↩</a></p></li>
+<li id="fn2"><p>Devine &amp; Stephens, <a href="http://www.amazon.com/Discontinuous-Syntax-Hyperbaton-M-Devine/dp/019513270X">Discontinuous Syntax: Hyperbaton in Ancient Greek</a> provides some useful preparatory reading on the semantics and pragmatics of Greek hyperbaton, but it’s by no means necessary for understanding what I shall be presenting.<a href="#fnref2">↩</a></p></li>
+</ol>
+</div></article>
+<h1>Want to comment?</h1>
+<p> I’m @jonsterling on <a href="http://www.twitter.com/jonsterling">Twitter</a> and <a href="https://alpha.app.net/jonsterling">App.net</a>.</p>
+
+
+<script src="//static.getclicky.com/js" type="text/javascript"></script>
+<script type="text/javascript">try{ clicky.init(66625087);
+    }catch(e){}</script>
+<noscript><p><img alt="Clicky" width="1" height="1" src="//in.getclicky.com/66625087ns.gif" /></p></noscript>
+
+<a rel="me" href="http://twitter.com/jonsterling"></a>
+<a rel="me" href="https://alpha.app.net/jonsterling"></a>
+</body>
+</html>
+

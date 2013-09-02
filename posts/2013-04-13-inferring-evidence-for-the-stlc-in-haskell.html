@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="readability-verification" content="cG3MqZcEVveKZ6mnEFkePAL3Ug79Jxxp5Fn27CM7" />
+<title>JS ⊢ Inferring Typing Derivations for the STLC in Haskell</title>
+<link rel="stylesheet" type="text/css" href="../css/screen.css" />
+<link rel="stylesheet" type="text/css" href="../css/syntax.css" />
+<link rel="stylesheet" type="text/css" href="../css/coqdoc.css" />
+<style type="text/css">
+    @import url(http://nmashton.ca/css/gloss-0.0.1.css);
+</style>
+<script type="text/javascript" src="http://code.jquery.com/jquery-1.8.3.min.js"></script>
+<script type="text/javascript" src="http://nmashton.ca/js/gloss-0.0.1.js"></script>
+<link rel="alternate" type="application/rss+xml" title="Jonathan Sterling" href="../rss.xml" />
+
+
+<!--[if IE]>
+  <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+<!--[if lte IE 7]>
+  <script src="js/IE8.js" type="text/javascript"></script><![endif]-->
+<!--[if lt IE 7]>
+<link rel="stylesheet" type="text/css" media="all" href="css/ie6.css"/><![endif]-->
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+MathJax.Hub.Config({
+  'HTML-CSS': {
+    availableFonts: [],
+    webFont: 'TeX'
+  }
+});
+</script>
+</head>
+<body>
+
+<header>
+<h1><a href="../index.html"><span class="title">Inferring Typing Derivations for the STLC in Haskell.</span></a></h1>
+</header>
+
+<section class="post">
+<article><p>We can define the STLC at the type-level in Haskell, and then provide a type of derivations (proofs of well-typedness) which is indexed by terms. Further, we can use Haskell’s type classes to infer typing derivations for well-typed terms in the STLC.</p>
+<p><!--more--></p>
+<p>First, let us pry open the pandora’s box; some of these wights are more dangerous than others.</p>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="ot">{-# LANGUAGE PolyKinds              #-}</span>
+<span class="ot">&gt;</span> <span class="ot">{-# LANGUAGE DataKinds              #-}</span>
+<span class="ot">&gt;</span> <span class="ot">{-# LANGUAGE FunctionalDependencies #-}</span>
+<span class="ot">&gt;</span> <span class="ot">{-# LANGUAGE GADTs                  #-}</span>
+<span class="ot">&gt;</span> <span class="ot">{-# LANGUAGE FlexibleContexts       #-}</span>
+<span class="ot">&gt;</span> <span class="ot">{-# LANGUAGE FlexibleInstances      #-}</span>
+<span class="ot">&gt;</span> <span class="ot">{-# LANGUAGE KindSignatures         #-}</span>
+<span class="ot">&gt;</span> <span class="ot">{-# LANGUAGE LambdaCase             #-}</span>
+<span class="ot">&gt;</span> <span class="ot">{-# LANGUAGE RankNTypes             #-}</span>
+<span class="ot">&gt;</span> <span class="ot">{-# LANGUAGE TypeOperators          #-}</span>
+<span class="ot">&gt;</span> <span class="ot">{-# LANGUAGE UndecidableInstances   #-}</span>
+<span class="ot">&gt;</span> <span class="ot">{-# LANGUAGE UnicodeSyntax          #-}</span></code></pre>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">module</span> <span class="dt">STLC</span> <span class="kw">where</span></code></pre>
+<h3> 
+The Syntax of the STLC
+</h3>
+
+<p>First, we will begin with a type-free syntax of terms generating a universe with a predicative hierarchy of sets:</p>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">data</span> <span class="dt">Term</span>
+<span class="ot">&gt;</span>   <span class="fu">=</span> <span class="dt">Set</span> <span class="dt">Term</span>       <span class="co">-- ^ predicative sets</span>
+<span class="ot">&gt;</span>   <span class="fu">|</span> (<span class="fu">~&gt;</span>) <span class="dt">Term</span> <span class="dt">Term</span> <span class="co">-- ^ the function arrow</span>
+<span class="ot">&gt;</span>   <span class="fu">|</span> ℕ              <span class="co">-- ^ natural numbers</span>
+<span class="ot">&gt;</span>   <span class="fu">|</span> <span class="dt">Z</span>              <span class="co">-- ^ zero</span>
+<span class="ot">&gt;</span>   <span class="fu">|</span> <span class="dt">S</span> <span class="dt">Term</span>         <span class="co">-- ^ successor</span>
+<span class="ot">&gt;</span>   <span class="fu">|</span> Λ <span class="dt">Term</span>         <span class="co">-- ^ abstraction</span>
+<span class="ot">&gt;</span>   <span class="fu">|</span> (<span class="fu">#</span>) <span class="dt">Term</span> <span class="dt">Term</span>  <span class="co">-- ^ application</span>
+<span class="ot">&gt;</span>   <span class="fu">|</span> <span class="dt">V</span> <span class="dt">Term</span>         <span class="co">-- ^ variables</span></code></pre>
+<p>It may seem odd that, for instance, we parameterize <code>Set</code> and <code>V</code> by <code>Term</code>, since it’s clear that we should want natural numbers there. But this will get nailed down when we make our family of typing rules.</p>
+<p>Contexts are either empty or are extended by a type:</p>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">data</span> <span class="dt">Cx</span>
+<span class="ot">&gt;</span>   <span class="fu">=</span> <span class="dt">E</span>
+<span class="ot">&gt;</span>   <span class="fu">|</span> (<span class="fu">:&gt;</span>) <span class="dt">Term</span> <span class="dt">Cx</span></code></pre>
+<h3> 
+Typing Rules for the STLC
+</h3>
+
+<p>With the addition of a dirty little bit of syntactic sugar, we can now present the typing rules of our system.</p>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">type</span> x ⊢ f <span class="fu">=</span> f x
+<span class="ot">&gt;</span> <span class="kw">infixr</span> <span class="dv">5</span> ⊢</code></pre>
+<p>I’ve decided to arrange these rules in a natural-deduction style presentation. A term of type <code>γ ⊢ x ∈ τ</code> says that “the context <code>γ</code> proves that <code>x</code> is of type <code>τ</code>”; this is called a typing derivation.</p>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">data</span> (∈)<span class="ot"> ::</span> <span class="dt">Term</span> <span class="ot">→</span> <span class="dt">Term</span> <span class="ot">→</span> <span class="dt">Cx</span> <span class="ot">→</span> ★ <span class="kw">where</span></code></pre>
+<p>There is an infinite hierarchy of sets, where each is the type of the previous, down to the base case, which is the type of small types.</p>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span>   <span class="dt">TSet</span><span class="ot">  ::</span>           <span class="dt">E</span> ⊢ n ∈ ℕ
+<span class="ot">&gt;</span>           <span class="fu">--------------------------------</span>
+<span class="ot">&gt;</span>          <span class="ot">→</span>      γ ⊢ <span class="dt">Set</span> n ∈ <span class="dt">Set</span> (<span class="dt">S</span> n)</code></pre>
+<p><code>ℕ</code> is a small type.</p>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span>   <span class="dt">TNat</span><span class="ot">  ::</span> <span class="fu">-------------------------------</span>
+<span class="ot">&gt;</span>                    γ ⊢ ℕ ∈ <span class="dt">Set</span> <span class="dt">Z</span></code></pre>
+<p><code>Z</code> is a natural number.</p>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span>   <span class="dt">TZ</span><span class="ot">    ::</span> <span class="fu">-------------------------------</span>
+<span class="ot">&gt;</span>                       γ ⊢ <span class="dt">Z</span> ∈ ℕ</code></pre>
+<p>Given a natural number <code>n</code>, <code>S n</code> is also a natural number.</p>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span>   <span class="dt">TS</span><span class="ot">    ::</span>            γ ⊢ n ∈ ℕ
+<span class="ot">&gt;</span>           <span class="fu">--------------------------------</span>
+<span class="ot">&gt;</span>          <span class="ot">→</span>           γ ⊢ <span class="dt">S</span> n ∈ ℕ</code></pre>
+<p>Given a term <code>l</code> of type <code>τ</code> a context extended by <code>σ</code>, <code>Λ l</code> is of type <code>σ ~&gt; τ</code>.</p>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span>   <span class="dt">TLam</span><span class="ot">  ::</span>        σ <span class="fu">:&gt;</span> γ ⊢ l ∈ τ
+<span class="ot">&gt;</span>           <span class="fu">--------------------------------</span>
+<span class="ot">&gt;</span>          <span class="ot">→</span>       γ ⊢ Λ l ∈ (σ <span class="fu">~&gt;</span> τ)</code></pre>
+<p>Given a term <code>f</code> in <code>σ ~&gt; τ</code> and a term <code>x</code> in <code>σ</code>, <code>f # x</code> is in <code>τ</code>.</p>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span>   <span class="dt">TApp</span><span class="ot">  ::</span>  γ ⊢ f ∈ (σ <span class="fu">~&gt;</span> τ) <span class="ot">→</span> γ ⊢ x ∈ σ
+<span class="ot">&gt;</span>           <span class="fu">--------------------------------</span>
+<span class="ot">&gt;</span>          <span class="ot">→</span>         γ ⊢ f <span class="fu">#</span> x ∈ τ</code></pre>
+<p>Now we provide evidence that a variable of a given type is within a context.</p>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span>   <span class="dt">TVTop</span><span class="ot"> ::</span> <span class="fu">-------------------------------</span>
+<span class="ot">&gt;</span>                  τ <span class="fu">:&gt;</span> γ ⊢ <span class="dt">V</span> <span class="dt">Z</span> ∈ τ
+<span class="ot">&gt;</span>   <span class="dt">TVPop</span><span class="ot"> ::</span>   <span class="dt">E</span> ⊢ i ∈ ℕ   <span class="ot">→</span>   γ ⊢ <span class="dt">V</span> i ∈ σ
+<span class="ot">&gt;</span>           <span class="fu">--------------------------------</span>
+<span class="ot">&gt;</span>          <span class="ot">→</span>     τ <span class="fu">:&gt;</span> γ ⊢ <span class="dt">V</span> (<span class="dt">S</span> i) ∈ σ</code></pre>
+<h3> 
+Computing Typing Derivations for Terms
+</h3>
+
+Using <code>-XDataKinds</code> we can construct terms of our lambda calculus using Haskell’s type system as a metalanguage. For instance, <span class="math">\(\lambda x.\, \mathbf{suc}\; x\)</span> is encoded as follows:
+</h3>
+
+<pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">type</span> <span class="dt">PlusOne</span> <span class="fu">=</span> Λ (<span class="dt">S</span> (<span class="dt">V</span> <span class="dt">Z</span>))
+<span class="ot">plusOne ::</span> <span class="dt">E</span> ⊢ <span class="dt">PlusOne</span> ∈ (ℕ <span class="fu">~&gt;</span> ℕ)
+plusOne <span class="fu">=</span> <span class="dt">TLam</span> (<span class="dt">TS</span> <span class="dt">TVTop</span>)</code></pre>
+<p>We of course can also just have our expressions in-line:</p>
+<pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">plusOne' ::</span> <span class="dt">E</span> ⊢ (Λ <span class="dt">S</span> (<span class="dt">V</span> <span class="dt">Z</span>)) ∈ (ℕ <span class="fu">~&gt;</span> ℕ)
+plusOne' <span class="fu">=</span> <span class="dt">TLam</span> (<span class="dt">TS</span> <span class="dt">TVTop</span>)</code></pre>
+<p>It would be nice if we could get the process of generating typing derivations automated for us! Since it’s the case that the typing derivation for well-typed expressions usually resembles the structure of the term very nicely anyway, this should be possible. We can start with this type class:</p>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">class</span> <span class="dt">Infer</span> (<span class="ot">x ::</span> <span class="dt">Term</span>) (τ <span class="ot">::</span> <span class="dt">Term</span>) (γ <span class="ot">::</span> <span class="dt">Cx</span>) <span class="fu">|</span> x γ <span class="ot">→</span> τ <span class="kw">where</span>
+<span class="ot">&gt;   infer ::</span> γ ⊢ x ∈ τ</code></pre>
+<p>It turns out that we’ll basically just be recapitulating the typing rules wholesale, in such a way as to get Haskell’s constraint solver to infer them for us:</p>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">instance</span> <span class="dt">Infer</span> ℓ ℕ <span class="dt">E</span> <span class="ot">⇒</span> <span class="dt">Infer</span> (<span class="dt">Set</span> ℓ) (<span class="dt">Set</span> (<span class="dt">S</span> ℓ)) γ <span class="kw">where</span>
+<span class="ot">&gt;</span>   infer <span class="fu">=</span> <span class="dt">TSet</span> infer
+<span class="ot">&gt;</span> <span class="kw">instance</span> <span class="dt">Infer</span> <span class="dt">Z</span> ℕ γ <span class="kw">where</span>
+<span class="ot">&gt;</span>   infer <span class="fu">=</span> <span class="dt">TZ</span>
+<span class="ot">&gt;</span> <span class="kw">instance</span> <span class="dt">Infer</span> n ℕ γ <span class="ot">⇒</span> <span class="dt">Infer</span> (<span class="dt">S</span> n) ℕ γ <span class="kw">where</span>
+<span class="ot">&gt;</span>   infer <span class="fu">=</span> <span class="dt">TS</span> infer</code></pre>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">instance</span> <span class="dt">Infer</span> l τ (σ <span class="fu">:&gt;</span> γ) <span class="ot">⇒</span> <span class="dt">Infer</span> (Λ l) (σ <span class="fu">~&gt;</span> τ) γ <span class="kw">where</span>
+<span class="ot">&gt;</span>   infer <span class="fu">=</span> <span class="dt">TLam</span> infer
+<span class="ot">&gt;</span> <span class="kw">instance</span> (<span class="dt">Infer</span> f (σ <span class="fu">~&gt;</span> τ) γ, <span class="dt">Infer</span> x σ γ) <span class="ot">⇒</span> <span class="dt">Infer</span> (f <span class="fu">#</span> x) τ γ <span class="kw">where</span>
+<span class="ot">&gt;</span>   infer <span class="fu">=</span> <span class="dt">TApp</span> infer infer</code></pre>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">instance</span> <span class="dt">Infer</span> (<span class="dt">V</span> <span class="dt">Z</span>) τ (τ <span class="fu">:&gt;</span> γ) <span class="kw">where</span>
+<span class="ot">&gt;</span>   infer <span class="fu">=</span> <span class="dt">TVTop</span>
+<span class="ot">&gt;</span> <span class="kw">instance</span> (<span class="dt">Infer</span> i ℕ <span class="dt">E</span>, <span class="dt">Infer</span> (<span class="dt">V</span> i) σ γ) <span class="ot">⇒</span> <span class="dt">Infer</span> (<span class="dt">V</span> (<span class="dt">S</span> i)) σ (τ <span class="fu">:&gt;</span> γ) <span class="kw">where</span>
+<span class="ot">&gt;</span>   infer <span class="fu">=</span> <span class="dt">TVPop</span> infer infer</code></pre>
+<p>Then, we can make a type for closed expressions that have an inferrable type:</p>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">type</span> <span class="dt">Closed</span> e <span class="fu">=</span> <span class="dt">Infer</span> e τ <span class="dt">E</span> <span class="ot">⇒</span> <span class="dt">E</span> ⊢ e ∈ τ</code></pre>
+<pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="fu">fst</span><span class="ot"> ::</span> <span class="dt">Closed</span> (Λ (Λ (<span class="dt">V</span> (<span class="dt">S</span> <span class="dt">Z</span>))))
+<span class="fu">fst</span> <span class="fu">=</span> infer</code></pre>
+<pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="fu">snd</span><span class="ot"> ::</span> <span class="dt">Closed</span> (Λ (Λ (<span class="dt">V</span> <span class="dt">Z</span>)))
+<span class="fu">snd</span> <span class="fu">=</span> infer</code></pre>
+<h3>
+Appendix: Pretty Pretting
+</h3>
+
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">instance</span> <span class="kw">Show</span> (γ ⊢ x ∈ t) <span class="kw">where</span>
+<span class="ot">&gt;</span>   <span class="fu">show</span> (<span class="dt">TSet</span> ℓ) <span class="fu">=</span> <span class="st">&quot;Set&quot;</span> <span class="fu">++</span> (<span class="fu">show</span> <span class="fu">.</span> <span class="dt">Sub</span> <span class="fu">.</span> natToInt <span class="fu">$</span> ℓ)
+<span class="ot">&gt;</span>   <span class="fu">show</span> <span class="dt">TNat</span> <span class="fu">=</span> <span class="st">&quot;ℕ&quot;</span>
+<span class="ot">&gt;</span>   <span class="fu">show</span> <span class="dt">TZ</span> <span class="fu">=</span> <span class="st">&quot;Z&quot;</span>
+<span class="ot">&gt;</span>   <span class="fu">show</span> (<span class="dt">TS</span> n) <span class="fu">=</span> <span class="st">&quot;S (&quot;</span> <span class="fu">++</span> <span class="fu">show</span> n <span class="fu">++</span> <span class="st">&quot;)&quot;</span>
+<span class="ot">&gt;</span>   <span class="fu">show</span> (<span class="dt">TLam</span> l) <span class="fu">=</span> <span class="st">&quot;λ. &quot;</span> <span class="fu">++</span> <span class="fu">show</span> l
+<span class="ot">&gt;</span>   <span class="fu">show</span> (<span class="dt">TApp</span> f x) <span class="fu">=</span> <span class="st">&quot;(&quot;</span> <span class="fu">++</span> <span class="fu">show</span> f <span class="fu">++</span> <span class="st">&quot;)&quot;</span> <span class="fu">++</span> <span class="st">&quot; &quot;</span> <span class="fu">++</span> <span class="st">&quot;(&quot;</span> <span class="fu">++</span> <span class="fu">show</span> x <span class="fu">++</span> <span class="st">&quot;)&quot;</span>
+<span class="ot">&gt;</span>   <span class="fu">show</span> <span class="dt">TVTop</span> <span class="fu">=</span> <span class="st">&quot;v&quot;</span> <span class="fu">++</span> <span class="fu">show</span> (varToInt <span class="dt">TVTop</span>)
+<span class="ot">&gt;</span>   <span class="fu">show</span> (<span class="dt">TVPop</span> _ i) <span class="fu">=</span> <span class="st">&quot;v&quot;</span> <span class="fu">++</span> (<span class="fu">show</span> <span class="fu">.</span> <span class="dt">Sub</span> <span class="fu">.</span> varToInt <span class="fu">$</span> i)</code></pre>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt; varToInt ::</span> γ ⊢ <span class="dt">V</span> i ∈ σ <span class="ot">→</span> <span class="dt">Int</span>
+<span class="ot">&gt;</span> varToInt <span class="dt">TVTop</span> <span class="fu">=</span> <span class="dv">0</span>
+<span class="ot">&gt;</span> varToInt (<span class="dt">TVPop</span> _ i) <span class="fu">=</span> <span class="dv">1</span> <span class="fu">+</span> varToInt i</code></pre>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt; natToInt ::</span> γ ⊢ n ∈ ℕ <span class="ot">→</span> <span class="dt">Int</span>
+<span class="ot">&gt;</span> natToInt <span class="dt">TZ</span> <span class="fu">=</span> <span class="dv">0</span>
+<span class="ot">&gt;</span> natToInt (<span class="dt">TS</span> i) <span class="fu">=</span> <span class="dv">1</span> <span class="fu">+</span> natToInt i
+<span class="ot">&gt;</span> natToInt _ <span class="fu">=</span> <span class="fu">error</span> <span class="st">&quot;non-canonical natural number&quot;</span></code></pre>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">newtype</span> <span class="dt">Subscript</span> <span class="fu">=</span> <span class="dt">Sub</span> <span class="dt">Int</span>
+<span class="ot">&gt;</span> <span class="kw">instance</span> <span class="kw">Show</span> <span class="dt">Subscript</span> <span class="kw">where</span>
+<span class="ot">&gt;</span>   <span class="fu">show</span> (<span class="dt">Sub</span> n) <span class="fu">=</span> <span class="fu">fmap</span> trans (<span class="fu">show</span> n) <span class="kw">where</span>
+<span class="ot">&gt;</span>     trans <span class="fu">=</span>
+<span class="ot">&gt;</span>       \<span class="kw">case</span>
+<span class="ot">&gt;</span>         <span class="ch">'0'</span> <span class="ot">→</span> <span class="ch">'₀'</span>
+<span class="ot">&gt;</span>         <span class="ch">'1'</span> <span class="ot">→</span> <span class="ch">'₁'</span>
+<span class="ot">&gt;</span>         <span class="ch">'2'</span> <span class="ot">→</span> <span class="ch">'₂'</span>
+<span class="ot">&gt;</span>         <span class="ch">'3'</span> <span class="ot">→</span> <span class="ch">'₃'</span>
+<span class="ot">&gt;</span>         <span class="ch">'4'</span> <span class="ot">→</span> <span class="ch">'₄'</span>
+<span class="ot">&gt;</span>         <span class="ch">'5'</span> <span class="ot">→</span> <span class="ch">'₅'</span>
+<span class="ot">&gt;</span>         <span class="ch">'6'</span> <span class="ot">→</span> <span class="ch">'₆'</span>
+<span class="ot">&gt;</span>         <span class="ch">'7'</span> <span class="ot">→</span> <span class="ch">'₇'</span>
+<span class="ot">&gt;</span>         <span class="ch">'8'</span> <span class="ot">→</span> <span class="ch">'₈'</span>
+<span class="ot">&gt;</span>         <span class="ch">'9'</span> <span class="ot">→</span> <span class="ch">'₉'</span>
+<span class="ot">&gt;</span>         d   <span class="ot">→</span> d</code></pre></article>
+<h1>Want to comment?</h1>
+<p> I’m @jonsterling on <a href="http://www.twitter.com/jonsterling">Twitter</a> and <a href="https://alpha.app.net/jonsterling">App.net</a>.</p>
+
+
+<script src="//static.getclicky.com/js" type="text/javascript"></script>
+<script type="text/javascript">try{ clicky.init(66625087);
+    }catch(e){}</script>
+<noscript><p><img alt="Clicky" width="1" height="1" src="//in.getclicky.com/66625087ns.gif" /></p></noscript>
+
+<a rel="me" href="http://twitter.com/jonsterling"></a>
+<a rel="me" href="https://alpha.app.net/jonsterling"></a>
+</body>
+</html>
+

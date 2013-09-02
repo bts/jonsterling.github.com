@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="readability-verification" content="cG3MqZcEVveKZ6mnEFkePAL3Ug79Jxxp5Fn27CM7" />
+<title>JS ⊢ Expressing Church Pairs with Types</title>
+<link rel="stylesheet" type="text/css" href="../css/screen.css" />
+<link rel="stylesheet" type="text/css" href="../css/syntax.css" />
+<link rel="stylesheet" type="text/css" href="../css/coqdoc.css" />
+<style type="text/css">
+    @import url(http://nmashton.ca/css/gloss-0.0.1.css);
+</style>
+<script type="text/javascript" src="http://code.jquery.com/jquery-1.8.3.min.js"></script>
+<script type="text/javascript" src="http://nmashton.ca/js/gloss-0.0.1.js"></script>
+<link rel="alternate" type="application/rss+xml" title="Jonathan Sterling" href="../rss.xml" />
+
+
+<!--[if IE]>
+  <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+<!--[if lte IE 7]>
+  <script src="js/IE8.js" type="text/javascript"></script><![endif]-->
+<!--[if lt IE 7]>
+<link rel="stylesheet" type="text/css" media="all" href="css/ie6.css"/><![endif]-->
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+MathJax.Hub.Config({
+  'HTML-CSS': {
+    availableFonts: [],
+    webFont: 'TeX'
+  }
+});
+</script>
+</head>
+<body>
+
+<header>
+<h1><a href="../index.html"><span class="title">Expressing Church Pairs with Types.</span></a></h1>
+</header>
+
+<section class="post">
+<article><p>It’s easy to express pairs in the untyped lambda calculus; adding types makes it somewhat more complex to get a correct encoding. In this article, I explain how we can build a pair with typesafe accessors in a polymorphically typed lambda calculus with type operators (System <span class="math">\(F_\omega\)</span>), and demonstrate it in Haskell. This document is Literate Haskell: simply copy and paste it into an <code>.lhs</code> file, and you can feed it into GHCI.</p>
+<p><!--more--></p>
+<p>In the untyped lambda calculus, a pair <span class="math">\((x,y)\)</span> is encoded as a function which takes two values <span class="math">\(x\)</span>, <span class="math">\(y\)</span>, yielding a new function that takes an accessor function <span class="math">\(f\)</span> as its argument (that is, <span class="math">\(f\)</span> selects either the left or the right argument):</p>
+<p><span class="math">\(\begin{aligned} \textbf{pair} &amp;:= \lambda xyf. f\,xy\\ \textbf{fst}  &amp;:= \lambda p. p\, (\lambda xy. x)\\ \textbf{snd}  &amp;:= \lambda p. p\, (\lambda xy. y) \end{aligned}\)</span></p>
+<p>So, the following reductions can occur:</p>
+<p><span class="math">\(\begin{aligned} \textbf{pair}\; ab &amp;\equiv (\lambda xyf. f\,xy)\; ab\\                    &amp;\to \lambda f. f\,ab\\ \textbf{fst}\; (\textbf{pair}\; ab) &amp;\equiv \textbf{fst}\; (\lambda f. f\,ab)\\ &amp;\to (\lambda p. p\, (\lambda xy. x))\; (\lambda f. f\,ab)\\ &amp;\to (\lambda f. f\,ab)\; (\lambda xy. x)\\ &amp;\to (\lambda xy. x)\; ab\\ &amp;\to a\\ \textbf{snd}\; (\textbf{pair}\; ab) &amp;\equiv \textbf{snd}\; (\lambda f. f\,ab)\\ &amp;\to (\lambda p. p\, (\lambda xy. y))\; (\lambda f. f\,ab)\\ &amp;\to (\lambda f. f\,ab)\; (\lambda xy. y)\\ &amp;\to (\lambda xy. y)\; ab\\ &amp;\to b\\ \end{aligned}\)</span></p>
+<p>Translating our untyped example into the typed lambda calculus naïvely doesn’t change much of anything. The main features of this new calculus are polymorphic types (<span class="math">\(\alpha,\beta,\gamma\)</span>…), and type-level functions corresponding to universal quantification. Types are abstracted over using a capital lambda.</p>
+<p><span class="math">\(\begin{aligned} \textbf{pair} &amp;:= \Lambda\alpha\beta\gamma. \lambda (x : \alpha) (y : \beta) (f : \alpha\to\beta\to\gamma). f\,xy\\ \textbf{fst} &amp;:= \Lambda\alpha\beta\gamma. \lambda (p : {(\alpha\to\beta\to\alpha)\to\gamma}). p (\lambda (x : \alpha) (y : \beta). x)\\ \textbf{snd} &amp;:= \Lambda\alpha\beta\gamma. \lambda (p : {(\alpha\to\beta\to\beta)\to\gamma}). p (\lambda (x:\alpha) (y:\beta). y) \end{aligned}\)</span></p>
+<p>However, this is problematic. What this definition of <span class="math">\(\textbf{pair}\)</span> ends up saying is that <em>for all</em> types <span class="math">\(\alpha,\beta,\gamma\)</span>, there is a function that will retrieve a value in <span class="math">\(\gamma\)</span> from a pair in <span class="math">\((\alpha,\beta)\)</span>. This, however, is only true inasmuch as <span class="math">\(\gamma\)</span> is either <span class="math">\(\alpha\)</span> or <span class="math">\(\beta\)</span>. Thus, our current definition will allow more incorrect programs than is acceptable in a typed (but not dependently-typed) language. What we really need is to constrain <span class="math">\(\gamma\)</span>:</p>
+<p><span class="math">\(\begin{aligned} \textbf{pair} &amp;:= \Lambda\alpha\beta. \lambda (x:\alpha) (y:\beta) (f:{\alpha\to\beta\to(\alpha\lor\beta)}). f\,xy\\ \textbf{fst} &amp;:= \Lambda\alpha\beta. \lambda (p:{(\alpha\to\beta\to\alpha)\to\alpha}). p (\lambda (x:\alpha)(y:\beta). x)\\ \textbf{snd} &amp;:= \Lambda\alpha\beta. \lambda (p:{(\alpha\to\beta\to\beta)\to\beta}). p (\lambda (x:\alpha)(y:\beta). y) \end{aligned}\)</span></p>
+<p>So, we have created a typed encoding of the Church Pair which only allows accessors which return a value of the correct type.</p>
+<h1 id="encoding-our-typed-church-pair-in-haskell">Encoding our typed Church Pair in Haskell</h1>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="ot">{-# LANGUAGE MultiParamTypeClasses #-}</span>
+<span class="ot">&gt;</span> <span class="ot">{-# LANGUAGE Rank2Types #-}</span>
+<span class="ot">&gt;</span> <span class="ot">{-# LANGUAGE FlexibleInstances #-}</span>
+<span class="ot">&gt;</span> <span class="ot">{-# LANGUAGE IncoherentInstances #-}</span>
+<span class="ot">&gt;</span> <span class="ot">{-# LANGUAGE UnicodeSyntax #-}</span></code></pre>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">module</span> <span class="dt">ChurchPair</span> <span class="kw">where</span>
+<span class="ot">&gt;</span> <span class="kw">import</span> Prelude <span class="kw">hiding</span> (fst, snd)</code></pre>
+<p>The first order of business will be to implement the disjunction constraint (<span class="math">\(\Lambda\alpha\beta. \alpha\lor\beta\)</span>) in Haskell. To do this, we can use a type class:</p>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">class</span> <span class="dt">TypeOr</span> α β γ</code></pre>
+<p>and inhabit it with the proper combinations:</p>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">instance</span> <span class="dt">TypeOr</span> α β α
+<span class="ot">&gt;</span> <span class="kw">instance</span> <span class="dt">TypeOr</span> α β β</code></pre>
+<p>Now, we can create a type synonym (for the sake of convenience) that encapsulates the structure of pairs:</p>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">type</span> <span class="dt">Pair</span> α β <span class="fu">=</span> <span class="ot">∀</span> γ. <span class="dt">TypeOr</span> α β γ <span class="ot">⇒</span> (α <span class="ot">→</span> β <span class="ot">→</span> γ) <span class="ot">→</span> γ</code></pre>
+<p>A <span class="math">\(\textbf{Pair}\)</span> over <span class="math">\((\alpha,\beta)\)</span> is function that takes a function that returns one of its elements. Note that we cannot specify within this non-dependent type system that the result of this accessor actually be one of the elements, but the <code>(TypeOr α β γ)</code> constraint allows us to at least ensure that the result is of the type of either element in the pair.</p>
+<p>And now, given two values, we can construct a <span class="math">\(\textbf{Pair}\)</span>:</p>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt; pair ::</span> α <span class="ot">→</span> β <span class="ot">→</span> <span class="dt">Pair</span> α β
+<span class="ot">&gt;</span> pair x y f <span class="fu">=</span> f x y</code></pre>
+<p>The accessors are easily written, and their type annotations make clear their function:</p>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt; fst ::</span> <span class="dt">Pair</span> α β <span class="ot">→</span> α
+<span class="ot">&gt;</span> <span class="fu">fst</span> p <span class="fu">=</span> p <span class="fu">$</span> \x y <span class="ot">→</span> x</code></pre>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt; snd ::</span> <span class="dt">Pair</span> α β <span class="ot">→</span> β
+<span class="ot">&gt;</span> <span class="fu">snd</span> p <span class="fu">=</span> p <span class="fu">$</span> \x y <span class="ot">→</span> y</code></pre>
+<p>Incidentally, <code>fst</code> and <code>snd</code> can also be defined in terms of library functions:</p>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> fst' p <span class="fu">=</span> p <span class="fu">const</span>
+<span class="ot">&gt;</span> snd' p <span class="fu">=</span> p <span class="fu">$</span> <span class="fu">flip</span> <span class="fu">const</span></code></pre>
+<p>To demonstrate the benefit our typing constraints, try the following:</p>
+<pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">badAccessor ::</span> <span class="dt">Pair</span> α β <span class="ot">→</span> <span class="dt">String</span>
+badAccessor p <span class="fu">=</span> p <span class="fu">$</span> \x y <span class="ot">→</span> <span class="st">&quot;Hello&quot;</span> <span class="co">-- type error</span></code></pre>
+<p>It is impossible to create an accessor of the wrong type (unless the accessor itself is the <em>bottom</em>, in which case you will have a runtime error).</p></article>
+<h1>Want to comment?</h1>
+<p> I’m @jonsterling on <a href="http://www.twitter.com/jonsterling">Twitter</a> and <a href="https://alpha.app.net/jonsterling">App.net</a>.</p>
+
+
+<script src="//static.getclicky.com/js" type="text/javascript"></script>
+<script type="text/javascript">try{ clicky.init(66625087);
+    }catch(e){}</script>
+<noscript><p><img alt="Clicky" width="1" height="1" src="//in.getclicky.com/66625087ns.gif" /></p></noscript>
+
+<a rel="me" href="http://twitter.com/jonsterling"></a>
+<a rel="me" href="https://alpha.app.net/jonsterling"></a>
+</body>
+</html>
+
