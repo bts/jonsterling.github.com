@@ -95,7 +95,7 @@ lang=gk>ἀπέκτεινε</span> as <span class="math">\(V\{|D_\textit{acc}, |
   \dfrac{\gk{τοὺς πέρσας}}{D_\textit{acc}}
 }{V}&gt;
 \]</span></p>
-<p>This all seems very nice and good, but in the course of this extension, we have inadvertently ended up sacrificing one of the most desirable aspects of the CCG, which is the transparent and deterministic interface between the semantics and the syntax of a construction. That is, unlikely in plain CCG, from one syntactic derivation, I can prove two distinct semantic propositions. Let’s look at a pathological example brought about by the double-accusative construction in Greek.</p>
+<p>This all seems very nice and good, but in the course of this extension, we have inadvertently ended up sacrificing one of the most desirable aspects of the CCG, which is the transparent and deterministic interface between the semantics and the syntax of a construction. That is, unlike in plain CCG, from one syntactic derivation, I can prove two distinct semantic propositions. Let’s look at a pathological example brought about by the double-accusative construction in Greek.</p>
 <p>Our sentence will be <span lang=gk>ταῦτα ἔβλαψα ἐκεῖνα</span>,<sup><a href="#fn3" class="footnoteRef" id="fnref3">3</a></sup> which has two semantic interpretations: “I harmed these things in those respects” or “I harmed those things in these respects”. If the interpreter from syntactic to logical form is deterministic (which we should like very much to be the case), then we should only be able to derive one semantic interpretation per syntactic derivation. But it turns out, we can’t decide which one to do!</p>
 <p>Take the following derivation:</p>
 <p><span class="math">\[
