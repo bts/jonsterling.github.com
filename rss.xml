@@ -159,7 +159,7 @@ lang=gk>ἀπέκτεινε</span> as <span class="math">\(V\{|D_\textit{acc}, |
   }{V\{D_\textit{acc}, \mathsf{nil}\}}&lt;_\mathsf{top}
   \quad
   \dfrac{\gk{ἐκεῖνα}}{D_\textit{acc}}
-}{V}&gt;
+}{V}&gt;_\mathsf{top}
 \]</span></p>
 <p><span class="math">\[
 \dfrac{
@@ -170,7 +170,7 @@ lang=gk>ἀπέκτεινε</span> as <span class="math">\(V\{|D_\textit{acc}, |
   }{V\{D_\textit{acc}, \mathsf{nil}\}}&lt;_{(\mathsf{pop}\ \mathsf{top})}
   \quad
   \dfrac{\gk{ἐκεῖνα}}{D_\textit{acc}}
-}{V}&gt;
+}{V}&gt;_\mathsf{top}
 \]</span></p>
 <p>and we may proceed by induction on the structure of syntactic derivations to arrive at a semantic interpretation.</p>
 <div class="footnotes">
