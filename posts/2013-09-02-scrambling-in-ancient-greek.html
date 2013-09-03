@@ -47,7 +47,7 @@ MathJax.Hub.Config({
 <!--more-->
 
 <blockquote>
-<p>For the moment, we shall leave our working grammar of Greek overly permissive and consider words modulo the direction in which they satisfy their arguments. As such, rather than the directional slash notation traditional in CCG, we shall be using bars to indicate unsatisfied arguments. So, we arrive at a grammar of types given by <span class="math">\(N, D, V, P, \cdot|\cdot\)</span>.</p>
+<p>For the moment, we shall leave our working grammar of Greek overly permissive and consider words modulo the direction in which they satisfy their arguments. As such, rather than the directional slash notation traditional in CCG, we shall be using bars to indicate unsatisfied arguments. So, we arrive at a grammar of types given by <span class="math">\(N, D, V, P, \cdot|\cdot\)</span>. Finally, I shall work in a restricted subset of CCG which does not include the type raising operator.</p>
 </blockquote>
 <h3 id="the-problem">The problem</h3>
 <p>When you are satisfying only one argument, its position in relation to the head is structurally unimportant, given that <strong>MERGE</strong> may occur in either direction. With two or more arguments, though, it becomes more complicated. Let us consider the sentence <span lang="gk">ὁ στρατηγὸς ἀπέκτεινε τοὺς πέρσας</span> (“The general killed the Persians”);<sup><a href="#fn1" class="footnoteRef" id="fnref1">1</a></sup> if we assign the word <span lang="gk">ἀπέκτεινε</span> the type <span class="math">\((V\,|D_\textit{nom})|D_\textit{acc}\)</span>, then four permutations are permissable:</p>
@@ -113,7 +113,7 @@ MathJax.Hub.Config({
 \dfrac{\vdash e : Y\{\bar{Z}\} \quad \vdash e' : X \quad \vdash (|X) \in \bar{Z}}{\vdash e &gt; e' : Y\{\bar{Z} - \{|X\}\} \quad
 \vdash e' &lt; e : Y\{\bar{Z} - \{|X\}\}}
 \]</span></p>
-<p>Now, it is possible to derive the sentence which raw CCG fails with, as follows:</p>
+<p>Now, it is possible to derive the sentence which raw CCG minus type raising fails with, as follows:</p>
 <p><span class="math">\[
 \dfrac{
   \dfrac{
