@@ -80,8 +80,8 @@ lang=gk>ἀπέκτεινε</span> as <span class="math">\(V\{|D_\textit{acc}, |
 \]</span></p>
 <p>to the following:</p>
 <p><span class="math">\[
-\dfrac{\vdash e : Y\{\bar{Z}\} \quad \vdash e&#39; : X \quad \vdash (|X) \in \bar{Z}}{\vdash e &gt; e&#39; : Y\{\bar{Z} \uplus \{|X\}\} \quad
-\vdash e&#39; &lt; e : Y\{\bar{Z} \uplus \{|X\}\}}
+\dfrac{\vdash e : Y\{\bar{Z}\} \quad \vdash e&#39; : X \quad \vdash (|X) \in \bar{Z}}{\vdash e &gt; e&#39; : Y\{\bar{Z} - \{|X\}\} \quad
+\vdash e&#39; &lt; e : Y\{\bar{Z} - \{|X\}\}}
 \]</span></p>
 <p>Now, it is possible to derive the sentence which raw CCG fails with, as follows:</p>
 <p><span class="math">\[
