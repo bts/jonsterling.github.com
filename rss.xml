@@ -6,8 +6,185 @@
         <description><![CDATA[Jonathan Sterling writes about Types, Linguistics and Philology]]></description>
         <atom:link href="http://www.jonmsterling.com//rss.xml" rel="self"
                    type="application/rss+xml" />
-        <lastBuildDate>Sun, 07 Jul 2013 00:00:00 UT</lastBuildDate>
+        <lastBuildDate>Mon, 02 Sep 2013 00:00:00 UT</lastBuildDate>
         <item>
+    <title>Proof-Relevant MCCG: an approach to scrambling in Ancient Greek</title>
+    <link>http://www.jonmsterling.com//posts/2013-09-02-scrambling-in-ancient-greek.html</link>
+    <description><![CDATA[<p>Within a type-theoretic grammar, we must eventually deal with the issue of argument-ordering in languages which have (relatively) free word order. One approach, considered unsatisfactory, is to provide multiple categorial types for a word, giving the different orders in which it may accept its arguments; this is embeddable within a minimal CCG calculus. Another is to make copious use of the type raising operator combined with composition to construct mountains of unsatisfied clauses: this is less than optimal, however, given that the type raising operator itself is problematic for reasons outside the scope of this short exposition. So today, I shall present two different modest extensions to CCG which address this issue, namely <em>something old</em> and <em>something new</em>.</p>
+<!--more-->
+
+<blockquote>
+<p>For the moment, we shall leave our working grammar of Greek overly permissive and consider words modulo the direction in which they satisfy their arguments. As such, rather than the directional slash notation traditional in CCG, we shall be using bars to indicate unsatisfied arguments. So, we arrive at a grammar of types given by <span class="math">\(N, D, V, P, \cdot|\cdot\)</span>.</p>
+</blockquote>
+<h3 id="the-problem">The problem</h3>
+<p>When you are satisfying only one argument, its position in relation to the head is structurally unimportant, given that <strong>MERGE</strong> may occur in either direction. With two or more arguments, though, it becomes more complicated. Let us consider the sentence <span lang=gk>ὁ στρατηγὸς ἀπέκτεινε τοὺς πέρσας</span> (“The general killed the Persians”);<sup><a href="#fn1" class="footnoteRef" id="fnref1">1</a></sup> if we assign the word <span
+lang=gk>ἀπέκτεινε</span> the type <span class="math">\((V\,|D_\textit{nom})|D_\textit{acc}\)</span>, then four permutations are permissable:</p>
+<p><span class="math">\[
+\dfrac{
+  \dfrac{\gk{ὁ στρατηγός}}{D_\textit{nom}}
+  \quad
+  \dfrac{
+    \dfrac{\gk{ἀπέκτεινε}}{(V\,|D_\textit{nom})|D_\textit{acc}}
+    \quad
+    \dfrac{\gk{τοὺς πέρσας}}{D_\textit{acc}}
+  }{V\,|D_\textit{nom}}&gt;
+  \quad
+}{V}&lt;
+\tag{1}
+\]</span></p>
+<p><span class="math">\[
+\dfrac{
+  \dfrac{
+    \dfrac{\gk{ἀπέκτεινε}}{(V\,|D_\textit{nom})|D_\textit{acc}}
+    \quad
+    \dfrac{\gk{τοὺς πέρσας}}{D_\textit{acc}}
+  }{V\,|D_\textit{nom}}&gt;
+  \quad
+  \dfrac{\gk{ὁ στρατηγός}}{D_\textit{nom}}
+}{V}&gt;
+\tag{2}
+\]</span></p>
+<p><span class="math">\[
+\dfrac{
+  \dfrac{\gk{ὁ στρατηγός}}{D_\textit{nom}}
+  \quad
+  \dfrac{
+    \dfrac{\gk{τοὺς πέρσας}}{D_\textit{acc}}
+    \quad
+    \dfrac{\gk{ἀπέκτεινε}}{(V\,|D_\textit{nom})|D_\textit{acc}}
+  }{V\,|D_\textit{nom}}&lt;
+  \quad
+}{V}&lt;
+\tag{3}
+\]</span></p>
+<p><span class="math">\[
+\dfrac{
+  \dfrac{
+    \dfrac{\gk{τοὺς πέρσας}}{D_\textit{acc}}
+    \quad
+    \dfrac{\gk{ἀπέκτεινε}}{(V\,|D_\textit{nom})|D_\textit{acc}}
+  }{V\,|D_\textit{nom}}&lt;
+  \quad
+  \dfrac{\gk{ὁ στρατηγός}}{D_\textit{nom}}
+}{V}&gt;
+\tag{4}
+\]</span></p>
+<p>But any word order which places <span lang=gk>ὁ στρατηγὸς</span> closer to the verb than <span lang=gk>τοὺς πέρσας</span> cannot be constructed, because of the order of arguments given by <span
+lang=gk>ἀπέκτεινε</span>. And so there, for instance, is no derivation for the very grammatical sentence, <span lang=gk>ἀπέκτεινε ὁ στρατηγὸς τοὺς πέρσας</span>.</p>
+<h3 id="hoffmans-approach-multiset-combinatory-categorial-grammar-mccg">Hoffman’s Approach: Multiset Combinatory Categorial Grammar (MCCG)</h3>
+<p>Beryl Hoffman in her 1995 dissertation<sup><a href="#fn2" class="footnoteRef" id="fnref2">2</a></sup> presents a solution to the above problem by extending the CCG to include multisets for the arguments of function types. In essence, can now give the type for <span
+lang=gk>ἀπέκτεινε</span> as <span class="math">\(V\{|D_\textit{acc}, |D_\textit{acc}\}\)</span>, reformulating the typing rules for application from</p>
+<p><span class="math">\[
+\dfrac{\vdash e : Y\,|X \quad \vdash e&#39; : X}{\vdash e &gt; e&#39; : Y \quad
+\vdash e&#39; &lt; e : Y}
+\]</span></p>
+<p>to the following:</p>
+<p><span class="math">\[
+\dfrac{\vdash e : Y\{\bar{Z}\} \quad \vdash e&#39; : X \quad \vdash (|X) \in \bar{Z}}{\vdash e &gt; e&#39; : Y\{\bar{Z} \uplus \{|X\}\} \quad
+\vdash e&#39; &lt; e : Y\{\bar{Z} \uplus \{|X\}\}}
+\]</span></p>
+<p>Now, it is possible to derive the sentence which raw CCG fails with, as follows:</p>
+<p><span class="math">\[
+\dfrac{
+  \dfrac{
+    \dfrac{\gk{ἀπέκτεινε}}{V\{|D_\textit{acc}, |D_\textit{nom}\}}
+    \quad
+    \dfrac{\gk{ὁ στρατηγὸς}}{D_\textit{nom}}
+  }{V\{|D_\textit{acc}\}}&gt;
+  \quad
+  \dfrac{\gk{τοὺς πέρσας}}{D_\textit{acc}}
+}{V}&gt;
+\]</span></p>
+<p>This all seems very nice and good, but in the course of this extension, we have inadvertently ended up sacrificing one of the most desirable aspects of the CCG, which is the transparent and deterministic interface between the semantics and the syntax of a construction. That is, unlikely in plain CCG, from one syntactic derivation, I can prove two distinct semantic propositions. Let’s look at a pathological example brought about by the double-accusative construction in Greek.</p>
+<p>Our sentence will be <span lang=gk>ταῦτα ἔβλαψα ἐκεῖνα</span>,<sup><a href="#fn3" class="footnoteRef" id="fnref3">3</a></sup> which has two semantic interpretations: “I harmed these things in those respects” or “I harmed those things in these respects”. If the interpreter from syntactic to logical form is deterministic (which we should like very much to be the case), then we should only be able to derive one semantic interpretation per syntactic derivation. But it turns out, we can’t decide which one to do!</p>
+<p>Take the following derivation:</p>
+<p><span class="math">\[
+\dfrac{
+  \dfrac{
+    \dfrac{\gk{ταῦτα}}{D_\textit{acc}}
+    \quad
+    \dfrac{\gk{ἔβλαψα}}{V\{D_\textit{acc}, D_\textit{acc}\}}
+  }{V\{D_\textit{acc}\}}&lt;
+  \quad
+  \dfrac{\gk{ἐκεῖνα}}{D_\textit{acc}}
+}{V}&gt;
+\]</span></p>
+<p>There is actually not enough information present in the derivation to decide which of the arguments in the multiset we substituted first! Which of those demonstratives is the external object, and which is the internal object? And since there are no distinguishing features which the verb can assert on each argument and thence disambiguate them, the question of which one is which is utterly undecidable in this example. And so it is clear that we in fact need to reify some notion of substitution ordering in the proof, since we must compute with it in order to translate to the unique logical form which corresponds to that derivation.</p>
+<blockquote>
+<p>We may draw a parallel here between proof-relevant and proof-irrelevant mathematics: the syntactic proofs which are got through Ms Hoffman’s MCCG would seem to demand a proof-relevant approach (that is, one where the particular substitution isn’t erased and lost to computation), if we are interested in doing a translation into logical form by induction on the structure of the syntactic proof.</p>
+</blockquote>
+<h3 id="proof-relevant-multiset-ccg">Proof-Relevant Multiset CCG</h3>
+<p>It has become clear to me that in order to recover the computational behavior of syntactic proofs and their translation to logical form, we must amend the multiset approach to avoid the problem of the indistinguishability of identical elements. So we must replace multisets with ordered lists, and then replace the <span class="math">\((|X) \in Z\)</span> membership judgements with true membership proofs, as follows.</p>
+<p>First, we provide ordered lists of types:</p>
+<p><span class="math">\[
+\dfrac{}{\vdash \mathsf{List}\ \ \textbf{type}}
+\qquad
+\dfrac{}{\vdash \mathsf{nil} : \mathsf{List}}
+\qquad
+\dfrac{\vdash X\ \ \textbf{type} \quad \vdash \bar{X} : \mathsf{List}}{\vdash \{X,\bar{X}\} :
+\mathsf{List}}
+\]</span></p>
+<p>Now, we give the rules for membership proofs:</p>
+<p><span class="math">\[
+\dfrac{\vdash X\ \ \textbf{type} \quad \vdash \bar{X} : \mathsf{List}}{\vdash X \in \bar{X}\ \ \textbf{type}}
+\qquad
+\dfrac{\vdash X\ \ \textbf{type} \quad \vdash \bar{X} :
+\mathsf{List}}{\vdash \mathsf{top} : X \in \{X, \bar{X}\}}
+\qquad
+\dfrac{\vdash X\ \ \textbf{type} \quad \vdash Y\ \ \textbf{type} \quad
+\vdash \bar{X} : \mathsf{List} \quad \vdash p : X \in \bar{X}}{\vdash
+\mathsf{pop}\ p : X \in \{Y, \bar{X}\}}
+\]</span></p>
+<p>Next, the list subtraction computations:</p>
+<p><span class="math">\[
+\dfrac{\vdash X\ \ \textbf{type} \quad \vdash \bar{X} : \mathsf{List}
+\quad \vdash p : X \in \bar{X}}{\vdash \bar{X} - p : \mathsf{List}}
+\]</span> <span class="math">\[\begin{align}
+\{X, \bar{X}\} - \mathsf{top} &amp;\mapsto \bar{X}\\
+\{X, \bar{X}\} - \mathsf{pop}\ p &amp;\mapsto \{X, \bar{X} - p\}
+\end{align}
+\]</span></p>
+<p>And finally, we adjust the application typing rules (and the rest, omitted for simplicity of presentation) to include the membership proofs in their syntax, so that we may use them when computing logical form later:</p>
+<p><span class="math">\[
+\dfrac{\vdash e : Y\{\bar{Z}\} \quad \vdash e&#39; : X \quad \vdash p : (|X) \in \bar{Z}}{\vdash e &gt;_p e&#39; : Y\{\bar{Z} - p\} \quad
+\vdash e&#39; &lt;_p e : Y\{\bar{Z} - p\}}
+\]</span> <!-- _ --></p>
+<p>With these enhancements, then, the single syntactic derivation we had for our pathologically ambiguous sentence is recovered as two distinct syntactic derivations (and our semantic interpreter is once again deterministic). Thus the following derivations may once again be told apart:</p>
+<p><span class="math">\[
+\dfrac{
+  \dfrac{
+    \dfrac{\gk{ταῦτα}}{D_\textit{acc}}
+    \quad
+    \dfrac{\gk{ἔβλαψα}}{V\{D_\textit{acc}, D_\textit{acc}, \mathsf{nil}\}}
+  }{V\{D_\textit{acc}, \mathsf{nil}\}}&lt;_\mathsf{top}
+  \quad
+  \dfrac{\gk{ἐκεῖνα}}{D_\textit{acc}}
+}{V}&gt;
+\]</span></p>
+<p><span class="math">\[
+\dfrac{
+  \dfrac{
+    \dfrac{\gk{ταῦτα}}{D_\textit{acc}}
+    \quad
+    \dfrac{\gk{ἔβλαψα}}{V\{D_\textit{acc}, D_\textit{acc}, \mathsf{nil}\}}
+  }{V\{D_\textit{acc}, \mathsf{nil}\}}&lt;_{(\mathsf{pop}\ \mathsf{top})}
+  \quad
+  \dfrac{\gk{ἐκεῖνα}}{D_\textit{acc}}
+}{V}&gt;
+\]</span></p>
+<p>and we may proceed by induction on the structure of syntactic derivations to arrive at a semantic interpretation.</p>
+<div class="footnotes">
+<hr />
+<ol>
+<li id="fn1"><p>Transliteration: <em>ho stratēgos apekteine tous persas</em><a href="#fnref1">↩</a></p></li>
+<li id="fn2"><p>Hoffman, Beryl (1995). <em>The computational Analysis of the Syntax and Interpretation of “Free” Word Order in Turkish</em>.<a href="#fnref2">↩</a></p></li>
+<li id="fn3"><p>Translitation: <em>tauta eblapsa ekeina</em><a href="#fnref3">↩</a></p></li>
+</ol>
+</div>]]></description>
+    <pubDate>Mon, 02 Sep 2013 00:00:00 UT</pubDate>
+    <guid>http://www.jonmsterling.com//posts/2013-09-02-scrambling-in-ancient-greek.html</guid>
+</item>
+<item>
     <title>Towards Univalent Observational Type Theory: First Steps</title>
     <link>http://www.jonmsterling.com//posts/2013-07-07-towards-univalent-ott.html</link>
     <description><![CDATA[<p>Last week I <a href="/posts/2013-06-30-terms-indexed-by-canonicity-admit-coercion-across-isomorphism.html">proposed</a> a way to embed non-canonical equality proofs in a type theory in such a way as to force that they are eliminated prior to evaluation. This approach has a few problems. Today, I shall reformulate equality internally after the manner of Altenkirch, McBride <em>et al</em>,<sup><a href="#fn1" class="footnoteRef" id="fnref1">1</a></sup> and again shy away from the problem of computing congruence or substitution over functions, which is quite a bit more difficult.<sup><a href="#fn2" class="footnoteRef" id="fnref2">2</a></sup></p>
