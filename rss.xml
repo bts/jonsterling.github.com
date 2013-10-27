@@ -82,7 +82,7 @@ Y/Z \quad X/Y &amp;\Rightarrow_\color{red}{\mathbf{???}} X/Z\tag{not provided, b
 }{N_{nom}/N_{nom}}\triangleright
 \]</span></p>
 <p>But it would appear that such <span class="math">\(Y_2\)</span> hyperbaton in prepositional phrases is blocked when there has already been a <span class="math">\(Y_1\)</span> hyperbaton. For instance, in the <em>Trachinian Women</em> of Sophocles, there are many instances of both <span class="math">\(\gk{ἐν}\ Y_1\cdots Y_2\)</span> and also <span class="math">\(Y_1\ \gk{ἐν}\ Y_2\)</span>, but there is not a single instance of <span class="math">\(Y_1\ \gk{ἐν}\cdots Y_2\)</span>: that is, when there has been a displacement of <span class="math">\(Y_1\)</span>, <span class="math">\(Y_2\)</span> must remain glued to the head preposition.</p>
-<p>So we may tentatively consider the following sentence ungrammatical, or at least highly awkward: <span lang="gk" style="color:red;">*τοιοῖσδ’ ἐν κειμένη κακοῖς</span>. Unfortunately, though, if we augment the CCG to be powerful enough to generate <span lang="gk">τοιοῖσδ’ ἐν κακοῖς</span>, it will also generate the other with equal ease, which we should like to avoid.</p>
+<p>So we may tentatively consider the following phrase ungrammatical, or at least highly awkward: <span lang="gk" style="color:red;">*τοιοῖσδ’ ἐν κειμένη κακοῖς</span>. Unfortunately, though, if we augment the CCG to be powerful enough to generate <span lang="gk">τοιοῖσδ’ ἐν κακοῖς</span>, it will also generate the other with equal ease, which we should like to avoid.</p>
 <p>For this reason, I venture as a suggestion that the new composition schemas to support <span class="math">\(Y_1\)</span> hyperbaton should ignore the modalities of their arguments in favor of the most restrictive <span class="math">\(\bullet\)</span>, which does not admit further composition. In this fashion, we can prevent the addition of this combinator from sending the grammar into overproduction. So one of the added composition schemas would be the following (given a sufficiently large grain of salt to take with the notation):</p>
 <p><span class="math">\[\begin{equation}
 \dfrac{\diamond\leq\mu \quad \diamond\leq\nu}
@@ -102,7 +102,7 @@ Y/Z \quad X/Y &amp;\Rightarrow_\color{red}{\mathbf{???}} X/Z\tag{not provided, b
   \dfrac{\gk{ἡμέρᾳ}}{N}
 }{P}\triangleright
 \]</span></p>
-<p>Whereas it would remain entirely impossible construct something like <span lang="gk" style="color:red;">*τῇδ’ ἐν ἔφη ἡμέρᾳ τάδε</span>.</p>]]></description>
+<p>Whereas it would remain entirely impossible to construct something like <span lang="gk" style="color:red;">*τῇδ’ ἐν ἔφη ἡμέρᾳ τάδε</span>.</p>]]></description>
     <pubDate>Sat, 26 Oct 2013 00:00:00 UT</pubDate>
     <guid>http://www.jonmsterling.com//posts/2013-10-26-resource-sensitivity-in-ccg.html</guid>
 </item>
