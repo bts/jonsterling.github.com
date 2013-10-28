@@ -24,6 +24,9 @@
 
 <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
 MathJax.Hub.Config({
+  showMathMenu: false,
+  showProcessingMessages: false,
+  messageStyle: "none",
   'HTML-CSS': {
     availableFonts: [],
     webFont: 'TeX',
@@ -124,24 +127,6 @@ MathJax.Hub.Config({
 
     <div class="read_more">
         <a href="./posts/2013-06-30-terms-indexed-by-canonicity-admit-coercion-across-isomorphism.html">
-           more …
-        </a>
-    </div>
-    </article>
-
-    <article class="digest">
-
-    <h3>
-        <a href="./posts/2013-06-09-isomorphism-implies-equality-for-finite-sets.html">Isomorphism Implies Equality for Finite Sets</a>
-        <span class="date">June  9, 2013</span>
-    </h3>
-    
-        <p>In a sufficiently simple type theory, it’s trivial to demonstrate that adding an axiom that isomorphism implies equality is safe and computable. Today we demonstrate this for a universe of finite sets without induction. Perhaps will help some people start to feel why the Voevodsky’s Univalence Axiom is probably morally correct.</p>
-
-    
-
-    <div class="read_more">
-        <a href="./posts/2013-06-09-isomorphism-implies-equality-for-finite-sets.html">
            more …
         </a>
     </div>
@@ -369,60 +354,6 @@ prover based on the <a href="http://en.wikipedia.org/wiki/Calculus_of_inductive_
     <article class="digest">
 
     <h3>
-        <a href="./posts/2012-09-14-natural-language-semantics-I.html">Natural Language Semantics: Montague → Martin-Löf</a>
-        <span class="date">September 14, 2012</span>
-    </h3>
-    
-        <p>My great joy at finally taking logical semantics for natural language at Berkeley was a bit dampened by the realization that everyone is still doing semantics in a type theory from the 1940s. Rather than wallowing in dismay, I have been inspired to think about manifesting semantics in a modern Constructive theory within the Martin-Löf tradition;<sup><a href="#fn1" class="footnoteRef" id="fnref1">1</a></sup> this is the first in a series of posts in that vein.</p>
-
-    
-
-    <div class="read_more">
-        <a href="./posts/2012-09-14-natural-language-semantics-I.html">
-           more …
-        </a>
-    </div>
-    </article>
-
-    <article class="digest">
-
-    <h3>
-        <a href="./posts/2012-09-08-adding-universe-polymorphism.html">Pi &amp; Sigma: Adding Universe Polymorphism</a>
-        <span class="date">September  8, 2012</span>
-    </h3>
-    
-        <p><a href="http://www.jonmsterling.com/posts/2012-09-07-pi-is-for-power-sigma-for-product.html">Last time</a>, I showed how <span class="math">\(\prod\)</span> and <span class="math">\(\sum\)</span> types generalize the cartesian power (function arrow) and the cartesian product respectively. Unfortunately, the Agda implementation I provided requires the first element in the <span class="math">\(\sum\)</span>-pair to be a term of a type, which precludes the encoding of existentials which could be used to abstract away a type (which is a term of a kind). Today, I’ll show how to fix this using Universe Polymorphism.</p>
-
-    
-
-    <div class="read_more">
-        <a href="./posts/2012-09-08-adding-universe-polymorphism.html">
-           more …
-        </a>
-    </div>
-    </article>
-
-    <article class="digest">
-
-    <h3>
-        <a href="./posts/2012-09-07-pi-is-for-power-sigma-for-product.html">Pi is for Power, Sigma for Product</a>
-        <span class="date">September  7, 2012</span>
-    </h3>
-    
-        <p><span class="math">\(\prod\)</span> and <span class="math">\(\sum\)</span> are two fundamental connectives of <a href="http://en.wikipedia.org/wiki/Intuitionistic_type_theory">Intuitionistic Type Theory</a>, corresponding to <span class="math">\(\forall\)</span> and <span class="math">\(\exists\)</span> in logic respectively. In their non-dependent special cases, they represent cartesian powers and products respectively. Let’s take a look at how this works!</p>
-
-    
-
-    <div class="read_more">
-        <a href="./posts/2012-09-07-pi-is-for-power-sigma-for-product.html">
-           more …
-        </a>
-    </div>
-    </article>
-
-    <article class="digest">
-
-    <h3>
         <a href="./posts/2012-08-05-static-and-dynamic-proof-inference-in-haskell.html">Static and Dynamic Proof Inference in Haskell</a>
         <span class="date">August  5, 2012</span>
     </h3>
@@ -452,27 +383,6 @@ prover based on the <a href="http://en.wikipedia.org/wiki/Calculus_of_inductive_
 
     <div class="read_more">
         <a href="./posts/2012-07-22-flexibly-phased-constraints-in-haskell.html">
-           more …
-        </a>
-    </div>
-    </article>
-
-    <article class="digest">
-
-    <h3>
-        <a href="./posts/2012-07-15-partial-functions-more-or-less.html">Partial Functions: more or less than a function?</a>
-        <span class="date">July 15, 2012</span>
-    </h3>
-    
-        <blockquote>
-<p>Funny how we like to talk about total functions. As if there’s any other kind of function.</p>
-</blockquote>
-<p>This was my somewhat flippant remark this morning, which incited a conversation about the nature of functions and partial functions, leading me to learn a few things.</p>
-
-    
-
-    <div class="read_more">
-        <a href="./posts/2012-07-15-partial-functions-more-or-less.html">
            more …
         </a>
     </div>
@@ -564,42 +474,6 @@ A monad is just a monoid in the category of endofunctors, what’s the problem? 
     <article class="digest">
 
     <h3>
-        <a href="./posts/2011-11-13-more-useful-snapping-for-nsslider.html">More useful snapping for NSSlider</a>
-        <span class="date">November 13, 2011</span>
-    </h3>
-    
-        <p>If you want an <code>NSSlider</code> to snap on certain intervals, your option out-of-the-box is to give it tick marks (using <code>-setNumberOfTickMarks:</code>), and then enforce that it can only be set to values coinciding with a tick mark (using <code>setAllowsTickMarkValuesOnly:</code>). This is great, if you only want to accept values at certain intervals; but it’s not very helpful if you simply want to <em>snap to</em> values at key points (like quarters, or thirds).</p>
-
-    
-
-    <div class="read_more">
-        <a href="./posts/2011-11-13-more-useful-snapping-for-nsslider.html">
-           more …
-        </a>
-    </div>
-    </article>
-
-    <article class="digest">
-
-    <h3>
-        <a href="./posts/2011-02-04-making-your-web-app-not-suck.html">Making your web app not suck</a>
-        <span class="date">February  4, 2011</span>
-    </h3>
-    
-        <p>In the past, I have railed against companies who choose to write mobile web applications instead of native apps. Having recently tried the mobile version of <a href="http://m.pinboard.in/">Pinboard</a>, as well as the new <a href="http://basecamphq.com/mobile">Basecamp mobile version</a>, I must slightly revise my opinion.</p>
-
-    
-
-    <div class="read_more">
-        <a href="./posts/2011-02-04-making-your-web-app-not-suck.html">
-           more …
-        </a>
-    </div>
-    </article>
-
-    <article class="digest">
-
-    <h3>
         <a href="./posts/2010-12-10-jsbag-a-modern-class-cluster.html">JSBag: A Modern Class Cluster</a>
         <span class="date">December 10, 2010</span>
     </h3>
@@ -611,24 +485,6 @@ A monad is just a monoid in the category of endofunctors, what’s the problem? 
 
     <div class="read_more">
         <a href="./posts/2010-12-10-jsbag-a-modern-class-cluster.html">
-           more …
-        </a>
-    </div>
-    </article>
-
-    <article class="digest">
-
-    <h3>
-        <a href="./posts/2010-08-17-diamonds-wait-for-no-man.html">Diamonds Wait For No Man</a>
-        <span class="date">August 17, 2010</span>
-    </h3>
-    
-        <p>I know people. Some of them are even reading this. You know who you are. The ones who sighed in relief when it became cool to be a geek, when the International Baccalaureate became a source of pride and mutual camaraderie. You’re one of the new generation of movers, shakers and future-makers; but what’s this? You’re hiding?</p>
-
-    
-
-    <div class="read_more">
-        <a href="./posts/2010-08-17-diamonds-wait-for-no-man.html">
            more …
         </a>
     </div>
