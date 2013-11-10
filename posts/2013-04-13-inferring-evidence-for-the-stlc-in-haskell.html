@@ -151,33 +151,33 @@ plusOne' <span class="fu">=</span> <span class="dt">TLam</span> (<span class="dt
 <span class="ot">&gt;</span>   infer <span class="fu">=</span> <span class="dt">TVPop</span> infer infer</code></pre>
 <p>Then, we can make a type for closed expressions that have an inferrable type:</p>
 <pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">type</span> <span class="dt">Closed</span> e <span class="fu">=</span> <span class="dt">Infer</span> e τ <span class="dt">E</span> <span class="ot">⇒</span> <span class="dt">E</span> ⊢ e ∈ τ</code></pre>
-<pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="fu">fst</span><span class="ot"> ::</span> <span class="dt">Closed</span> (Λ (Λ (<span class="dt">V</span> (<span class="dt">S</span> <span class="dt">Z</span>))))
-<span class="fu">fst</span> <span class="fu">=</span> infer</code></pre>
-<pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="fu">snd</span><span class="ot"> ::</span> <span class="dt">Closed</span> (Λ (Λ (<span class="dt">V</span> <span class="dt">Z</span>)))
-<span class="fu">snd</span> <span class="fu">=</span> infer</code></pre>
+<pre class="sourceCode haskell"><code class="sourceCode haskell">fst<span class="ot"> ::</span> <span class="dt">Closed</span> (Λ (Λ (<span class="dt">V</span> (<span class="dt">S</span> <span class="dt">Z</span>))))
+fst <span class="fu">=</span> infer</code></pre>
+<pre class="sourceCode haskell"><code class="sourceCode haskell">snd<span class="ot"> ::</span> <span class="dt">Closed</span> (Λ (Λ (<span class="dt">V</span> <span class="dt">Z</span>)))
+snd <span class="fu">=</span> infer</code></pre>
 <h3>
 Appendix: Pretty Pretting
 </h3>
 
-<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">instance</span> <span class="kw">Show</span> (γ ⊢ x ∈ t) <span class="kw">where</span>
-<span class="ot">&gt;</span>   <span class="fu">show</span> (<span class="dt">TSet</span> ℓ) <span class="fu">=</span> <span class="st">&quot;Set&quot;</span> <span class="fu">++</span> (<span class="fu">show</span> <span class="fu">.</span> <span class="dt">Sub</span> <span class="fu">.</span> natToInt <span class="fu">$</span> ℓ)
-<span class="ot">&gt;</span>   <span class="fu">show</span> <span class="dt">TNat</span> <span class="fu">=</span> <span class="st">&quot;ℕ&quot;</span>
-<span class="ot">&gt;</span>   <span class="fu">show</span> <span class="dt">TZ</span> <span class="fu">=</span> <span class="st">&quot;Z&quot;</span>
-<span class="ot">&gt;</span>   <span class="fu">show</span> (<span class="dt">TS</span> n) <span class="fu">=</span> <span class="st">&quot;S (&quot;</span> <span class="fu">++</span> <span class="fu">show</span> n <span class="fu">++</span> <span class="st">&quot;)&quot;</span>
-<span class="ot">&gt;</span>   <span class="fu">show</span> (<span class="dt">TLam</span> l) <span class="fu">=</span> <span class="st">&quot;λ. &quot;</span> <span class="fu">++</span> <span class="fu">show</span> l
-<span class="ot">&gt;</span>   <span class="fu">show</span> (<span class="dt">TApp</span> f x) <span class="fu">=</span> <span class="st">&quot;(&quot;</span> <span class="fu">++</span> <span class="fu">show</span> f <span class="fu">++</span> <span class="st">&quot;)&quot;</span> <span class="fu">++</span> <span class="st">&quot; &quot;</span> <span class="fu">++</span> <span class="st">&quot;(&quot;</span> <span class="fu">++</span> <span class="fu">show</span> x <span class="fu">++</span> <span class="st">&quot;)&quot;</span>
-<span class="ot">&gt;</span>   <span class="fu">show</span> <span class="dt">TVTop</span> <span class="fu">=</span> <span class="st">&quot;v&quot;</span> <span class="fu">++</span> <span class="fu">show</span> (varToInt <span class="dt">TVTop</span>)
-<span class="ot">&gt;</span>   <span class="fu">show</span> (<span class="dt">TVPop</span> _ i) <span class="fu">=</span> <span class="st">&quot;v&quot;</span> <span class="fu">++</span> (<span class="fu">show</span> <span class="fu">.</span> <span class="dt">Sub</span> <span class="fu">.</span> varToInt <span class="fu">$</span> i)</code></pre>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">instance</span> <span class="dt">Show</span> (γ ⊢ x ∈ t) <span class="kw">where</span>
+<span class="ot">&gt;</span>   show (<span class="dt">TSet</span> ℓ) <span class="fu">=</span> <span class="st">&quot;Set&quot;</span> <span class="fu">++</span> (show <span class="fu">.</span> <span class="dt">Sub</span> <span class="fu">.</span> natToInt <span class="fu">$</span> ℓ)
+<span class="ot">&gt;</span>   show <span class="dt">TNat</span> <span class="fu">=</span> <span class="st">&quot;ℕ&quot;</span>
+<span class="ot">&gt;</span>   show <span class="dt">TZ</span> <span class="fu">=</span> <span class="st">&quot;Z&quot;</span>
+<span class="ot">&gt;</span>   show (<span class="dt">TS</span> n) <span class="fu">=</span> <span class="st">&quot;S (&quot;</span> <span class="fu">++</span> show n <span class="fu">++</span> <span class="st">&quot;)&quot;</span>
+<span class="ot">&gt;</span>   show (<span class="dt">TLam</span> l) <span class="fu">=</span> <span class="st">&quot;λ. &quot;</span> <span class="fu">++</span> show l
+<span class="ot">&gt;</span>   show (<span class="dt">TApp</span> f x) <span class="fu">=</span> <span class="st">&quot;(&quot;</span> <span class="fu">++</span> show f <span class="fu">++</span> <span class="st">&quot;)&quot;</span> <span class="fu">++</span> <span class="st">&quot; &quot;</span> <span class="fu">++</span> <span class="st">&quot;(&quot;</span> <span class="fu">++</span> show x <span class="fu">++</span> <span class="st">&quot;)&quot;</span>
+<span class="ot">&gt;</span>   show <span class="dt">TVTop</span> <span class="fu">=</span> <span class="st">&quot;v&quot;</span> <span class="fu">++</span> show (varToInt <span class="dt">TVTop</span>)
+<span class="ot">&gt;</span>   show (<span class="dt">TVPop</span> _ i) <span class="fu">=</span> <span class="st">&quot;v&quot;</span> <span class="fu">++</span> (show <span class="fu">.</span> <span class="dt">Sub</span> <span class="fu">.</span> varToInt <span class="fu">$</span> i)</code></pre>
 <pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt; varToInt ::</span> γ ⊢ <span class="dt">V</span> i ∈ σ <span class="ot">→</span> <span class="dt">Int</span>
 <span class="ot">&gt;</span> varToInt <span class="dt">TVTop</span> <span class="fu">=</span> <span class="dv">0</span>
 <span class="ot">&gt;</span> varToInt (<span class="dt">TVPop</span> _ i) <span class="fu">=</span> <span class="dv">1</span> <span class="fu">+</span> varToInt i</code></pre>
 <pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt; natToInt ::</span> γ ⊢ n ∈ ℕ <span class="ot">→</span> <span class="dt">Int</span>
 <span class="ot">&gt;</span> natToInt <span class="dt">TZ</span> <span class="fu">=</span> <span class="dv">0</span>
 <span class="ot">&gt;</span> natToInt (<span class="dt">TS</span> i) <span class="fu">=</span> <span class="dv">1</span> <span class="fu">+</span> natToInt i
-<span class="ot">&gt;</span> natToInt _ <span class="fu">=</span> <span class="fu">error</span> <span class="st">&quot;non-canonical natural number&quot;</span></code></pre>
+<span class="ot">&gt;</span> natToInt _ <span class="fu">=</span> error <span class="st">&quot;non-canonical natural number&quot;</span></code></pre>
 <pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">newtype</span> <span class="dt">Subscript</span> <span class="fu">=</span> <span class="dt">Sub</span> <span class="dt">Int</span>
-<span class="ot">&gt;</span> <span class="kw">instance</span> <span class="kw">Show</span> <span class="dt">Subscript</span> <span class="kw">where</span>
-<span class="ot">&gt;</span>   <span class="fu">show</span> (<span class="dt">Sub</span> n) <span class="fu">=</span> <span class="fu">fmap</span> trans (<span class="fu">show</span> n) <span class="kw">where</span>
+<span class="ot">&gt;</span> <span class="kw">instance</span> <span class="dt">Show</span> <span class="dt">Subscript</span> <span class="kw">where</span>
+<span class="ot">&gt;</span>   show (<span class="dt">Sub</span> n) <span class="fu">=</span> fmap trans (show n) <span class="kw">where</span>
 <span class="ot">&gt;</span>     trans <span class="fu">=</span>
 <span class="ot">&gt;</span>       \<span class="kw">case</span>
 <span class="ot">&gt;</span>         <span class="ch">'0'</span> <span class="ot">→</span> <span class="ch">'₀'</span>

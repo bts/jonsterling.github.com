@@ -78,12 +78,12 @@ MathJax.Hub.Config({
 <span class="ot">&gt;</span> pair x y f <span class="fu">=</span> f x y</code></pre>
 <p>The accessors are easily written, and their type annotations make clear their function:</p>
 <pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt; fst ::</span> <span class="dt">Pair</span> α β <span class="ot">→</span> α
-<span class="ot">&gt;</span> <span class="fu">fst</span> p <span class="fu">=</span> p <span class="fu">$</span> \x y <span class="ot">→</span> x</code></pre>
+<span class="ot">&gt;</span> fst p <span class="fu">=</span> p <span class="fu">$</span> \x y <span class="ot">→</span> x</code></pre>
 <pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt; snd ::</span> <span class="dt">Pair</span> α β <span class="ot">→</span> β
-<span class="ot">&gt;</span> <span class="fu">snd</span> p <span class="fu">=</span> p <span class="fu">$</span> \x y <span class="ot">→</span> y</code></pre>
+<span class="ot">&gt;</span> snd p <span class="fu">=</span> p <span class="fu">$</span> \x y <span class="ot">→</span> y</code></pre>
 <p>Incidentally, <code>fst</code> and <code>snd</code> can also be defined in terms of library functions:</p>
-<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> fst' p <span class="fu">=</span> p <span class="fu">const</span>
-<span class="ot">&gt;</span> snd' p <span class="fu">=</span> p <span class="fu">$</span> <span class="fu">flip</span> <span class="fu">const</span></code></pre>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> fst' p <span class="fu">=</span> p const
+<span class="ot">&gt;</span> snd' p <span class="fu">=</span> p <span class="fu">$</span> flip const</code></pre>
 <p>To demonstrate the benefit our typing constraints, try the following:</p>
 <pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">badAccessor ::</span> <span class="dt">Pair</span> α β <span class="ot">→</span> <span class="dt">String</span>
 badAccessor p <span class="fu">=</span> p <span class="fu">$</span> \x y <span class="ot">→</span> <span class="st">&quot;Hello&quot;</span> <span class="co">-- type error</span></code></pre>

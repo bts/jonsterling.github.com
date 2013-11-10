@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="readability-verification" content="cG3MqZcEVveKZ6mnEFkePAL3Ug79Jxxp5Fn27CM7" />
+<title>JS ⊢ A Primer of Infinitesimal Analysis: Some Exercises from Chapter 1</title>
+<link rel="stylesheet" type="text/css" href="../css/screen.css" />
+<link rel="stylesheet" type="text/css" href="../css/syntax.css" />
+<link rel="stylesheet" type="text/css" href="../css/coqdoc.css" />
+<style type="text/css">
+    @import url(http://nmashton.ca/css/gloss-0.0.1.css);
+</style>
+<script type="text/javascript" src="http://code.jquery.com/jquery-1.8.3.min.js"></script>
+<script type="text/javascript" src="http://nmashton.ca/js/gloss-0.0.1.js"></script>
+<link rel="alternate" type="application/rss+xml" title="Jonathan Sterling" href="../rss.xml" />
+
+
+<!--[if IE]>
+  <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+<!--[if lte IE 7]>
+  <script src="js/IE8.js" type="text/javascript"></script><![endif]-->
+<!--[if lt IE 7]>
+<link rel="stylesheet" type="text/css" media="all" href="css/ie6.css"/><![endif]-->
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+MathJax.Hub.Config({
+  showMathMenu: false,
+  showProcessingMessages: false,
+  messageStyle: "none",
+  'HTML-CSS': {
+    availableFonts: [],
+    webFont: 'TeX',
+  },
+  TeX: {
+    Macros: {
+      gk: ["\\style{font-family:Junicode!important; font-size:1.3em;}{\\text{#1}}", 1]
+    }
+  }
+});
+</script>
+</head>
+<body>
+
+<header>
+<h1><a href="../index.html"><span class="title">A Primer of Infinitesimal Analysis: Some Exercises from Chapter 1.</span></a></h1>
+</header>
+
+<section class="post">
+<article><p>As I read Bell’s <em>A Primer of Infinitesimal Analysis</em>, I thought it would be useful for me to write down my workings of the exercises as I went. The proofs are in the language of Intuitionistic Type Theory; according to common practice, I will sometimes omit arguments from application which can easily be inferred from the others.</p>
+<!--more-->
+
+<p>Bell gives several properties of the order relation <span class="math">\(&lt; \)</span> on <span class="math">\(\mathbb{R}\)</span>, which we will express as follows:</p>
+<p><span class="math">\[\begin{align}
+~\mathsf{transitivity} &amp;: \prod_{a,b,c: \mathbb{R}} a &lt; b \to b &lt; c \to a &lt; c\tag{1}\\
+\mathsf{strictness} &amp;: \prod_{a:\mathbb{R}} a &lt; a \to \bot\tag{2}\\
+\mathsf{compat}_+ &amp;: \prod_{a,b,c:\mathbb{R}} a + c &lt; b + c\tag{3}\\
+\mathsf{compat}_\times &amp;: \prod_{a,b,c:\mathbb{R}} a &lt; b \to 0 &lt; c \to a\times c &lt; b\times c\tag{4}\\
+\mathsf{distinction} &amp;: \prod_{a:\mathbb{R}} 0 &lt; a \lor a &lt; 1\tag{5}\\
+\mathsf{ordering} &amp;: \prod_{a,b:\mathbb{R}} (a = b \to \bot) \to a &lt; b \lor b &lt; a\tag{6}
+\end{align}\]</span></p>
+<div class="theorem">
+<strong>Exercise 1.1</strong> Show that (i) <span class="math">\(0 &lt; a\)</span> implies <span class="math">\(0\neq a\)</span>; (ii) <span class="math">\(0 &lt; a\)</span> iff <span class="math">\(-a &lt; 0\)</span>; (iii) <span class="math">\(0 &lt; 1 + 1\)</span>; and (iv) <span class="math">\((a &lt; 0 \lor 0 &lt; a)\)</span> implies <span class="math">\(0 &lt; a^2\)</span>.
+</div>
+<div class="proof">
+<ol style="list-style-type: lower-roman">
+<li>We employ <em>reductio ad absurdum</em> of the proposition that <span class="math">\(0 = a\)</span> under the hypothesis <span class="math">\(0 &lt; a\)</span> by Bell’s strictness axiom. <span class="math">\[
+  (p: 0 &lt; a) \mapsto (q : 0 = a) \mapsto \mathsf{strictness}\ (\mathsf{transport}\ (x\mapsto 0 &lt; x)\ q\ p)
+\]</span></li>
+<li>The equivalence is given on both sides by Bell’s axiom that <span class="math">\(&lt; \)</span> is compatibible with addition: <span class="math">\[
+\langle \mathsf{compat}_+ \{c:\equiv -a\},\ \mathsf{compat}_+ \{c:\equiv a\} \rangle
+\]</span></li>
+<li>By the definition of the addition operator, this proposition reduces to <span class="math">\(0 &lt; 2\)</span>, which holds by definition.</li>
+<li>We reason by case disjunction elimination: <span class="math">\[\begin{align}
+\mathsf{left} &amp;:\equiv (p: a &lt; 0) \mapsto \mathbf{let}\ q :\equiv \mathsf{compat}_+\ p\ \mathbf{in}\ \mathsf{compat}_\times\ q\ q\\
+\mathsf{right} &amp;:\equiv (p: 0 &lt; a) \mapsto \mathsf{compat}_\times\ p\ p
+\end{align}\]</span> So the full proof is given by <span class="math">\(\mathsf{induction}_\lor\ (\_ \mapsto 0 &lt; a^2)\ \mathsf{left}\ \mathsf{right}\)</span>.
+</div>
+</li>
+</ol>
+<div class="theorem">
+<strong>Exercise 1.2</strong> Show that, if <span class="math">\(a &lt; b\)</span>, then, for any <span class="math">\(x\)</span>, either <span class="math">\(a &lt; x\)</span> or <span class="math">\(x &lt; b\)</span>.
+</div>
+<div class="proof">
+Classically, we can show that from <span class="math">\(a\neq b\)</span>, then <span class="math">\(\lnot (a = x \land b = x)\)</span>, and thence by DM <span class="math">\(a\neq x \lor b \neq x\)</span>, and thence by case analysis we arrive at the goal. Intuitionistically, the proof is a bit different: <span class="math">\[\begin{align}
+&amp;(p: a &lt; b) \mapsto (x: \mathbb{R})\mapsto \\
+&amp;\qquad \mathbf{let}\ (q: 0 &lt; b - a) :\equiv \mathsf{compat}_+\ p\ \mathbf{in}\\
+&amp;\qquad \mathbf{let}\ (r : 0 &lt; \frac{x-a}{b-a} \lor \frac{x-a}{b-a} &lt; 1) = \mathsf{distinction}\ \mathbf{in}\\
+&amp;\qquad \mathsf{induction}_\lor\ (\_ \mapsto a &lt; x \lor x &lt; b)\\
+&amp;\qquad\quad (\mathsf{inl} \circ \mathsf{compat}_+ \circ (\mathsf{compat}_\times\ \_\ q))\\
+&amp;\qquad\quad (\mathsf{inr} \circ \mathsf{compat}_+ \circ (\mathsf{compat}_\times\ \_\ q))\\
+&amp;\qquad\quad r
+\end{align}\]</span> This is a particularly nice example of how we often immediately reach for the “big guns” of logic and consign ourselves to proof irrelevancy for better or for worse, where there is a perfectly valid approach which allows us to benefit from more the stronger, more general constructive quantifiers.
+</div>
+<div class="theorem">
+<strong>Exercise 1.3</strong> Show that <span class="math">\()a,b(\)</span> is empty iff <span class="math">\(\lnot (a &lt; b)\)</span>.
+</div>
+<div class="proof">
+By the definition of the open interval, the goal for one side of the equivalence is: <span class="math">\[
+\mathsf{from}\ :\ (a &lt; b \to \bot) \to \sum_{x:\mathbb{R}} a &lt; x \land x &lt; b \to \bot
+\]</span> We can construct a term for this as follows: <span class="math">\[
+\mathsf{from}\ :\equiv\ p \mapsto \langle x, (q, r) \rangle \mapsto p\ (\mathsf{transitivity} \ q\ r)
+\]</span> Therefore, <span class="math">\(\lnot (a &lt; b)\)</span> implies that <span class="math">\()a,b( = \emptyset\)</span>. The statement of the other side of the equivalence is as follows: <span class="math">\[
+\mathsf{to}\ :\ \left(\sum_{x:\mathbb{R}}a &lt; x \land x &lt; b \to \bot\right) \to a &lt; b \to \bot
+\]</span> This is given by the following <em>reductio ad absurdum</em>: <span class="math">\[\begin{align}
+&amp;p \mapsto (q : a &lt; b) \mapsto\\
+&amp;\qquad \mathbf{let}\ (x : \mathbb{R}) :\equiv \frac{b - a}{2}\ \mathbf{in}\\
+&amp;\qquad \mathbf{let}\ (s : a &lt; a + x) :\equiv \mathsf{compat}_+\ (\mathsf{compat}_\times\ (\mathsf{compat}_+\ q)\ \mathsf{trivial})\  \mathbf{in}\\
+&amp;\qquad \mathbf{let}\ (u : b - x &lt; b) :\equiv \mathsf{trivial}\ \mathbf{in}\\
+&amp;\qquad \mathbf{let}\ (v : b = a + (b - a)) :\equiv \mathsf{trivial}\ \mathbf{in}\\
+&amp;\qquad p\ \langle a + x,\ (s,\ \mathsf{transport}\ (z\mapsto z - x &lt; b)\ v\ u)\rangle
+\end{align}\]</span>
+</div></article>
+<h1>Want to comment?</h1>
+<p> I’m @jonsterling on <a href="http://www.twitter.com/jonsterling">Twitter</a> and <a href="https://alpha.app.net/jonsterling">App.net</a>.</p>
+
+
+<script src="//static.getclicky.com/js" type="text/javascript"></script>
+<script type="text/javascript">try{ clicky.init(66625087);
+    }catch(e){}</script>
+<noscript><p><img alt="Clicky" width="1" height="1" src="//in.getclicky.com/66625087ns.gif" /></p></noscript>
+
+<a rel="me" href="http://twitter.com/jonsterling"></a>
+<a rel="me" href="https://alpha.app.net/jonsterling"></a>
+</body>
+</html>
+

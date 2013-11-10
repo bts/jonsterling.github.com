@@ -6,8 +6,78 @@
         <description><![CDATA[Jonathan Sterling writes about Types, Linguistics and Philology]]></description>
         <atom:link href="http://www.jonmsterling.com//rss.xml" rel="self"
                    type="application/rss+xml" />
-        <lastBuildDate>Sat, 26 Oct 2013 00:00:00 UT</lastBuildDate>
+        <lastBuildDate>Thu, 07 Nov 2013 00:00:00 UT</lastBuildDate>
         <item>
+    <title>A Primer of Infinitesimal Analysis: Some Exercises from Chapter 1</title>
+    <link>http://www.jonmsterling.com//posts/2013-11-07-psia-chapter-1.html</link>
+    <description><![CDATA[<p>As I read Bell’s <em>A Primer of Infinitesimal Analysis</em>, I thought it would be useful for me to write down my workings of the exercises as I went. The proofs are in the language of Intuitionistic Type Theory; according to common practice, I will sometimes omit arguments from application which can easily be inferred from the others.</p>
+<!--more-->
+
+<p>Bell gives several properties of the order relation <span class="math">\(&lt; \)</span> on <span class="math">\(\mathbb{R}\)</span>, which we will express as follows:</p>
+<p><span class="math">\[\begin{align}
+~\mathsf{transitivity} &amp;: \prod_{a,b,c: \mathbb{R}} a &lt; b \to b &lt; c \to a &lt; c\tag{1}\\
+\mathsf{strictness} &amp;: \prod_{a:\mathbb{R}} a &lt; a \to \bot\tag{2}\\
+\mathsf{compat}_+ &amp;: \prod_{a,b,c:\mathbb{R}} a + c &lt; b + c\tag{3}\\
+\mathsf{compat}_\times &amp;: \prod_{a,b,c:\mathbb{R}} a &lt; b \to 0 &lt; c \to a\times c &lt; b\times c\tag{4}\\
+\mathsf{distinction} &amp;: \prod_{a:\mathbb{R}} 0 &lt; a \lor a &lt; 1\tag{5}\\
+\mathsf{ordering} &amp;: \prod_{a,b:\mathbb{R}} (a = b \to \bot) \to a &lt; b \lor b &lt; a\tag{6}
+\end{align}\]</span></p>
+<div class="theorem">
+<strong>Exercise 1.1</strong> Show that (i) <span class="math">\(0 &lt; a\)</span> implies <span class="math">\(0\neq a\)</span>; (ii) <span class="math">\(0 &lt; a\)</span> iff <span class="math">\(-a &lt; 0\)</span>; (iii) <span class="math">\(0 &lt; 1 + 1\)</span>; and (iv) <span class="math">\((a &lt; 0 \lor 0 &lt; a)\)</span> implies <span class="math">\(0 &lt; a^2\)</span>.
+</div>
+<div class="proof">
+<ol style="list-style-type: lower-roman">
+<li>We employ <em>reductio ad absurdum</em> of the proposition that <span class="math">\(0 = a\)</span> under the hypothesis <span class="math">\(0 &lt; a\)</span> by Bell’s strictness axiom. <span class="math">\[
+  (p: 0 &lt; a) \mapsto (q : 0 = a) \mapsto \mathsf{strictness}\ (\mathsf{transport}\ (x\mapsto 0 &lt; x)\ q\ p)
+\]</span></li>
+<li>The equivalence is given on both sides by Bell’s axiom that <span class="math">\(&lt; \)</span> is compatibible with addition: <span class="math">\[
+\langle \mathsf{compat}_+ \{c:\equiv -a\},\ \mathsf{compat}_+ \{c:\equiv a\} \rangle
+\]</span></li>
+<li>By the definition of the addition operator, this proposition reduces to <span class="math">\(0 &lt; 2\)</span>, which holds by definition.</li>
+<li>We reason by case disjunction elimination: <span class="math">\[\begin{align}
+\mathsf{left} &amp;:\equiv (p: a &lt; 0) \mapsto \mathbf{let}\ q :\equiv \mathsf{compat}_+\ p\ \mathbf{in}\ \mathsf{compat}_\times\ q\ q\\
+\mathsf{right} &amp;:\equiv (p: 0 &lt; a) \mapsto \mathsf{compat}_\times\ p\ p
+\end{align}\]</span> So the full proof is given by <span class="math">\(\mathsf{induction}_\lor\ (\_ \mapsto 0 &lt; a^2)\ \mathsf{left}\ \mathsf{right}\)</span>.
+</div>
+</li>
+</ol>
+<div class="theorem">
+<strong>Exercise 1.2</strong> Show that, if <span class="math">\(a &lt; b\)</span>, then, for any <span class="math">\(x\)</span>, either <span class="math">\(a &lt; x\)</span> or <span class="math">\(x &lt; b\)</span>.
+</div>
+<div class="proof">
+Classically, we can show that from <span class="math">\(a\neq b\)</span>, then <span class="math">\(\lnot (a = x \land b = x)\)</span>, and thence by DM <span class="math">\(a\neq x \lor b \neq x\)</span>, and thence by case analysis we arrive at the goal. Intuitionistically, the proof is a bit different: <span class="math">\[\begin{align}
+&amp;(p: a &lt; b) \mapsto (x: \mathbb{R})\mapsto \\
+&amp;\qquad \mathbf{let}\ (q: 0 &lt; b - a) :\equiv \mathsf{compat}_+\ p\ \mathbf{in}\\
+&amp;\qquad \mathbf{let}\ (r : 0 &lt; \frac{x-a}{b-a} \lor \frac{x-a}{b-a} &lt; 1) = \mathsf{distinction}\ \mathbf{in}\\
+&amp;\qquad \mathsf{induction}_\lor\ (\_ \mapsto a &lt; x \lor x &lt; b)\\
+&amp;\qquad\quad (\mathsf{inl} \circ \mathsf{compat}_+ \circ (\mathsf{compat}_\times\ \_\ q))\\
+&amp;\qquad\quad (\mathsf{inr} \circ \mathsf{compat}_+ \circ (\mathsf{compat}_\times\ \_\ q))\\
+&amp;\qquad\quad r
+\end{align}\]</span> This is a particularly nice example of how we often immediately reach for the “big guns” of logic and consign ourselves to proof irrelevancy for better or for worse, where there is a perfectly valid approach which allows us to benefit from more the stronger, more general constructive quantifiers.
+</div>
+<div class="theorem">
+<strong>Exercise 1.3</strong> Show that <span class="math">\()a,b(\)</span> is empty iff <span class="math">\(\lnot (a &lt; b)\)</span>.
+</div>
+<div class="proof">
+By the definition of the open interval, the goal for one side of the equivalence is: <span class="math">\[
+\mathsf{from}\ :\ (a &lt; b \to \bot) \to \sum_{x:\mathbb{R}} a &lt; x \land x &lt; b \to \bot
+\]</span> We can construct a term for this as follows: <span class="math">\[
+\mathsf{from}\ :\equiv\ p \mapsto \langle x, (q, r) \rangle \mapsto p\ (\mathsf{transitivity} \ q\ r)
+\]</span> Therefore, <span class="math">\(\lnot (a &lt; b)\)</span> implies that <span class="math">\()a,b( = \emptyset\)</span>. The statement of the other side of the equivalence is as follows: <span class="math">\[
+\mathsf{to}\ :\ \left(\sum_{x:\mathbb{R}}a &lt; x \land x &lt; b \to \bot\right) \to a &lt; b \to \bot
+\]</span> This is given by the following <em>reductio ad absurdum</em>: <span class="math">\[\begin{align}
+&amp;p \mapsto (q : a &lt; b) \mapsto\\
+&amp;\qquad \mathbf{let}\ (x : \mathbb{R}) :\equiv \frac{b - a}{2}\ \mathbf{in}\\
+&amp;\qquad \mathbf{let}\ (s : a &lt; a + x) :\equiv \mathsf{compat}_+\ (\mathsf{compat}_\times\ (\mathsf{compat}_+\ q)\ \mathsf{trivial})\  \mathbf{in}\\
+&amp;\qquad \mathbf{let}\ (u : b - x &lt; b) :\equiv \mathsf{trivial}\ \mathbf{in}\\
+&amp;\qquad \mathbf{let}\ (v : b = a + (b - a)) :\equiv \mathsf{trivial}\ \mathbf{in}\\
+&amp;\qquad p\ \langle a + x,\ (s,\ \mathsf{transport}\ (z\mapsto z - x &lt; b)\ v\ u)\rangle
+\end{align}\]</span>
+</div>]]></description>
+    <pubDate>Thu, 07 Nov 2013 00:00:00 UT</pubDate>
+    <guid>http://www.jonmsterling.com//posts/2013-11-07-psia-chapter-1.html</guid>
+</item>
+<item>
     <title>Hyperbaton & Resource Sensitivity in Combinatory Categorial Grammar</title>
     <link>http://www.jonmsterling.com//posts/2013-10-26-resource-sensitivity-in-ccg.html</link>
     <description><![CDATA[<p>Baldridge’s Multi-Modal extension of Steedman’s CCG attempts to account for variation in rule applicability entirely within the lexicon, by annotating slash types (function arrows) with modalities, which license different combining rules: <span class="math">\(\bullet\)</span> licenses only simple application, <span class="math">\(\diamond\)</span> simple application and harmonic composition/substitution, <span class="math">\(\times\)</span> simple application and permuting composition/substitution, and <span class="math">\(\star\)</span> licenses all rules. I demonstrate that further refinement is needed in order to have a grammar which suffices for the most basic hyperbata of Ancient Greek (and Latin).</p>
@@ -116,8 +186,7 @@ Y/Z \quad X/Y &amp;\Rightarrow_\color{red}{\mathbf{???}} X/Z\tag{not provided, b
 <p>For the moment, we shall leave our working grammar of Greek overly permissive and consider words modulo the direction in which they satisfy their arguments. As such, rather than the directional slash notation traditional in CCG, we shall be using bars to indicate unsatisfied arguments. So, we arrive at a grammar of types given by <span class="math">\(N, D, V, P, \cdot|\cdot\)</span>. Finally, I shall work in a restricted subset of CCG which does not include the type raising operator.</p>
 </blockquote>
 <h3 id="the-problem">The problem</h3>
-<p>When you are satisfying only one argument, its position in relation to the head is structurally unimportant, given that <strong>MERGE</strong> may occur in either direction. With two or more arguments, though, it becomes more complicated. Let us consider the sentence <span lang=gk>ὁ στρατηγὸς ἀπέκτεινε τοὺς πέρσας</span> (“The general killed the Persians”);<sup><a href="#fn1" class="footnoteRef" id="fnref1">1</a></sup> if we assign the word <span
-lang=gk>ἀπέκτεινε</span> the type <span class="math">\((V\,|D_\textit{nom})|D_\textit{acc}\)</span>, then four permutations are permissable:</p>
+<p>When you are satisfying only one argument, its position in relation to the head is structurally unimportant, given that <strong>MERGE</strong> may occur in either direction. With two or more arguments, though, it becomes more complicated. Let us consider the sentence <span lang="gk">ὁ στρατηγὸς ἀπέκτεινε τοὺς πέρσας</span> (“The general killed the Persians”);<sup><a href="#fn1" class="footnoteRef" id="fnref1">1</a></sup> if we assign the word <span lang="gk">ἀπέκτεινε</span> the type <span class="math">\((V\,|D_\textit{nom})|D_\textit{acc}\)</span>, then four permutations are permissable:</p>
 <p><span class="math">\[
 \dfrac{
   \dfrac{\gk{ὁ στρατηγός}}{D_\textit{nom}}
@@ -168,11 +237,9 @@ lang=gk>ἀπέκτεινε</span> the type <span class="math">\((V\,|D_\textit{
 }{V}&gt;
 \tag{4}
 \]</span></p>
-<p>But any word order which places <span lang=gk>ὁ στρατηγὸς</span> closer to the verb than <span lang=gk>τοὺς πέρσας</span> cannot be constructed, because of the order of arguments given by <span
-lang=gk>ἀπέκτεινε</span>. And so there, for instance, is no derivation for the very grammatical sentence, <span lang=gk>ἀπέκτεινε ὁ στρατηγὸς τοὺς πέρσας</span>.</p>
+<p>But any word order which places <span lang="gk">ὁ στρατηγὸς</span> closer to the verb than <span lang="gk">τοὺς πέρσας</span> cannot be constructed, because of the order of arguments given by <span lang="gk">ἀπέκτεινε</span>. And so there, for instance, is no derivation for the very grammatical sentence, <span lang="gk">ἀπέκτεινε ὁ στρατηγὸς τοὺς πέρσας</span>.</p>
 <h3 id="hoffmans-approach-multiset-combinatory-categorial-grammar-mccg">Hoffman’s Approach: Multiset Combinatory Categorial Grammar (MCCG)</h3>
-<p>Beryl Hoffman in her 1995 dissertation<sup><a href="#fn2" class="footnoteRef" id="fnref2">2</a></sup> presents a solution to the above problem by extending the CCG to include multisets for the arguments of function types. In essence, can now give the type for <span
-lang=gk>ἀπέκτεινε</span> as <span class="math">\(V\{|D_\textit{acc}, |D_\textit{nom}\}\)</span>, reformulating the typing rules for application from</p>
+<p>Beryl Hoffman in her 1995 dissertation<sup><a href="#fn2" class="footnoteRef" id="fnref2">2</a></sup> presents a solution to the above problem by extending the CCG to include multisets for the arguments of function types. In essence, can now give the type for <span lang="gk">ἀπέκτεινε</span> as <span class="math">\(V\{|D_\textit{acc}, |D_\textit{nom}\}\)</span>, reformulating the typing rules for application from</p>
 <p><span class="math">\[
 \dfrac{\vdash e : Y\,|X \quad \vdash e&#39; : X}{\vdash e &gt; e&#39; : Y \quad
 \vdash e&#39; &lt; e : Y}
@@ -195,7 +262,7 @@ lang=gk>ἀπέκτεινε</span> as <span class="math">\(V\{|D_\textit{acc}, |
 }{V}&gt;
 \]</span></p>
 <p>This all seems very nice and good, but in the course of this extension, we have inadvertently ended up sacrificing one of the most desirable aspects of the CCG, which is the transparent and deterministic interface between the semantics and the syntax of a construction. That is, unlike in plain CCG, from one syntactic derivation, I can construct two distinct semantic propositions. Let’s look at a pathological example brought about by the double-accusative construction in Greek.</p>
-<p>Our sentence will be <span lang=gk>ταῦτα ἔβλαψα ἐκεῖνα</span>,<sup><a href="#fn3" class="footnoteRef" id="fnref3">3</a></sup> which has two semantic interpretations: “I harmed these things in those respects” or “I harmed those things in these respects”. If the interpreter from syntactic to logical form is deterministic (which we should like very much to be the case), then we should only be able to derive one semantic interpretation per syntactic derivation. But it turns out, we can’t decide which one to do!</p>
+<p>Our sentence will be <span lang="gk">ταῦτα ἔβλαψα ἐκεῖνα</span>,<sup><a href="#fn3" class="footnoteRef" id="fnref3">3</a></sup> which has two semantic interpretations: “I harmed these things in those respects” or “I harmed those things in these respects”. If the interpreter from syntactic to logical form is deterministic (which we should like very much to be the case), then we should only be able to derive one semantic interpretation per syntactic derivation. But it turns out, we can’t decide which one to do!</p>
 <p>Take the following derivation:</p>
 <p><span class="math">\[
 \dfrac{
@@ -450,24 +517,22 @@ x}\\
     <link>http://www.jonmsterling.com//posts/2013-05-20-combinatory-categorial-grammar-for-greek.html</link>
     <description><![CDATA[<p>This is the first in a series I intend to write in regard to the syntax of Ancient Greek hyperbaton, and what can be done about it formally using a combinatory categorial grammar<sup><a href="#fn1" class="footnoteRef" id="fnref1">1</a></sup>. We will begin with a pathological example of <span class="math">\(Y_1\)</span> hyperbaton from Sophocles’ <em>Trachinian Women</em>:</p>
 <div class="gloss">
-  <div class="aligned" language="gk">
-    
-τὴν Εὐρυτείαν οἶσθα δῆτα παρθένον;<br/> the-*acc* of-Eurytus-*acc* know-*2.sing* of-course girl-*acc*
+<div class="aligned" language="gk">
+<pre><code>τὴν Εὐρυτείαν οἶσθα δῆτα παρθένον;&lt;br/&gt;
+the-\*acc\* of-Eurytus-\*acc\* know-\*2.sing* of-course girl-\*acc\*</code></pre>
 </div>
-  <div class="unaligned">
-    
-“You of course know the daughter of Eurytus…?” (<em>Trachinian Women</em>, l. 1219)
+<div class="unaligned">
+<pre><code>&quot;You of course know the daughter of Eurytus...?&quot; (*Trachinian Women*, l.</code></pre>
+1219)
 </div>
 </div>
-
 <!--more-->
 
 <h2 id="a-transformational-approach">A Transformational Approach</h2>
 <p>Using the null head modifier theory presented by Devine &amp; Stephens<sup><a href="#fn2" class="footnoteRef" id="fnref2">2</a></sup>, we can actually get a reasonable transformational representation of the sentence:</p>
 <p><img src="/graphics/ccg_greek/null_head_modifier.png" width="300px" /></p>
 <p>The central conceit is a DP can serve to provide additional information to something it adjoins to; intuitively, this is the same as when we say in English, “You know that dog, the crazed one…”. The null head modifier presentation jives very nicely with other peculiarities about Greek, including how modified DPs often surface with repeated determiners, as follows: <span lang="gk">τὰς παρθένους τὰς αἰχμαλώτους</span>.</p>
-<p>But there are a few problems which I can see with this approach: Devine &amp; Stephens fail to provide a convincing account for why a verb may take a bare noun as its argument, and how a null head modifier DP adjoining to <span class="math">\(V\prime\)</span> can be semantically associated to that noun. And so, whilst retaining the insight of the null head modifier presentation (that there is some way in which the <span lang="gk">τὴν Εὐρυτείαν</span> is on its own, but informs the interpretation of <span
-lang="gk">παρθένον</span>), we must move onto something else which allows for a more compositional approach, whence a sound semantic interpretation may be derived.</p>
+<p>But there are a few problems which I can see with this approach: Devine &amp; Stephens fail to provide a convincing account for why a verb may take a bare noun as its argument, and how a null head modifier DP adjoining to <span class="math">\(V\prime\)</span> can be semantically associated to that noun. And so, whilst retaining the insight of the null head modifier presentation (that there is some way in which the <span lang="gk">τὴν Εὐρυτείαν</span> is on its own, but informs the interpretation of <span lang="gk">παρθένον</span>), we must move onto something else which allows for a more compositional approach, whence a sound semantic interpretation may be derived.</p>
 <h2 id="the-combinatory-approach">The Combinatory Approach</h2>
 <p>The ideal result is one which allows us to start with a somehow fully lexically licensed structure like this (bear with me):</p>
 <p><img src="/graphics/ccg_greek/ideal_structure.png" width="300px"/></p>
@@ -731,33 +796,33 @@ plusOne&#39; <span class="fu">=</span> <span class="dt">TLam</span> (<span class
 <span class="ot">&gt;</span>   infer <span class="fu">=</span> <span class="dt">TVPop</span> infer infer</code></pre>
 <p>Then, we can make a type for closed expressions that have an inferrable type:</p>
 <pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">type</span> <span class="dt">Closed</span> e <span class="fu">=</span> <span class="dt">Infer</span> e τ <span class="dt">E</span> <span class="ot">⇒</span> <span class="dt">E</span> ⊢ e ∈ τ</code></pre>
-<pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="fu">fst</span><span class="ot"> ::</span> <span class="dt">Closed</span> (Λ (Λ (<span class="dt">V</span> (<span class="dt">S</span> <span class="dt">Z</span>))))
-<span class="fu">fst</span> <span class="fu">=</span> infer</code></pre>
-<pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="fu">snd</span><span class="ot"> ::</span> <span class="dt">Closed</span> (Λ (Λ (<span class="dt">V</span> <span class="dt">Z</span>)))
-<span class="fu">snd</span> <span class="fu">=</span> infer</code></pre>
+<pre class="sourceCode haskell"><code class="sourceCode haskell">fst<span class="ot"> ::</span> <span class="dt">Closed</span> (Λ (Λ (<span class="dt">V</span> (<span class="dt">S</span> <span class="dt">Z</span>))))
+fst <span class="fu">=</span> infer</code></pre>
+<pre class="sourceCode haskell"><code class="sourceCode haskell">snd<span class="ot"> ::</span> <span class="dt">Closed</span> (Λ (Λ (<span class="dt">V</span> <span class="dt">Z</span>)))
+snd <span class="fu">=</span> infer</code></pre>
 <h3>
 Appendix: Pretty Pretting
 </h3>
 
-<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">instance</span> <span class="kw">Show</span> (γ ⊢ x ∈ t) <span class="kw">where</span>
-<span class="ot">&gt;</span>   <span class="fu">show</span> (<span class="dt">TSet</span> ℓ) <span class="fu">=</span> <span class="st">&quot;Set&quot;</span> <span class="fu">++</span> (<span class="fu">show</span> <span class="fu">.</span> <span class="dt">Sub</span> <span class="fu">.</span> natToInt <span class="fu">$</span> ℓ)
-<span class="ot">&gt;</span>   <span class="fu">show</span> <span class="dt">TNat</span> <span class="fu">=</span> <span class="st">&quot;ℕ&quot;</span>
-<span class="ot">&gt;</span>   <span class="fu">show</span> <span class="dt">TZ</span> <span class="fu">=</span> <span class="st">&quot;Z&quot;</span>
-<span class="ot">&gt;</span>   <span class="fu">show</span> (<span class="dt">TS</span> n) <span class="fu">=</span> <span class="st">&quot;S (&quot;</span> <span class="fu">++</span> <span class="fu">show</span> n <span class="fu">++</span> <span class="st">&quot;)&quot;</span>
-<span class="ot">&gt;</span>   <span class="fu">show</span> (<span class="dt">TLam</span> l) <span class="fu">=</span> <span class="st">&quot;λ. &quot;</span> <span class="fu">++</span> <span class="fu">show</span> l
-<span class="ot">&gt;</span>   <span class="fu">show</span> (<span class="dt">TApp</span> f x) <span class="fu">=</span> <span class="st">&quot;(&quot;</span> <span class="fu">++</span> <span class="fu">show</span> f <span class="fu">++</span> <span class="st">&quot;)&quot;</span> <span class="fu">++</span> <span class="st">&quot; &quot;</span> <span class="fu">++</span> <span class="st">&quot;(&quot;</span> <span class="fu">++</span> <span class="fu">show</span> x <span class="fu">++</span> <span class="st">&quot;)&quot;</span>
-<span class="ot">&gt;</span>   <span class="fu">show</span> <span class="dt">TVTop</span> <span class="fu">=</span> <span class="st">&quot;v&quot;</span> <span class="fu">++</span> <span class="fu">show</span> (varToInt <span class="dt">TVTop</span>)
-<span class="ot">&gt;</span>   <span class="fu">show</span> (<span class="dt">TVPop</span> _ i) <span class="fu">=</span> <span class="st">&quot;v&quot;</span> <span class="fu">++</span> (<span class="fu">show</span> <span class="fu">.</span> <span class="dt">Sub</span> <span class="fu">.</span> varToInt <span class="fu">$</span> i)</code></pre>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">instance</span> <span class="dt">Show</span> (γ ⊢ x ∈ t) <span class="kw">where</span>
+<span class="ot">&gt;</span>   show (<span class="dt">TSet</span> ℓ) <span class="fu">=</span> <span class="st">&quot;Set&quot;</span> <span class="fu">++</span> (show <span class="fu">.</span> <span class="dt">Sub</span> <span class="fu">.</span> natToInt <span class="fu">$</span> ℓ)
+<span class="ot">&gt;</span>   show <span class="dt">TNat</span> <span class="fu">=</span> <span class="st">&quot;ℕ&quot;</span>
+<span class="ot">&gt;</span>   show <span class="dt">TZ</span> <span class="fu">=</span> <span class="st">&quot;Z&quot;</span>
+<span class="ot">&gt;</span>   show (<span class="dt">TS</span> n) <span class="fu">=</span> <span class="st">&quot;S (&quot;</span> <span class="fu">++</span> show n <span class="fu">++</span> <span class="st">&quot;)&quot;</span>
+<span class="ot">&gt;</span>   show (<span class="dt">TLam</span> l) <span class="fu">=</span> <span class="st">&quot;λ. &quot;</span> <span class="fu">++</span> show l
+<span class="ot">&gt;</span>   show (<span class="dt">TApp</span> f x) <span class="fu">=</span> <span class="st">&quot;(&quot;</span> <span class="fu">++</span> show f <span class="fu">++</span> <span class="st">&quot;)&quot;</span> <span class="fu">++</span> <span class="st">&quot; &quot;</span> <span class="fu">++</span> <span class="st">&quot;(&quot;</span> <span class="fu">++</span> show x <span class="fu">++</span> <span class="st">&quot;)&quot;</span>
+<span class="ot">&gt;</span>   show <span class="dt">TVTop</span> <span class="fu">=</span> <span class="st">&quot;v&quot;</span> <span class="fu">++</span> show (varToInt <span class="dt">TVTop</span>)
+<span class="ot">&gt;</span>   show (<span class="dt">TVPop</span> _ i) <span class="fu">=</span> <span class="st">&quot;v&quot;</span> <span class="fu">++</span> (show <span class="fu">.</span> <span class="dt">Sub</span> <span class="fu">.</span> varToInt <span class="fu">$</span> i)</code></pre>
 <pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt; varToInt ::</span> γ ⊢ <span class="dt">V</span> i ∈ σ <span class="ot">→</span> <span class="dt">Int</span>
 <span class="ot">&gt;</span> varToInt <span class="dt">TVTop</span> <span class="fu">=</span> <span class="dv">0</span>
 <span class="ot">&gt;</span> varToInt (<span class="dt">TVPop</span> _ i) <span class="fu">=</span> <span class="dv">1</span> <span class="fu">+</span> varToInt i</code></pre>
 <pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt; natToInt ::</span> γ ⊢ n ∈ ℕ <span class="ot">→</span> <span class="dt">Int</span>
 <span class="ot">&gt;</span> natToInt <span class="dt">TZ</span> <span class="fu">=</span> <span class="dv">0</span>
 <span class="ot">&gt;</span> natToInt (<span class="dt">TS</span> i) <span class="fu">=</span> <span class="dv">1</span> <span class="fu">+</span> natToInt i
-<span class="ot">&gt;</span> natToInt _ <span class="fu">=</span> <span class="fu">error</span> <span class="st">&quot;non-canonical natural number&quot;</span></code></pre>
+<span class="ot">&gt;</span> natToInt _ <span class="fu">=</span> error <span class="st">&quot;non-canonical natural number&quot;</span></code></pre>
 <pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">newtype</span> <span class="dt">Subscript</span> <span class="fu">=</span> <span class="dt">Sub</span> <span class="dt">Int</span>
-<span class="ot">&gt;</span> <span class="kw">instance</span> <span class="kw">Show</span> <span class="dt">Subscript</span> <span class="kw">where</span>
-<span class="ot">&gt;</span>   <span class="fu">show</span> (<span class="dt">Sub</span> n) <span class="fu">=</span> <span class="fu">fmap</span> trans (<span class="fu">show</span> n) <span class="kw">where</span>
+<span class="ot">&gt;</span> <span class="kw">instance</span> <span class="dt">Show</span> <span class="dt">Subscript</span> <span class="kw">where</span>
+<span class="ot">&gt;</span>   show (<span class="dt">Sub</span> n) <span class="fu">=</span> fmap trans (show n) <span class="kw">where</span>
 <span class="ot">&gt;</span>     trans <span class="fu">=</span>
 <span class="ot">&gt;</span>       \<span class="kw">case</span>
 <span class="ot">&gt;</span>         <span class="ch">&#39;0&#39;</span> <span class="ot">→</span> <span class="ch">&#39;₀&#39;</span>
@@ -798,7 +863,7 @@ cabal install vinyl</code></pre>
 <p>Now, let’s try to make an entity that represents a man:</p>
 <pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> jon <span class="fu">=</span> name <span class="fu">=:</span> <span class="st">&quot;jon&quot;</span>
 <span class="ot">&gt;</span>    <span class="fu">&lt;+&gt;</span> age <span class="fu">=:</span> <span class="dv">20</span>
-<span class="ot">&gt;</span>    <span class="fu">&lt;+&gt;</span> sleeping <span class="fu">=:</span> <span class="kw">False</span></code></pre>
+<span class="ot">&gt;</span>    <span class="fu">&lt;+&gt;</span> sleeping <span class="fu">=:</span> <span class="dt">False</span></code></pre>
 <p>We could make an alias for the sort of entity that <code>jon</code> is:</p>
 <pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">type</span> <span class="dt">LifeForm</span> <span class="fu">=</span> [<span class="st">&quot;name&quot;</span> <span class="ot">::</span><span class="fu">:</span> <span class="dt">String</span>, <span class="st">&quot;age&quot;</span> <span class="ot">::</span><span class="fu">:</span> <span class="dt">Int</span>, <span class="st">&quot;sleeping&quot;</span> <span class="ot">::</span><span class="fu">:</span> <span class="dt">Bool</span>]
 <span class="ot">&gt; jon ::</span> <span class="dt">PlainRec</span> <span class="dt">LifeForm</span></code></pre>
@@ -806,21 +871,21 @@ cabal install vinyl</code></pre>
 <pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> master <span class="fu">=</span> <span class="dt">Field</span><span class="ot"> ::</span> <span class="st">&quot;master&quot;</span> <span class="ot">::</span><span class="fu">:</span> <span class="dt">PlainRec</span> <span class="dt">LifeForm</span></code></pre>
 <pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> tucker <span class="fu">=</span> name <span class="fu">=:</span> <span class="st">&quot;tucker&quot;</span>
 <span class="ot">&gt;</span>       <span class="fu">&lt;+&gt;</span> age <span class="fu">=:</span> <span class="dv">7</span>
-<span class="ot">&gt;</span>       <span class="fu">&lt;+&gt;</span> sleeping <span class="fu">=:</span> <span class="kw">True</span>
+<span class="ot">&gt;</span>       <span class="fu">&lt;+&gt;</span> sleeping <span class="fu">=:</span> <span class="dt">True</span>
 <span class="ot">&gt;</span>       <span class="fu">&lt;+&gt;</span> master <span class="fu">=:</span> jon</code></pre>
 <h2 id="using-lenses">Using Lenses</h2>
 <p>Now, if we want to wake entities up, we don’t want to have to write a separate wake-up function for both dogs and men (even though they are of different type). Luckily, we can use the built-in lenses to focus on a particular field in the record for access and update, without losing additional information:</p>
 <pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt; wakeUp ::</span> ((<span class="st">&quot;sleeping&quot;</span> <span class="ot">::</span><span class="fu">:</span> <span class="dt">Bool</span>) ∈ fields) <span class="ot">=&gt;</span> <span class="dt">PlainRec</span> fields <span class="ot">-&gt;</span> <span class="dt">PlainRec</span> fields
-<span class="ot">&gt;</span> wakeUp <span class="fu">=</span> sleeping <span class="ot">`rPut`</span> <span class="kw">False</span></code></pre>
+<span class="ot">&gt;</span> wakeUp <span class="fu">=</span> sleeping <span class="ot">`rPut`</span> <span class="dt">False</span></code></pre>
 <p>Now, the type annotation on <code>wakeUp</code> was not necessary; I just wanted to show how intuitive the type is. Basically, it takes as an input any record that has a <code>BOOL</code> field labelled <code>sleeping</code>, and the modifies that specific field in the record accordingly.</p>
 <pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> tucker&#39; <span class="fu">=</span> wakeUp tucker
 <span class="ot">&gt;</span> jon&#39; <span class="fu">=</span> wakeUp jon</code></pre>
 <p>We can also access the entire lens for a field using the <code>rLens</code> function; since lenses are composable, it’s super easy to do deep update on a record:</p>
 <pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt; masterSleeping ::</span> ((<span class="st">&quot;master&quot;</span> <span class="ot">::</span><span class="fu">:</span> <span class="dt">PlainRec</span> <span class="dt">LifeForm</span>) ∈ fields) <span class="ot">=&gt;</span> <span class="dt">SimpleLens</span> (<span class="dt">PlainRec</span> fields) <span class="dt">Bool</span>
 <span class="ot">&gt;</span> masterSleeping <span class="fu">=</span> rLens master <span class="fu">.</span> rLens sleeping</code></pre>
-<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> tucker&#39;&#39; <span class="fu">=</span> masterSleeping <span class="fu">.~</span> <span class="kw">True</span> <span class="fu">$</span> tucker&#39;</code></pre>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> tucker&#39;&#39; <span class="fu">=</span> masterSleeping <span class="fu">.~</span> <span class="dt">True</span> <span class="fu">$</span> tucker&#39;</code></pre>
 <p>Again, the type annotation is unnecessary. In fact, the seperate definition is also unnecessary, and we could just define:</p>
-<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> tucker&#39;&#39;&#39; <span class="fu">=</span> rLens master <span class="fu">.</span> rLens sleeping <span class="fu">.~</span> <span class="kw">True</span> <span class="fu">$</span> tucker&#39;</code></pre>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> tucker&#39;&#39;&#39; <span class="fu">=</span> rLens master <span class="fu">.</span> rLens sleeping <span class="fu">.~</span> <span class="dt">True</span> <span class="fu">$</span> tucker&#39;</code></pre>
 <h2 id="subtyping-relation-and-coercion">Subtyping Relation and Coercion</h2>
 <p>A record <code>PlainRec xs</code> is a subtype of a record <code>PlainRec ys</code> if <code>ys ⊆ xs</code>; that is to say, if one record can do everything that another record can, the former is a subtype of the latter. As such, we should be able to provide an upcast operator which “forgets” whatever makes one record different from another (whether it be extra data, or different order).</p>
 <p>Therefore, the following works:</p>
@@ -849,7 +914,7 @@ cabal install vinyl</code></pre>
 <span class="ot">&gt;</span>   vName <span class="fu">=</span> validateName (rGet name p)
 <span class="ot">&gt;</span>   vAge  <span class="fu">=</span> validateAge  (rGet age p)
 <span class="ot">&gt;</span> 
-<span class="ot">&gt;</span>   validateName str <span class="fu">|</span> <span class="fu">all</span> <span class="fu">isAlpha</span> str <span class="fu">=</span> <span class="dt">Success</span> str
+<span class="ot">&gt;</span>   validateName str <span class="fu">|</span> all isAlpha str <span class="fu">=</span> <span class="dt">Success</span> str
 <span class="ot">&gt;</span>   validateName _ <span class="fu">=</span> <span class="dt">Failure</span> [ <span class="st">&quot;name must be alphabetic&quot;</span> ]
 <span class="ot">&gt;</span>   validateAge i <span class="fu">|</span> i <span class="fu">&gt;=</span> <span class="dv">0</span> <span class="fu">=</span> <span class="dt">Success</span> i
 <span class="ot">&gt;</span>   validateAge _ <span class="fu">=</span> <span class="dt">Failure</span> [ <span class="st">&quot;age must be positive&quot;</span> ]</code></pre>
@@ -860,7 +925,7 @@ cabal install vinyl</code></pre>
 <p>Let’s parameterize a record by it: when we do, then an element of type <code>a</code> should be a function <code>Identity a -&gt; Result e a</code>:</p>
 <pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt; vperson ::</span> <span class="dt">Rec</span> <span class="dt">Person</span> (<span class="dt">Validator</span> [<span class="dt">String</span>])
 <span class="ot">&gt;</span> vperson <span class="fu">=</span> <span class="dt">NT</span> validateName <span class="fu">:&amp;</span> <span class="dt">NT</span> validateAge <span class="fu">:&amp;</span> <span class="dt">RNil</span> <span class="kw">where</span>
-<span class="ot">&gt;</span>    validateName (<span class="dt">Identity</span> str) <span class="fu">|</span> <span class="fu">all</span> <span class="fu">isAlpha</span> str <span class="fu">=</span> <span class="dt">Success</span> str
+<span class="ot">&gt;</span>    validateName (<span class="dt">Identity</span> str) <span class="fu">|</span> all isAlpha str <span class="fu">=</span> <span class="dt">Success</span> str
 <span class="ot">&gt;</span>    validateName _ <span class="fu">=</span> <span class="dt">Failure</span> [ <span class="st">&quot;name must be alphabetic&quot;</span> ]
 <span class="ot">&gt;</span>    validateAge (<span class="dt">Identity</span> i) <span class="fu">|</span> i <span class="fu">&gt;=</span> <span class="dv">0</span> <span class="fu">=</span> <span class="dt">Success</span> i
 <span class="ot">&gt;</span>    validateAge _ <span class="fu">=</span> <span class="dt">Failure</span> [ <span class="st">&quot;age must be positive&quot;</span> ]</code></pre>
@@ -876,9 +941,9 @@ badPersonResult  <span class="fu">===</span> name <span class="fu">:=:</span> <s
 runBadPerson  <span class="fu">===</span> <span class="dt">Failure</span> [<span class="st">&quot;name must be alphabetic&quot;</span>]</code></pre>
 <h2 id="fixing-a-polymorphic-record-into-the-identity-functor">Fixing a polymorphic record into the Identity Functor</h2>
 <p>If you produced a record using <code>(=:)</code> and <code>(&lt;+&gt;)</code> without providing a type annotation, then its type is something like this:</p>
-<pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">record ::</span> <span class="kw">Applicative</span> f <span class="ot">=&gt;</span> <span class="dt">Record</span> [ <span class="fu">&lt;</span>bunch <span class="kw">of</span> stuff<span class="fu">&gt;</span> ] f</code></pre>
+<pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">record ::</span> <span class="dt">Applicative</span> f <span class="ot">=&gt;</span> <span class="dt">Record</span> [ <span class="fu">&lt;</span>bunch <span class="kw">of</span> stuff<span class="fu">&gt;</span> ] f</code></pre>
 <p>The problem is then we can’t do anything with the record that requires us to know what its functor is. For instance, <code>cast</code> will fail. So, we might try to provide a type annotation, but that can be a bit brittle and frustrating to have to do. To alleviate this problem, <code>fixRecord</code> is provided:</p>
-<pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">fixRecord ::</span> (forall f<span class="fu">.</span> <span class="kw">Applicative</span> f <span class="ot">=&gt;</span> <span class="dt">Rec</span> rs f) <span class="ot">-&gt;</span> <span class="dt">PlainRec</span> rs</code></pre>]]></description>
+<pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">fixRecord ::</span> (forall f<span class="fu">.</span> <span class="dt">Applicative</span> f <span class="ot">=&gt;</span> <span class="dt">Rec</span> rs f) <span class="ot">-&gt;</span> <span class="dt">PlainRec</span> rs</code></pre>]]></description>
     <pubDate>Sat, 06 Apr 2013 00:00:00 UT</pubDate>
     <guid>http://www.jonmsterling.com//posts/2013-04-06-vinyl-modern-records-for-haskell.html</guid>
 </item>
@@ -2047,7 +2112,6 @@ R tick_tock(R <span class="dt">const</span>&amp; rec) {
 <span class="ot">&gt;</span>   fromSing <span class="dt">SRover</span>  <span class="fu">=</span> <span class="dt">Rover</span></code></pre>
 <p>It’s clear what this does, but it might not be immediately obvious what the <code>(Kind :: Doggy)</code> business is. Basically, Haskell does not currently allow one to abstract over kinds in a straight-forward way. Since we’re basically trying to make a map from kinds to types (that is, from the kind which <code>-XDataKinds</code> generated to the type whence it arose), we need to pass the kind in as the annotation to a dummy type; in this case, we use <code>Kind</code>, which is provided by <code>GHC.TypeLits</code>, and has no actual meaning by itself.</p>
 <p>As you can see, all this boilerplate could in fact be generated with Template Haskell. In fact, the <a href="http://hackage.haskell.org/package/singletons">Singletons</a> package already does so, but it does not use GHC’s built-in kit, so there’s a bit of unhappiness there.</p>
-
 <blockquote>
 <strong>Update</strong>: The Singletons package has been updated, and is now compatible with TypeLits.
 </blockquote>
@@ -2088,22 +2152,22 @@ R tick_tock(R <span class="dt">const</span>&amp; rec) {
 <p>We would hope to be able to create something analogous in Haskell under the limited encoding of dependent types possible using singletons.</p>
 <p>Now, as you can see, the Agda version is very flexible in terms of the sorts of things it can quantify, because of its use of <a href="http://www.jonmsterling.com/posts/2012-09-08-adding-universe-polymorphism.html">universe polymorphism</a>. Now, we can’t hope for anything quite as profound in Haskell; we’ll settle for having the second parameter be a predicate over terms of some kind, which is supplied in the first parameter.</p>
 <p>We can now create the following definition:</p>
-<pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">data</span> Σ (<span class="ot">kind ::</span> k) (<span class="fu">pred</span><span class="ot"> ::</span> k <span class="ot">→</span> <span class="fu">*</span>) <span class="kw">where</span>
-<span class="ot">  (:|-) ::</span> Π (<span class="ot">x ::</span> k) <span class="ot">→</span> <span class="fu">pred</span> x <span class="ot">→</span> Σ kind <span class="fu">pred</span></code></pre>
+<pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">data</span> Σ (<span class="ot">kind ::</span> k) (pred<span class="ot"> ::</span> k <span class="ot">→</span> <span class="fu">*</span>) <span class="kw">where</span>
+<span class="ot">  (:|-) ::</span> Π (<span class="ot">x ::</span> k) <span class="ot">→</span> pred x <span class="ot">→</span> Σ kind pred</code></pre>
 <p>Note that this is equivalent to the following (minus our little <code>Π</code> shorthand which we use in the spirit of dependent types):</p>
-<pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">data</span> Σ (<span class="ot">kind ::</span> k) (<span class="fu">pred</span><span class="ot"> ::</span> k <span class="ot">→</span> <span class="fu">*</span>) <span class="kw">where</span>
-<span class="ot">  (:|-) ::</span> <span class="dt">Sing</span> x <span class="ot">→</span> <span class="fu">pred</span> x <span class="ot">→</span> Σ kind <span class="fu">pred</span></code></pre>
+<pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">data</span> Σ (<span class="ot">kind ::</span> k) (pred<span class="ot"> ::</span> k <span class="ot">→</span> <span class="fu">*</span>) <span class="kw">where</span>
+<span class="ot">  (:|-) ::</span> <span class="dt">Sing</span> x <span class="ot">→</span> pred x <span class="ot">→</span> Σ kind pred</code></pre>
 <p>Last, we put the final touches on by making this into a record:</p>
-<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">data</span> Σ (<span class="ot">kind ::</span> k) (<span class="fu">pred</span><span class="ot"> ::</span> k <span class="ot">→</span> <span class="fu">*</span>) <span class="kw">where</span>
-<span class="ot">&gt;   (:|-) ::</span> { proj₁ <span class="ot">::</span> Π (<span class="ot">x ::</span> k), proj₂ <span class="ot">::</span> <span class="fu">pred</span> x } <span class="ot">→</span> Σ kind <span class="fu">pred</span></code></pre>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">data</span> Σ (<span class="ot">kind ::</span> k) (pred<span class="ot"> ::</span> k <span class="ot">→</span> <span class="fu">*</span>) <span class="kw">where</span>
+<span class="ot">&gt;   (:|-) ::</span> { proj₁ <span class="ot">::</span> Π (<span class="ot">x ::</span> k), proj₂ <span class="ot">::</span> pred x } <span class="ot">→</span> Σ kind pred</code></pre>
 <p>Since in most cases, the kind over which the predicate operates is inferrable from the predicate itself, we provide the following convenience synonym:</p>
-<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">type</span> <span class="dt">Exists</span> (<span class="fu">pred</span><span class="ot"> ::</span> k <span class="ot">→</span> <span class="fu">*</span>) <span class="fu">=</span> Σ <span class="dt">Kind</span> <span class="fu">pred</span></code></pre>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">type</span> <span class="dt">Exists</span> (pred<span class="ot"> ::</span> k <span class="ot">→</span> <span class="fu">*</span>) <span class="fu">=</span> Σ <span class="dt">Kind</span> pred</code></pre>
 <p>So, we could, for instance, make a function that takes a number which is not one:</p>
 <pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">data</span> <span class="dt">NotOne</span><span class="ot"> ::</span> <span class="dt">Nat</span> <span class="ot">→</span> <span class="fu">*</span> <span class="kw">where</span>
 <span class="ot">&gt;</span>   <span class="dt">NotOneZ</span><span class="ot"> ::</span> <span class="dt">NotOne</span> <span class="dv">0</span>
 <span class="ot">&gt;</span>   <span class="dt">NotOneSS</span><span class="ot"> ::</span> <span class="dt">NotOne</span> (n <span class="fu">+</span> <span class="dv">2</span>)</code></pre>
-<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt; cantTakeOne ::</span> <span class="kw">Fractional</span> t <span class="ot">⇒</span> <span class="dt">Exists</span> <span class="dt">NotOne</span> <span class="ot">→</span> t
-<span class="ot">&gt;</span> cantTakeOne ((π <span class="ot">→</span> n) <span class="fu">:|-</span> _) <span class="fu">=</span> <span class="dv">10</span><span class="fu">.</span><span class="dv">0</span> <span class="fu">/</span> (<span class="fu">fromInteger</span> n <span class="fu">-</span> <span class="dv">1</span>)</code></pre>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt; cantTakeOne ::</span> <span class="dt">Fractional</span> t <span class="ot">⇒</span> <span class="dt">Exists</span> <span class="dt">NotOne</span> <span class="ot">→</span> t
+<span class="ot">&gt;</span> cantTakeOne ((π <span class="ot">→</span> n) <span class="fu">:|-</span> _) <span class="fu">=</span> <span class="dv">10</span><span class="fu">.</span><span class="dv">0</span> <span class="fu">/</span> (fromInteger n <span class="fu">-</span> <span class="dv">1</span>)</code></pre>
 <p>We can also show that our Haskell encoding really is similar to the Agda version by providing our own version of the encoding of cartesian products (remember, a cartesian product arises when the predicate ignores its parameter).</p>
 <p>If it were possible to have type-level lambdas in Haskell, then this would be just as simple as in Agda:</p>
 <pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">type</span> x <span class="fu">&amp;</span> y <span class="fu">=</span> Σ x (λ _ <span class="ot">→</span> y)</code></pre>
@@ -2141,8 +2205,8 @@ Safe Dictionary Lookup
 <pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt; lookup ::</span> (<span class="dt">SingE</span> (<span class="dt">Kind</span><span class="ot"> ::</span> k) k&#39;, <span class="dt">SingE</span> (<span class="dt">Kind</span><span class="ot"> ::</span> v) v&#39;) <span class="ot">⇒</span>
 <span class="ot">&gt;</span>           Π (<span class="ot">key ::</span> k) <span class="ot">→</span>
 <span class="ot">&gt;</span>           Σ (<span class="dt">Kind</span><span class="ot"> ::</span> [(k,v)]) (<span class="dt">HasKey</span> key) <span class="ot">→</span> v&#39;
-<span class="ot">&gt;</span> <span class="fu">lookup</span> _ ((π <span class="ot">→</span> (_,x) <span class="fu">:</span> _) <span class="fu">:|-</span> <span class="dt">KeyHere</span>)     <span class="fu">=</span> x
-<span class="ot">&gt;</span> <span class="fu">lookup</span> k (<span class="dt">SCons</span> _ xs      <span class="fu">:|-</span> <span class="dt">KeyThere</span> hk) <span class="fu">=</span> <span class="fu">lookup</span> k (xs <span class="fu">:|-</span> hk)</code></pre>
+<span class="ot">&gt;</span> lookup _ ((π <span class="ot">→</span> (_,x) <span class="fu">:</span> _) <span class="fu">:|-</span> <span class="dt">KeyHere</span>)     <span class="fu">=</span> x
+<span class="ot">&gt;</span> lookup k (<span class="dt">SCons</span> _ xs      <span class="fu">:|-</span> <span class="dt">KeyThere</span> hk) <span class="fu">=</span> lookup k (xs <span class="fu">:|-</span> hk)</code></pre>
 <p>Of course, we can use the same trick as we always do by providing implicit proof terms:</p>
 <pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">class</span> <span class="dt">Implicit</span> x <span class="kw">where</span>
 <span class="ot">&gt;   implicitly ::</span> x
@@ -2150,10 +2214,10 @@ Safe Dictionary Lookup
 <span class="ot">&gt;</span>   implicitly <span class="fu">=</span> <span class="dt">KeyHere</span>
 <span class="ot">&gt;</span> <span class="kw">instance</span> <span class="dt">Implicit</span> (<span class="dt">HasKey</span> k dict) <span class="ot">⇒</span> <span class="dt">Implicit</span> (<span class="dt">HasKey</span> k (pair <span class="ch">&#39;: dict)) where</span>
 <span class="ot">&gt;</span>   implicitly <span class="fu">=</span> <span class="dt">KeyThere</span> implicitly</code></pre>
-<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> lookup&#39; k dict <span class="fu">=</span> <span class="fu">lookup</span> k (dict <span class="fu">:|-</span> implicitly)</code></pre>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> lookup&#39; k dict <span class="fu">=</span> lookup k (dict <span class="fu">:|-</span> implicitly)</code></pre>
 <pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">type</span> <span class="dt">DogNamesMap</span> <span class="fu">=</span> [<span class="ch">&#39;(Tucker, &quot;Tucker&quot;), &#39;</span>(<span class="dt">Rover</span>, <span class="st">&quot;Rover&quot;</span>)]
 <span class="ot">&gt;</span> sDogNamesMap <span class="fu">=</span><span class="ot"> sing ::</span> <span class="dt">Sing</span> <span class="dt">DogNamesMap</span></code></pre>
-<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> tuckersName <span class="fu">=</span> <span class="fu">lookup</span> <span class="dt">STucker</span> (sDogNamesMap <span class="fu">:|-</span> <span class="dt">KeyHere</span>)
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> tuckersName <span class="fu">=</span> lookup <span class="dt">STucker</span> (sDogNamesMap <span class="fu">:|-</span> <span class="dt">KeyHere</span>)
 <span class="ot">&gt;</span> tuckersName&#39; <span class="fu">=</span> lookup&#39; <span class="dt">STucker</span> sDogNamesMap</code></pre>
 <h2 id="caveats">Caveats</h2>
 <p>That was fun! But this was mostly a demonstration to show that Σ-types are possible in Haskell, rather than a recommendation to use them. For one, it is a fair bit more complicated under this system to allow such functions to operate on dynamic data (which may or may not satisfy the static predicate), than under the system I proposed in <a href="http://www.jonmsterling.com/posts/2012-08-05-static-and-dynamic-proof-inference-in-haskell.html">my previous post</a>.</p>
@@ -2188,11 +2252,11 @@ Safe Dictionary Lookup
 <span class="ot">&gt;</span> <span class="kw">data</span> <span class="dt">DNat</span> (<span class="ot">n ::</span> <span class="dt">Nat</span>) <span class="kw">where</span>
 <span class="ot">&gt;</span>   <span class="dt">DZ</span><span class="ot"> ::</span> <span class="dt">DNat</span> <span class="dt">Z</span>
 <span class="ot">&gt;</span>   <span class="dt">DS</span><span class="ot"> ::</span> <span class="dt">DNat</span> n <span class="ot">-&gt;</span> <span class="dt">DNat</span> (<span class="dt">S</span> n)</code></pre>
-<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt; natToNum ::</span> <span class="kw">Num</span> a <span class="ot">=&gt;</span> <span class="dt">DNat</span> n <span class="ot">-&gt;</span> a
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt; natToNum ::</span> <span class="dt">Num</span> a <span class="ot">=&gt;</span> <span class="dt">DNat</span> n <span class="ot">-&gt;</span> a
 <span class="ot">&gt;</span> natToNum <span class="dt">DZ</span> <span class="fu">=</span> <span class="dv">0</span>
 <span class="ot">&gt;</span> natToNum (<span class="dt">DS</span> n) <span class="fu">=</span> <span class="dv">1</span> <span class="fu">+</span> natToNum n</code></pre>
-<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">instance</span> <span class="kw">Show</span> (<span class="dt">DNat</span> n) <span class="kw">where</span>
-<span class="ot">&gt;</span>   <span class="fu">show</span> <span class="fu">=</span> <span class="fu">show</span> <span class="fu">.</span> natToNum</code></pre>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">instance</span> <span class="dt">Show</span> (<span class="dt">DNat</span> n) <span class="kw">where</span>
+<span class="ot">&gt;</span>   show <span class="fu">=</span> show <span class="fu">.</span> natToNum</code></pre>
 <p>We wish to have a function to get the index of an item that’s contained in the vector. For that to be safe, we need to be able to prove that the item is even contained in the vector.</p>
 <h3>
 An attempt without explicit witnesses
@@ -2204,7 +2268,7 @@ An attempt without explicit witnesses
 <span class="kw">instance</span> <span class="dt">Elem&#39;</span> i is <span class="ot">=&gt;</span> <span class="dt">Elem&#39;</span> i (j <span class="ch">&#39;: is)</span></code></pre>
 <p>But you’ll quickly find that writing a function which uses this constraint is not a simple proposition. In fact, it would appear to be impossible for more than one reason. If we wish to use type classes in this way, we shall actually have to write an <code>IndexOf</code> type class:</p>
 <pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">class</span> <span class="dt">IndexOf</span> i is <span class="kw">where</span>
-<span class="ot">  indexOf ::</span> <span class="kw">Num</span> a <span class="ot">=&gt;</span> <span class="dt">Vect</span> f is <span class="ot">-&gt;</span> f i <span class="ot">-&gt;</span> a
+<span class="ot">  indexOf ::</span> <span class="dt">Num</span> a <span class="ot">=&gt;</span> <span class="dt">Vect</span> f is <span class="ot">-&gt;</span> f i <span class="ot">-&gt;</span> a
 <span class="kw">instance</span> <span class="dt">IndexOf</span> i (i <span class="ch">&#39;: is) where</span>
   indexOf (i <span class="fu">:&lt;</span> is) i&#39; <span class="fu">=</span> <span class="dv">0</span>
 <span class="kw">instance</span> <span class="dt">IndexOf</span> i is <span class="ot">=&gt;</span> <span class="dt">IndexOf</span> i (j <span class="ch">&#39;: is) where</span>
@@ -2219,7 +2283,7 @@ An attempt with explicit witnesses
 <span class="ot">&gt;</span>   <span class="dt">Here</span><span class="ot"> ::</span> <span class="dt">Elem</span> x (x <span class="ch">&#39;: xs)</span>
 <span class="ot">&gt;</span>   <span class="dt">There</span><span class="ot"> ::</span> <span class="dt">Elem</span> x xs <span class="ot">-&gt;</span> <span class="dt">Elem</span> x (y <span class="ch">&#39;: xs)</span></code></pre>
 <p>And so we implement <code>indexOf</code> by recursing through both the values <em>and</em> the layers of proofs!</p>
-<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt; indexOf ::</span> <span class="kw">Num</span> a <span class="ot">=&gt;</span> <span class="dt">Vect</span> f is <span class="ot">-&gt;</span> f i <span class="ot">-&gt;</span> <span class="dt">Elem</span> i is <span class="ot">-&gt;</span> a
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt; indexOf ::</span> <span class="dt">Num</span> a <span class="ot">=&gt;</span> <span class="dt">Vect</span> f is <span class="ot">-&gt;</span> f i <span class="ot">-&gt;</span> <span class="dt">Elem</span> i is <span class="ot">-&gt;</span> a
 <span class="ot">&gt;</span> indexOf (x <span class="fu">:&lt;</span> xs) x&#39; <span class="dt">Here</span> <span class="fu">=</span> <span class="dv">0</span>
 <span class="ot">&gt;</span> indexOf (y <span class="fu">:&lt;</span> xs) x (<span class="dt">There</span> p) <span class="fu">=</span> <span class="dv">1</span> <span class="fu">+</span> indexOf xs x p</code></pre>
 <p>But, of course, this is absolutely useless at a glance, since in order to even use the function, the programmer has to type a chain of proofs isomorphic to the Peano encoding of the item’s index anyway!</p>
@@ -2250,16 +2314,16 @@ Another example: safe vector access
 <span class="ot">&gt;</span> <span class="kw">type</span> <span class="kw">instance</span> <span class="dt">At</span> (x <span class="ch">&#39;: xs) Z = x</span>
 <span class="ot">&gt;</span> <span class="kw">type</span> <span class="kw">instance</span> <span class="dt">At</span> (x <span class="ch">&#39;: xs) (S n) = At xs n</span></code></pre>
 <p>And now we need a type of less-than proofs:</p>
-<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">data</span> <span class="kw">LT</span> (<span class="ot">l ::</span> <span class="dt">Nat</span>) (<span class="ot">r ::</span> <span class="dt">Nat</span>) <span class="kw">where</span>
-<span class="ot">&gt;</span>   <span class="dt">ZLT</span><span class="ot"> ::</span> <span class="kw">LT</span> <span class="dt">Z</span> (<span class="dt">S</span> n)
-<span class="ot">&gt;</span>   <span class="dt">SLT</span><span class="ot"> ::</span> <span class="kw">LT</span> n m <span class="ot">-&gt;</span> <span class="kw">LT</span> (<span class="dt">S</span> n) (<span class="dt">S</span> m)</code></pre>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">data</span> <span class="dt">LT</span> (<span class="ot">l ::</span> <span class="dt">Nat</span>) (<span class="ot">r ::</span> <span class="dt">Nat</span>) <span class="kw">where</span>
+<span class="ot">&gt;</span>   <span class="dt">ZLT</span><span class="ot"> ::</span> <span class="dt">LT</span> <span class="dt">Z</span> (<span class="dt">S</span> n)
+<span class="ot">&gt;</span>   <span class="dt">SLT</span><span class="ot"> ::</span> <span class="dt">LT</span> n m <span class="ot">-&gt;</span> <span class="dt">LT</span> (<span class="dt">S</span> n) (<span class="dt">S</span> m)</code></pre>
 <p>The way we go about <code>at</code> is much the same as in the previous example, just a tiny bit more complicated in the types.</p>
-<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt; at ::</span> <span class="dt">Vect</span> f is <span class="ot">-&gt;</span> <span class="dt">DNat</span> n <span class="ot">-&gt;</span> <span class="kw">LT</span> n (<span class="dt">Length</span> is) <span class="ot">-&gt;</span> f (<span class="dt">At</span> is n)
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt; at ::</span> <span class="dt">Vect</span> f is <span class="ot">-&gt;</span> <span class="dt">DNat</span> n <span class="ot">-&gt;</span> <span class="dt">LT</span> n (<span class="dt">Length</span> is) <span class="ot">-&gt;</span> f (<span class="dt">At</span> is n)
 <span class="ot">&gt;</span> at (x <span class="fu">:&lt;</span> xs) <span class="dt">DZ</span> <span class="dt">ZLT</span> <span class="fu">=</span> x
 <span class="ot">&gt;</span> at (y <span class="fu">:&lt;</span> xs) (<span class="dt">DS</span> n) (<span class="dt">SLT</span> lt) <span class="fu">=</span> at xs n lt</code></pre>
-<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">instance</span> <span class="dt">Infer</span> (<span class="kw">LT</span> <span class="dt">Z</span> (<span class="dt">S</span> n)) <span class="kw">where</span>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">instance</span> <span class="dt">Infer</span> (<span class="dt">LT</span> <span class="dt">Z</span> (<span class="dt">S</span> n)) <span class="kw">where</span>
 <span class="ot">&gt;</span>   infer <span class="fu">=</span> <span class="dt">ZLT</span></code></pre>
-<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">instance</span> <span class="dt">Infer</span> (<span class="kw">LT</span> n m) <span class="ot">=&gt;</span> <span class="dt">Infer</span> (<span class="kw">LT</span> (<span class="dt">S</span> n) (<span class="dt">S</span> m)) <span class="kw">where</span>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">instance</span> <span class="dt">Infer</span> (<span class="dt">LT</span> n m) <span class="ot">=&gt;</span> <span class="dt">Infer</span> (<span class="dt">LT</span> (<span class="dt">S</span> n) (<span class="dt">S</span> m)) <span class="kw">where</span>
 <span class="ot">&gt;</span>   infer <span class="fu">=</span> <span class="dt">SLT</span> infer</code></pre>
 <pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> v <span class="fu">@.</span> i <span class="fu">=</span> at v i infer</code></pre>
 <pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> hailMary <span class="fu">=</span> testVect <span class="fu">@.</span> (<span class="dt">DS</span> <span class="dt">DZ</span>) <span class="co">-- 2</span></code></pre>
@@ -2272,21 +2336,21 @@ Inferring dynamic proofs
 <span class="ot">&gt;   inferDynamic ::</span> <span class="dt">Maybe</span> p</code></pre>
 <p>We have to go through this little dance for each proof which we want to make available dynamically. The routine is repetitive enough that one could conceivably use Template Haskell to factor it out, though I’d certainly be pleased to learn if there was a more clean and succinct way of doing it.</p>
 <pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">instance</span> <span class="dt">DynamicInfer</span> (<span class="dt">Elem</span> x (x <span class="ch">&#39;: xs)) where</span>
-<span class="ot">&gt;</span>   inferDynamic <span class="fu">=</span> <span class="kw">Just</span> infer
+<span class="ot">&gt;</span>   inferDynamic <span class="fu">=</span> <span class="dt">Just</span> infer
 <span class="ot">&gt;</span> <span class="kw">instance</span> <span class="dt">DynamicInfer</span> (<span class="dt">Elem</span> x xs) <span class="ot">=&gt;</span> <span class="dt">DynamicInfer</span> (<span class="dt">Elem</span> x (y <span class="ch">&#39;: xs)) where</span>
 <span class="ot">&gt;</span>   inferDynamic <span class="fu">=</span> <span class="dt">There</span> <span class="fu">&lt;$&gt;</span> inferDynamic
 <span class="ot">&gt;</span> <span class="kw">instance</span> <span class="dt">DynamicInfer</span> (<span class="dt">Elem</span> x ys) <span class="kw">where</span>
-<span class="ot">&gt;</span>   inferDynamic <span class="fu">=</span> <span class="kw">Nothing</span></code></pre>
-<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">instance</span> <span class="dt">DynamicInfer</span> (<span class="kw">LT</span> <span class="dt">Z</span> (<span class="dt">S</span> n)) <span class="kw">where</span>
-<span class="ot">&gt;</span>   inferDynamic <span class="fu">=</span> <span class="kw">Just</span> infer
-<span class="ot">&gt;</span> <span class="kw">instance</span> <span class="dt">DynamicInfer</span> (<span class="kw">LT</span> n m) <span class="ot">=&gt;</span> <span class="dt">DynamicInfer</span> (<span class="kw">LT</span> (<span class="dt">S</span> n) (<span class="dt">S</span> m)) <span class="kw">where</span>
+<span class="ot">&gt;</span>   inferDynamic <span class="fu">=</span> <span class="dt">Nothing</span></code></pre>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">instance</span> <span class="dt">DynamicInfer</span> (<span class="dt">LT</span> <span class="dt">Z</span> (<span class="dt">S</span> n)) <span class="kw">where</span>
+<span class="ot">&gt;</span>   inferDynamic <span class="fu">=</span> <span class="dt">Just</span> infer
+<span class="ot">&gt;</span> <span class="kw">instance</span> <span class="dt">DynamicInfer</span> (<span class="dt">LT</span> n m) <span class="ot">=&gt;</span> <span class="dt">DynamicInfer</span> (<span class="dt">LT</span> (<span class="dt">S</span> n) (<span class="dt">S</span> m)) <span class="kw">where</span>
 <span class="ot">&gt;</span>   inferDynamic <span class="fu">=</span> <span class="dt">SLT</span> <span class="fu">&lt;$&gt;</span> inferDynamic
-<span class="ot">&gt;</span> <span class="kw">instance</span> <span class="dt">DynamicInfer</span> (<span class="kw">LT</span> n m) <span class="kw">where</span>
-<span class="ot">&gt;</span>   inferDynamic <span class="fu">=</span> <span class="kw">Nothing</span></code></pre>
+<span class="ot">&gt;</span> <span class="kw">instance</span> <span class="dt">DynamicInfer</span> (<span class="dt">LT</span> n m) <span class="kw">where</span>
+<span class="ot">&gt;</span>   inferDynamic <span class="fu">=</span> <span class="dt">Nothing</span></code></pre>
 <p>And now it is trivial to make dynamic versions of our functions:</p>
-<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt; dynamicIndexOf ::</span> <span class="kw">Num</span> a <span class="ot">=&gt;</span> <span class="dt">Vect</span> f is <span class="ot">-&gt;</span> f i <span class="ot">-&gt;</span> <span class="dt">Maybe</span> a
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt; dynamicIndexOf ::</span> <span class="dt">Num</span> a <span class="ot">=&gt;</span> <span class="dt">Vect</span> f is <span class="ot">-&gt;</span> f i <span class="ot">-&gt;</span> <span class="dt">Maybe</span> a
 <span class="ot">&gt;</span> dynamicIndexOf xs x <span class="fu">=</span> indexOf xs x <span class="fu">&lt;$&gt;</span> inferDynamic</code></pre>
-<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt; dynamicAt ::</span> <span class="dt">DynamicInfer</span> (<span class="kw">LT</span> n (<span class="dt">Length</span> is)) <span class="ot">=&gt;</span> <span class="dt">Vect</span> f is <span class="ot">-&gt;</span> <span class="dt">DNat</span> n <span class="ot">-&gt;</span> <span class="dt">Maybe</span> (f (<span class="dt">At</span> is n))
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt; dynamicAt ::</span> <span class="dt">DynamicInfer</span> (<span class="dt">LT</span> n (<span class="dt">Length</span> is)) <span class="ot">=&gt;</span> <span class="dt">Vect</span> f is <span class="ot">-&gt;</span> <span class="dt">DNat</span> n <span class="ot">-&gt;</span> <span class="dt">Maybe</span> (f (<span class="dt">At</span> is n))
 <span class="ot">&gt;</span> dynamicAt xs i <span class="fu">=</span> at xs i <span class="fu">&lt;$&gt;</span> inferDynamic</code></pre>]]></description>
     <pubDate>Sun, 05 Aug 2012 00:00:00 UT</pubDate>
     <guid>http://www.jonmsterling.com//posts/2012-08-05-static-and-dynamic-proof-inference-in-haskell.html</guid>
@@ -2311,7 +2375,7 @@ Inferring dynamic proofs
 <span class="ot">&gt;</span> <span class="kw">data</span> <span class="dt">Vect</span><span class="ot"> ::</span> <span class="fu">*</span> <span class="ot">-&gt;</span> <span class="dt">Nat</span> <span class="ot">-&gt;</span> <span class="fu">*</span> <span class="kw">where</span>
 <span class="ot">&gt;</span>   <span class="dt">VNil</span><span class="ot"> ::</span> <span class="dt">Vect</span> a <span class="dt">Z</span>
 <span class="ot">&gt;   (:&gt;) ::</span> a <span class="ot">-&gt;</span> <span class="dt">Vect</span> a n <span class="ot">-&gt;</span> <span class="dt">Vect</span> a (<span class="dt">S</span> n)
-<span class="ot">&gt;</span> <span class="kw">deriving</span> <span class="kw">instance</span> <span class="kw">Show</span> a <span class="ot">=&gt;</span> <span class="kw">Show</span> (<span class="dt">Vect</span> a n)</code></pre>
+<span class="ot">&gt;</span> <span class="kw">deriving</span> <span class="kw">instance</span> <span class="dt">Show</span> a <span class="ot">=&gt;</span> <span class="dt">Show</span> (<span class="dt">Vect</span> a n)</code></pre>
 <p>It’s trivial to write safe <code>head</code> and <code>tail</code> functions now:</p>
 <pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">vhead ::</span> <span class="dt">Vect</span> a (<span class="dt">S</span> n) <span class="ot">-&gt;</span> a
 vhead (x <span class="fu">:&gt;</span> xs) <span class="fu">=</span> x</code></pre>
@@ -2320,7 +2384,7 @@ vtail (x <span class="fu">:&gt;</span> xs) <span class="fu">=</span> xs</code></
 <p>But what if we don’t statically know the size of our vector? For instance, if we are converting a plain old list to a vector, or if we are parsing some file. We’d presumably box up the vector and existentially quantify its length:</p>
 <pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">data</span> <span class="dt">EVect</span><span class="ot"> ::</span> <span class="fu">*</span> <span class="ot">-&gt;</span> <span class="fu">*</span> <span class="kw">where</span>
 <span class="ot">&gt;</span>   <span class="dt">EVect</span><span class="ot"> ::</span> <span class="dt">Vect</span> a n <span class="ot">-&gt;</span> <span class="dt">EVect</span> a
-<span class="ot">&gt;</span> <span class="kw">deriving</span> <span class="kw">instance</span> <span class="kw">Show</span> a <span class="ot">=&gt;</span> <span class="kw">Show</span> (<span class="dt">EVect</span> a)</code></pre>
+<span class="ot">&gt;</span> <span class="kw">deriving</span> <span class="kw">instance</span> <span class="dt">Show</span> a <span class="ot">=&gt;</span> <span class="dt">Show</span> (<span class="dt">EVect</span> a)</code></pre>
 <p>Now we can marshall <span class="math">\([\alpha]\)</span> into <span class="math">\(\forall (\alpha:Set). \exists (n:\mathbb{N}). a^n\)</span>:</p>
 <pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt; fromList ::</span> [a] <span class="ot">-&gt;</span> <span class="dt">EVect</span> a
 <span class="ot">&gt;</span> fromList [] <span class="fu">=</span> <span class="dt">EVect</span> <span class="dt">VNil</span>
@@ -2329,11 +2393,11 @@ vtail (x <span class="fu">:&gt;</span> xs) <span class="fu">=</span> xs</code></
 <span class="ot">&gt;</span>     <span class="dt">EVect</span> v <span class="ot">-&gt;</span> <span class="dt">EVect</span> <span class="fu">$</span> x <span class="fu">:&gt;</span> v</code></pre>
 <p>But now, we’re in a bit of a pickle, since we cannot reuse our <code>vhead</code> and <code>vtail</code>. So, we can just write new ones that target <code>Maybe</code>:</p>
 <pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">evhead ::</span> <span class="dt">EVect</span> a <span class="ot">-&gt;</span> <span class="dt">Maybe</span> a
-evhead (<span class="dt">EVect</span> <span class="dt">VNil</span>)     <span class="fu">=</span> <span class="kw">Nothing</span>
-evhead (<span class="dt">EVect</span> (a <span class="fu">:&gt;</span> b)) <span class="fu">=</span> <span class="kw">Just</span> a</code></pre>
+evhead (<span class="dt">EVect</span> <span class="dt">VNil</span>)     <span class="fu">=</span> <span class="dt">Nothing</span>
+evhead (<span class="dt">EVect</span> (a <span class="fu">:&gt;</span> b)) <span class="fu">=</span> <span class="dt">Just</span> a</code></pre>
 <pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">evtail ::</span> <span class="dt">EVect</span> a <span class="ot">-&gt;</span> <span class="dt">Maybe</span> (<span class="dt">EVect</span> a)
-evtail (<span class="dt">EVect</span> <span class="dt">VNil</span>)     <span class="fu">=</span> <span class="kw">Nothing</span>
-evtail (<span class="dt">EVect</span> (a <span class="fu">:&gt;</span> b)) <span class="fu">=</span> <span class="kw">Just</span> (<span class="dt">EVect</span> b)</code></pre>
+evtail (<span class="dt">EVect</span> <span class="dt">VNil</span>)     <span class="fu">=</span> <span class="dt">Nothing</span>
+evtail (<span class="dt">EVect</span> (a <span class="fu">:&gt;</span> b)) <span class="fu">=</span> <span class="dt">Just</span> (<span class="dt">EVect</span> b)</code></pre>
 <p>But this is certainly less-than-desirable. We haven’t reused any of our code. Imagine how unfortunate this would be for a function that is more complicated than <code>head</code> or <code>tail</code>… What we actually need is a way to marshall a function with static guarantees to a function with dynamic guarantees without rewriting everything, and without case analysis.</p>
 <h3>
 Types as Propositions
@@ -2342,7 +2406,7 @@ Types as Propositions
 <p>What if instead of restricting the type of the input of <code>vhead</code>, we just required a proof that it was a nonempty vector? Let’s try that. Under the Curry-Howard correspondance, types are propositions, and values are proofs. So, we can create a type that represents the proposition <em>greater-than-zero</em> for natural numbers:</p>
 <pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">data</span> <span class="dt">NotZero</span><span class="ot"> ::</span> <span class="dt">Nat</span> <span class="ot">-&gt;</span> <span class="fu">*</span> <span class="kw">where</span>
 <span class="ot">&gt;</span>   <span class="dt">NotZero</span><span class="ot"> ::</span> <span class="dt">NotZero</span> (<span class="dt">S</span> n)
-<span class="ot">&gt;</span> <span class="kw">deriving</span> <span class="kw">instance</span> <span class="kw">Show</span> (<span class="dt">NotZero</span> n)</code></pre>
+<span class="ot">&gt;</span> <span class="kw">deriving</span> <span class="kw">instance</span> <span class="dt">Show</span> (<span class="dt">NotZero</span> n)</code></pre>
 <p>Basically, excluding <em>bottom</em>, <code>NotZero n</code> does not have any inhabitants of type <code>NotZero Z</code>. So, forall natural numbers <code>n</code>, any value <code>NotZero n</code> is a proof that <code>n</code> is not zero. And we can just take this as a parameter in our new version of <code>vhead</code>:</p>
 <pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt; vhead ::</span> <span class="dt">Vect</span> a n <span class="ot">-&gt;</span> <span class="dt">NotZero</span> n <span class="ot">-&gt;</span> a
 <span class="ot">&gt;</span> vhead (x <span class="fu">:&gt;</span> xs) <span class="dt">NotZero</span> <span class="fu">=</span> x</code></pre>
@@ -2357,8 +2421,8 @@ hello <span class="fu">=</span> vhead exampleVector <span class="dt">NotZero</sp
 <span class="ot">&gt;</span> vtail (x <span class="fu">:&gt;</span> xs) <span class="dt">NotZero</span> <span class="fu">=</span> xs</code></pre>
 <p>Now, in order to make this work for vectors of unknown length, we need a function that can generate a <code>NotZero</code> proof for all vectors if applicable:</p>
 <pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt; notEmpty ::</span> <span class="dt">Vect</span> a n <span class="ot">-&gt;</span> <span class="dt">Maybe</span> (<span class="dt">NotZero</span> n)
-<span class="ot">&gt;</span> notEmpty <span class="dt">VNil</span> <span class="fu">=</span> <span class="kw">Nothing</span>
-<span class="ot">&gt;</span> notEmpty (x <span class="fu">:&gt;</span> xs) <span class="fu">=</span> <span class="kw">Just</span> <span class="dt">NotZero</span></code></pre>
+<span class="ot">&gt;</span> notEmpty <span class="dt">VNil</span> <span class="fu">=</span> <span class="dt">Nothing</span>
+<span class="ot">&gt;</span> notEmpty (x <span class="fu">:&gt;</span> xs) <span class="fu">=</span> <span class="dt">Just</span> <span class="dt">NotZero</span></code></pre>
 <p>And now, implementing <code>evhead</code> and <code>evtail</code> in terms of the originals is trivial, thanks to currying:</p>
 <pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt; evhead ::</span> <span class="dt">EVect</span> a <span class="ot">-&gt;</span> <span class="dt">Maybe</span> a
 <span class="ot">&gt;</span> evhead (<span class="dt">EVect</span> v) <span class="fu">=</span> vhead v <span class="fu">&lt;$&gt;</span> notEmpty v</code></pre>
@@ -3006,27 +3070,27 @@ A monad is just a monoid in the category of endofunctors, what’s the problem? 
 <span class="ot">&gt;</span> <span class="kw">import</span> Control.Monad (Monad(..))
 <span class="ot">&gt;</span> <span class="kw">import</span> Data.Monoid (Monoid(..))</code></pre>
 <p>First we define the type class <code>Monoidy</code>:</p>
-<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">class</span> <span class="dt">Monoidy</span> (<span class="fu">~&gt;</span>) comp <span class="fu">id</span> m <span class="fu">|</span> m (<span class="fu">~&gt;</span>) <span class="ot">→</span> comp <span class="fu">id</span> <span class="kw">where</span>
-<span class="ot">&gt;   munit ::</span> <span class="fu">id</span> <span class="fu">~&gt;</span> m
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">class</span> <span class="dt">Monoidy</span> (<span class="fu">~&gt;</span>) comp id m <span class="fu">|</span> m (<span class="fu">~&gt;</span>) <span class="ot">→</span> comp id <span class="kw">where</span>
+<span class="ot">&gt;   munit ::</span> id <span class="fu">~&gt;</span> m
 <span class="ot">&gt;   mjoin ::</span> m <span class="ot">`comp`</span> m <span class="fu">~&gt;</span> m</code></pre>
 <p>We use functional dependencies to help the typechecker understand that <code>m</code> and <code>~&gt;</code> uniquely determine <code>comp</code> (<span class="math">\(times\)</span>) and <code>id</code>.</p>
 <p>This kind of type class would not have been possible in previous versions of GHC; with the new kind system, however, we can abstract over kinds!<sup><a href="#fn2" class="footnoteRef" id="fnref2">2</a></sup> Now, let’s create types for the additive and multiplicative monoids over the natural numbers:</p>
-<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">newtype</span> <span class="dt">Sum</span> a <span class="fu">=</span> <span class="dt">Sum</span> a <span class="kw">deriving</span> <span class="kw">Show</span>
-<span class="ot">&gt;</span> <span class="kw">newtype</span> <span class="dt">Product</span> a <span class="fu">=</span> <span class="dt">Product</span> a <span class="kw">deriving</span> <span class="kw">Show</span>
-<span class="ot">&gt;</span> <span class="kw">instance</span> <span class="kw">Num</span> a <span class="ot">⇒</span> <span class="dt">Monoidy</span> (<span class="ot">→</span>) (,) () (<span class="dt">Sum</span> a) <span class="kw">where</span>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">newtype</span> <span class="dt">Sum</span> a <span class="fu">=</span> <span class="dt">Sum</span> a <span class="kw">deriving</span> <span class="dt">Show</span>
+<span class="ot">&gt;</span> <span class="kw">newtype</span> <span class="dt">Product</span> a <span class="fu">=</span> <span class="dt">Product</span> a <span class="kw">deriving</span> <span class="dt">Show</span>
+<span class="ot">&gt;</span> <span class="kw">instance</span> <span class="dt">Num</span> a <span class="ot">⇒</span> <span class="dt">Monoidy</span> (<span class="ot">→</span>) (,) () (<span class="dt">Sum</span> a) <span class="kw">where</span>
 <span class="ot">&gt;</span>   munit _ <span class="fu">=</span> <span class="dt">Sum</span> <span class="dv">0</span>
 <span class="ot">&gt;</span>   mjoin (<span class="dt">Sum</span> x, <span class="dt">Sum</span> y) <span class="fu">=</span> <span class="dt">Sum</span> <span class="fu">$</span> x <span class="fu">+</span> y
-<span class="ot">&gt;</span> <span class="kw">instance</span> <span class="kw">Num</span> a <span class="ot">⇒</span> <span class="dt">Monoidy</span> (<span class="ot">→</span>) (,) () (<span class="dt">Product</span> a) <span class="kw">where</span>
+<span class="ot">&gt;</span> <span class="kw">instance</span> <span class="dt">Num</span> a <span class="ot">⇒</span> <span class="dt">Monoidy</span> (<span class="ot">→</span>) (,) () (<span class="dt">Product</span> a) <span class="kw">where</span>
 <span class="ot">&gt;</span>   munit _ <span class="fu">=</span> <span class="dt">Product</span> <span class="dv">1</span>
 <span class="ot">&gt;</span>   mjoin (<span class="dt">Product</span> x, <span class="dt">Product</span> y) <span class="fu">=</span> <span class="dt">Product</span> <span class="fu">$</span> x <span class="fu">*</span> y</code></pre>
 <p>It will be slightly more complicated to make a monadic instance with <code>Monoidy</code>. First, we need to define the identity functor, a type for natural transformations, and a type for functor composition:</p>
-<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">newtype</span> <span class="dt">Id</span> α <span class="fu">=</span> <span class="dt">Id</span> {<span class="ot"> runId ::</span> α } <span class="kw">deriving</span> <span class="kw">Functor</span></code></pre>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">newtype</span> <span class="dt">Id</span> α <span class="fu">=</span> <span class="dt">Id</span> {<span class="ot"> runId ::</span> α } <span class="kw">deriving</span> <span class="dt">Functor</span></code></pre>
 <p>A natural transformation (<span class="math">\(\Lambda f\,g\,\alpha. (f\,\alpha)\to(g\,\alpha)\)</span>) may be encoded in Haskell as follows:</p>
 <pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">newtype</span> <span class="dt">NT</span> f g <span class="fu">=</span> <span class="dt">NT</span> {<span class="ot"> runNT ::</span> <span class="ot">∀</span> α. f α <span class="ot">→</span> g α }</code></pre>
 <p>Functor composition (<span class="math">\(\Lambda f\,g\,\alpha. f\ (g\,\alpha)\)</span>) is encoded as follows:</p>
 <pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">newtype</span> <span class="dt">FC</span> f g α <span class="fu">=</span> <span class="dt">FC</span> {<span class="ot"> runFC ::</span> f (g α) }</code></pre>
 <p>Now, let us define some type <code>T</code> which should be a monad:</p>
-<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">newtype</span> <span class="dt">Wrapper</span> a <span class="fu">=</span> <span class="dt">Wrapper</span> {<span class="ot"> runWrapper ::</span> a } <span class="kw">deriving</span> (<span class="kw">Show</span>, <span class="kw">Functor</span>)
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">newtype</span> <span class="dt">Wrapper</span> a <span class="fu">=</span> <span class="dt">Wrapper</span> {<span class="ot"> runWrapper ::</span> a } <span class="kw">deriving</span> (<span class="dt">Show</span>, <span class="dt">Functor</span>)
 <span class="ot">&gt;</span> <span class="kw">instance</span> <span class="dt">Monoidy</span> <span class="dt">NT</span> <span class="dt">FC</span> <span class="dt">Id</span> <span class="dt">Wrapper</span> <span class="kw">where</span>
 <span class="ot">&gt;</span>   munit <span class="fu">=</span> <span class="dt">NT</span> <span class="fu">$</span> <span class="dt">Wrapper</span> <span class="fu">.</span> runId
 <span class="ot">&gt;</span>   mjoin <span class="fu">=</span> <span class="dt">NT</span> <span class="fu">$</span> runWrapper <span class="fu">.</span> runFC</code></pre>
@@ -3039,15 +3103,15 @@ ghci<span class="fu">&gt;</span> runNT mjoin <span class="fu">$</span> <span cla
       <span class="dt">Wrapper</span> {runWrapper <span class="fu">=</span> <span class="st">&quot;hello, world&quot;</span> }</code></pre>
 <p>We can even provide a special binary operator for the appropriate monoids as follows:</p>
 <pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt; (&lt;+&gt;) ::</span> <span class="dt">Monoidy</span> (<span class="ot">→</span>) (,) () m <span class="ot">⇒</span> m <span class="ot">→</span> m <span class="ot">→</span> m
-<span class="ot">&gt;</span> (<span class="fu">&lt;+&gt;</span>) <span class="fu">=</span> <span class="fu">curry</span> mjoin</code></pre>
+<span class="ot">&gt;</span> (<span class="fu">&lt;+&gt;</span>) <span class="fu">=</span> curry mjoin</code></pre>
 <pre class="sourceCode haskell"><code class="sourceCode haskell">ghci<span class="fu">&gt;</span> <span class="dt">Sum</span> <span class="dv">1</span> <span class="fu">&lt;+&gt;</span> <span class="dt">Sum</span> <span class="dv">2</span> <span class="fu">&lt;+&gt;</span> <span class="dt">Sum</span> <span class="dv">4</span>
       <span class="dt">Sum</span> <span class="dv">7</span></code></pre>
 <p>Now, all the extra wrapping that Haskell requires for encoding this is rather cumbersome in actual use. So, we can give traditional <code>Monad</code> and <code>Monoid</code> instances for instances of <code>Monoidy</code>:</p>
 <pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">instance</span> <span class="dt">Monoidy</span> (<span class="ot">→</span>) (,) () m <span class="ot">⇒</span> <span class="dt">Monoid</span> m <span class="kw">where</span>
 <span class="ot">&gt;</span>   mempty <span class="fu">=</span> munit ()
-<span class="ot">&gt;</span>   mappend <span class="fu">=</span> <span class="fu">curry</span> mjoin</code></pre>
-<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">instance</span> (<span class="kw">Functor</span> m, <span class="dt">Monoidy</span> <span class="dt">NT</span> <span class="dt">FC</span> <span class="dt">Id</span> m) <span class="ot">⇒</span> <span class="kw">Monad</span> m <span class="kw">where</span>
-<span class="ot">&gt;</span>   <span class="fu">return</span> x <span class="fu">=</span> runNT munit <span class="fu">$</span> <span class="dt">Id</span> x
+<span class="ot">&gt;</span>   mappend <span class="fu">=</span> curry mjoin</code></pre>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">instance</span> (<span class="dt">Functor</span> m, <span class="dt">Monoidy</span> <span class="dt">NT</span> <span class="dt">FC</span> <span class="dt">Id</span> m) <span class="ot">⇒</span> <span class="dt">Monad</span> m <span class="kw">where</span>
+<span class="ot">&gt;</span>   return x <span class="fu">=</span> runNT munit <span class="fu">$</span> <span class="dt">Id</span> x
 <span class="ot">&gt;</span>   x <span class="fu">&gt;&gt;=</span> f <span class="fu">=</span> runNT mjoin <span class="fu">$</span> <span class="dt">FC</span> (f <span class="ot">`fmap`</span> x)</code></pre>
 <p>And so the following works:</p>
 <pre class="sourceCode haskell"><code class="sourceCode haskell">ghci<span class="fu">&gt;</span> mappend mempty (<span class="dt">Sum</span> <span class="dv">2</span>)
@@ -3056,7 +3120,7 @@ ghci<span class="fu">&gt;</span> mappend (<span class="dt">Product</span> <span 
       <span class="dt">Product</span> <span class="dv">6</span>
 ghci<span class="fu">&gt;</span> join <span class="fu">$</span> <span class="dt">Wrapper</span> <span class="fu">$</span> <span class="dt">Wrapper</span> <span class="st">&quot;hello&quot;</span>
       <span class="dt">Wrapper</span> {runWrapper <span class="fu">=</span> <span class="st">&quot;hello&quot;</span> }
-ghci<span class="fu">&gt;</span> <span class="dt">Wrapper</span> <span class="st">&quot;hello, world&quot;</span> <span class="fu">&gt;&gt;=</span> <span class="fu">return</span>
+ghci<span class="fu">&gt;</span> <span class="dt">Wrapper</span> <span class="st">&quot;hello, world&quot;</span> <span class="fu">&gt;&gt;=</span> return
       <span class="dt">Wrapper</span> {runWrapper <span class="fu">=</span> <span class="st">&quot;hello, world&quot;</span> }</code></pre>
 <h3 id="if-you-got-this-far">If you got this far…</h3>
 <p>I hope you enjoyed that! I can’t express enough my thanks to the people who came before me and helped me indirectly to refine my ideas and understanding of the relationship between monads and monoids. Additionally, a shout-out to the GHC team for adding kind polymorphism!</p>
@@ -3105,12 +3169,12 @@ ghci<span class="fu">&gt;</span> <span class="dt">Wrapper</span> <span class="st
 <span class="ot">&gt;</span> pair x y f <span class="fu">=</span> f x y</code></pre>
 <p>The accessors are easily written, and their type annotations make clear their function:</p>
 <pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt; fst ::</span> <span class="dt">Pair</span> α β <span class="ot">→</span> α
-<span class="ot">&gt;</span> <span class="fu">fst</span> p <span class="fu">=</span> p <span class="fu">$</span> \x y <span class="ot">→</span> x</code></pre>
+<span class="ot">&gt;</span> fst p <span class="fu">=</span> p <span class="fu">$</span> \x y <span class="ot">→</span> x</code></pre>
 <pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt; snd ::</span> <span class="dt">Pair</span> α β <span class="ot">→</span> β
-<span class="ot">&gt;</span> <span class="fu">snd</span> p <span class="fu">=</span> p <span class="fu">$</span> \x y <span class="ot">→</span> y</code></pre>
+<span class="ot">&gt;</span> snd p <span class="fu">=</span> p <span class="fu">$</span> \x y <span class="ot">→</span> y</code></pre>
 <p>Incidentally, <code>fst</code> and <code>snd</code> can also be defined in terms of library functions:</p>
-<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> fst&#39; p <span class="fu">=</span> p <span class="fu">const</span>
-<span class="ot">&gt;</span> snd&#39; p <span class="fu">=</span> p <span class="fu">$</span> <span class="fu">flip</span> <span class="fu">const</span></code></pre>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> fst&#39; p <span class="fu">=</span> p const
+<span class="ot">&gt;</span> snd&#39; p <span class="fu">=</span> p <span class="fu">$</span> flip const</code></pre>
 <p>To demonstrate the benefit our typing constraints, try the following:</p>
 <pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">badAccessor ::</span> <span class="dt">Pair</span> α β <span class="ot">→</span> <span class="dt">String</span>
 badAccessor p <span class="fu">=</span> p <span class="fu">$</span> \x y <span class="ot">→</span> <span class="st">&quot;Hello&quot;</span> <span class="co">-- type error</span></code></pre>

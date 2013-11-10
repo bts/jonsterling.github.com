@@ -68,11 +68,11 @@ MathJax.Hub.Config({
 <span class="ot">&gt;</span> <span class="kw">data</span> <span class="dt">DNat</span> (<span class="ot">n ::</span> <span class="dt">Nat</span>) <span class="kw">where</span>
 <span class="ot">&gt;</span>   <span class="dt">DZ</span><span class="ot"> ::</span> <span class="dt">DNat</span> <span class="dt">Z</span>
 <span class="ot">&gt;</span>   <span class="dt">DS</span><span class="ot"> ::</span> <span class="dt">DNat</span> n <span class="ot">-&gt;</span> <span class="dt">DNat</span> (<span class="dt">S</span> n)</code></pre>
-<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt; natToNum ::</span> <span class="kw">Num</span> a <span class="ot">=&gt;</span> <span class="dt">DNat</span> n <span class="ot">-&gt;</span> a
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt; natToNum ::</span> <span class="dt">Num</span> a <span class="ot">=&gt;</span> <span class="dt">DNat</span> n <span class="ot">-&gt;</span> a
 <span class="ot">&gt;</span> natToNum <span class="dt">DZ</span> <span class="fu">=</span> <span class="dv">0</span>
 <span class="ot">&gt;</span> natToNum (<span class="dt">DS</span> n) <span class="fu">=</span> <span class="dv">1</span> <span class="fu">+</span> natToNum n</code></pre>
-<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">instance</span> <span class="kw">Show</span> (<span class="dt">DNat</span> n) <span class="kw">where</span>
-<span class="ot">&gt;</span>   <span class="fu">show</span> <span class="fu">=</span> <span class="fu">show</span> <span class="fu">.</span> natToNum</code></pre>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">instance</span> <span class="dt">Show</span> (<span class="dt">DNat</span> n) <span class="kw">where</span>
+<span class="ot">&gt;</span>   show <span class="fu">=</span> show <span class="fu">.</span> natToNum</code></pre>
 <p>We wish to have a function to get the index of an item that’s contained in the vector. For that to be safe, we need to be able to prove that the item is even contained in the vector.</p>
 <h3>
 An attempt without explicit witnesses
@@ -84,7 +84,7 @@ An attempt without explicit witnesses
 <span class="kw">instance</span> <span class="dt">Elem'</span> i is <span class="ot">=&gt;</span> <span class="dt">Elem'</span> i (j <span class="ch">': is)</span></code></pre>
 <p>But you’ll quickly find that writing a function which uses this constraint is not a simple proposition. In fact, it would appear to be impossible for more than one reason. If we wish to use type classes in this way, we shall actually have to write an <code>IndexOf</code> type class:</p>
 <pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">class</span> <span class="dt">IndexOf</span> i is <span class="kw">where</span>
-<span class="ot">  indexOf ::</span> <span class="kw">Num</span> a <span class="ot">=&gt;</span> <span class="dt">Vect</span> f is <span class="ot">-&gt;</span> f i <span class="ot">-&gt;</span> a
+<span class="ot">  indexOf ::</span> <span class="dt">Num</span> a <span class="ot">=&gt;</span> <span class="dt">Vect</span> f is <span class="ot">-&gt;</span> f i <span class="ot">-&gt;</span> a
 <span class="kw">instance</span> <span class="dt">IndexOf</span> i (i <span class="ch">': is) where</span>
   indexOf (i <span class="fu">:&lt;</span> is) i' <span class="fu">=</span> <span class="dv">0</span>
 <span class="kw">instance</span> <span class="dt">IndexOf</span> i is <span class="ot">=&gt;</span> <span class="dt">IndexOf</span> i (j <span class="ch">': is) where</span>
@@ -99,7 +99,7 @@ An attempt with explicit witnesses
 <span class="ot">&gt;</span>   <span class="dt">Here</span><span class="ot"> ::</span> <span class="dt">Elem</span> x (x <span class="ch">': xs)</span>
 <span class="ot">&gt;</span>   <span class="dt">There</span><span class="ot"> ::</span> <span class="dt">Elem</span> x xs <span class="ot">-&gt;</span> <span class="dt">Elem</span> x (y <span class="ch">': xs)</span></code></pre>
 <p>And so we implement <code>indexOf</code> by recursing through both the values <em>and</em> the layers of proofs!</p>
-<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt; indexOf ::</span> <span class="kw">Num</span> a <span class="ot">=&gt;</span> <span class="dt">Vect</span> f is <span class="ot">-&gt;</span> f i <span class="ot">-&gt;</span> <span class="dt">Elem</span> i is <span class="ot">-&gt;</span> a
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt; indexOf ::</span> <span class="dt">Num</span> a <span class="ot">=&gt;</span> <span class="dt">Vect</span> f is <span class="ot">-&gt;</span> f i <span class="ot">-&gt;</span> <span class="dt">Elem</span> i is <span class="ot">-&gt;</span> a
 <span class="ot">&gt;</span> indexOf (x <span class="fu">:&lt;</span> xs) x' <span class="dt">Here</span> <span class="fu">=</span> <span class="dv">0</span>
 <span class="ot">&gt;</span> indexOf (y <span class="fu">:&lt;</span> xs) x (<span class="dt">There</span> p) <span class="fu">=</span> <span class="dv">1</span> <span class="fu">+</span> indexOf xs x p</code></pre>
 <p>But, of course, this is absolutely useless at a glance, since in order to even use the function, the programmer has to type a chain of proofs isomorphic to the Peano encoding of the item’s index anyway!</p>
@@ -130,16 +130,16 @@ Another example: safe vector access
 <span class="ot">&gt;</span> <span class="kw">type</span> <span class="kw">instance</span> <span class="dt">At</span> (x <span class="ch">': xs) Z = x</span>
 <span class="ot">&gt;</span> <span class="kw">type</span> <span class="kw">instance</span> <span class="dt">At</span> (x <span class="ch">': xs) (S n) = At xs n</span></code></pre>
 <p>And now we need a type of less-than proofs:</p>
-<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">data</span> <span class="kw">LT</span> (<span class="ot">l ::</span> <span class="dt">Nat</span>) (<span class="ot">r ::</span> <span class="dt">Nat</span>) <span class="kw">where</span>
-<span class="ot">&gt;</span>   <span class="dt">ZLT</span><span class="ot"> ::</span> <span class="kw">LT</span> <span class="dt">Z</span> (<span class="dt">S</span> n)
-<span class="ot">&gt;</span>   <span class="dt">SLT</span><span class="ot"> ::</span> <span class="kw">LT</span> n m <span class="ot">-&gt;</span> <span class="kw">LT</span> (<span class="dt">S</span> n) (<span class="dt">S</span> m)</code></pre>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">data</span> <span class="dt">LT</span> (<span class="ot">l ::</span> <span class="dt">Nat</span>) (<span class="ot">r ::</span> <span class="dt">Nat</span>) <span class="kw">where</span>
+<span class="ot">&gt;</span>   <span class="dt">ZLT</span><span class="ot"> ::</span> <span class="dt">LT</span> <span class="dt">Z</span> (<span class="dt">S</span> n)
+<span class="ot">&gt;</span>   <span class="dt">SLT</span><span class="ot"> ::</span> <span class="dt">LT</span> n m <span class="ot">-&gt;</span> <span class="dt">LT</span> (<span class="dt">S</span> n) (<span class="dt">S</span> m)</code></pre>
 <p>The way we go about <code>at</code> is much the same as in the previous example, just a tiny bit more complicated in the types.</p>
-<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt; at ::</span> <span class="dt">Vect</span> f is <span class="ot">-&gt;</span> <span class="dt">DNat</span> n <span class="ot">-&gt;</span> <span class="kw">LT</span> n (<span class="dt">Length</span> is) <span class="ot">-&gt;</span> f (<span class="dt">At</span> is n)
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt; at ::</span> <span class="dt">Vect</span> f is <span class="ot">-&gt;</span> <span class="dt">DNat</span> n <span class="ot">-&gt;</span> <span class="dt">LT</span> n (<span class="dt">Length</span> is) <span class="ot">-&gt;</span> f (<span class="dt">At</span> is n)
 <span class="ot">&gt;</span> at (x <span class="fu">:&lt;</span> xs) <span class="dt">DZ</span> <span class="dt">ZLT</span> <span class="fu">=</span> x
 <span class="ot">&gt;</span> at (y <span class="fu">:&lt;</span> xs) (<span class="dt">DS</span> n) (<span class="dt">SLT</span> lt) <span class="fu">=</span> at xs n lt</code></pre>
-<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">instance</span> <span class="dt">Infer</span> (<span class="kw">LT</span> <span class="dt">Z</span> (<span class="dt">S</span> n)) <span class="kw">where</span>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">instance</span> <span class="dt">Infer</span> (<span class="dt">LT</span> <span class="dt">Z</span> (<span class="dt">S</span> n)) <span class="kw">where</span>
 <span class="ot">&gt;</span>   infer <span class="fu">=</span> <span class="dt">ZLT</span></code></pre>
-<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">instance</span> <span class="dt">Infer</span> (<span class="kw">LT</span> n m) <span class="ot">=&gt;</span> <span class="dt">Infer</span> (<span class="kw">LT</span> (<span class="dt">S</span> n) (<span class="dt">S</span> m)) <span class="kw">where</span>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">instance</span> <span class="dt">Infer</span> (<span class="dt">LT</span> n m) <span class="ot">=&gt;</span> <span class="dt">Infer</span> (<span class="dt">LT</span> (<span class="dt">S</span> n) (<span class="dt">S</span> m)) <span class="kw">where</span>
 <span class="ot">&gt;</span>   infer <span class="fu">=</span> <span class="dt">SLT</span> infer</code></pre>
 <pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> v <span class="fu">@.</span> i <span class="fu">=</span> at v i infer</code></pre>
 <pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> hailMary <span class="fu">=</span> testVect <span class="fu">@.</span> (<span class="dt">DS</span> <span class="dt">DZ</span>) <span class="co">-- 2</span></code></pre>
@@ -152,21 +152,21 @@ Inferring dynamic proofs
 <span class="ot">&gt;   inferDynamic ::</span> <span class="dt">Maybe</span> p</code></pre>
 <p>We have to go through this little dance for each proof which we want to make available dynamically. The routine is repetitive enough that one could conceivably use Template Haskell to factor it out, though I’d certainly be pleased to learn if there was a more clean and succinct way of doing it.</p>
 <pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">instance</span> <span class="dt">DynamicInfer</span> (<span class="dt">Elem</span> x (x <span class="ch">': xs)) where</span>
-<span class="ot">&gt;</span>   inferDynamic <span class="fu">=</span> <span class="kw">Just</span> infer
+<span class="ot">&gt;</span>   inferDynamic <span class="fu">=</span> <span class="dt">Just</span> infer
 <span class="ot">&gt;</span> <span class="kw">instance</span> <span class="dt">DynamicInfer</span> (<span class="dt">Elem</span> x xs) <span class="ot">=&gt;</span> <span class="dt">DynamicInfer</span> (<span class="dt">Elem</span> x (y <span class="ch">': xs)) where</span>
 <span class="ot">&gt;</span>   inferDynamic <span class="fu">=</span> <span class="dt">There</span> <span class="fu">&lt;$&gt;</span> inferDynamic
 <span class="ot">&gt;</span> <span class="kw">instance</span> <span class="dt">DynamicInfer</span> (<span class="dt">Elem</span> x ys) <span class="kw">where</span>
-<span class="ot">&gt;</span>   inferDynamic <span class="fu">=</span> <span class="kw">Nothing</span></code></pre>
-<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">instance</span> <span class="dt">DynamicInfer</span> (<span class="kw">LT</span> <span class="dt">Z</span> (<span class="dt">S</span> n)) <span class="kw">where</span>
-<span class="ot">&gt;</span>   inferDynamic <span class="fu">=</span> <span class="kw">Just</span> infer
-<span class="ot">&gt;</span> <span class="kw">instance</span> <span class="dt">DynamicInfer</span> (<span class="kw">LT</span> n m) <span class="ot">=&gt;</span> <span class="dt">DynamicInfer</span> (<span class="kw">LT</span> (<span class="dt">S</span> n) (<span class="dt">S</span> m)) <span class="kw">where</span>
+<span class="ot">&gt;</span>   inferDynamic <span class="fu">=</span> <span class="dt">Nothing</span></code></pre>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">instance</span> <span class="dt">DynamicInfer</span> (<span class="dt">LT</span> <span class="dt">Z</span> (<span class="dt">S</span> n)) <span class="kw">where</span>
+<span class="ot">&gt;</span>   inferDynamic <span class="fu">=</span> <span class="dt">Just</span> infer
+<span class="ot">&gt;</span> <span class="kw">instance</span> <span class="dt">DynamicInfer</span> (<span class="dt">LT</span> n m) <span class="ot">=&gt;</span> <span class="dt">DynamicInfer</span> (<span class="dt">LT</span> (<span class="dt">S</span> n) (<span class="dt">S</span> m)) <span class="kw">where</span>
 <span class="ot">&gt;</span>   inferDynamic <span class="fu">=</span> <span class="dt">SLT</span> <span class="fu">&lt;$&gt;</span> inferDynamic
-<span class="ot">&gt;</span> <span class="kw">instance</span> <span class="dt">DynamicInfer</span> (<span class="kw">LT</span> n m) <span class="kw">where</span>
-<span class="ot">&gt;</span>   inferDynamic <span class="fu">=</span> <span class="kw">Nothing</span></code></pre>
+<span class="ot">&gt;</span> <span class="kw">instance</span> <span class="dt">DynamicInfer</span> (<span class="dt">LT</span> n m) <span class="kw">where</span>
+<span class="ot">&gt;</span>   inferDynamic <span class="fu">=</span> <span class="dt">Nothing</span></code></pre>
 <p>And now it is trivial to make dynamic versions of our functions:</p>
-<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt; dynamicIndexOf ::</span> <span class="kw">Num</span> a <span class="ot">=&gt;</span> <span class="dt">Vect</span> f is <span class="ot">-&gt;</span> f i <span class="ot">-&gt;</span> <span class="dt">Maybe</span> a
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt; dynamicIndexOf ::</span> <span class="dt">Num</span> a <span class="ot">=&gt;</span> <span class="dt">Vect</span> f is <span class="ot">-&gt;</span> f i <span class="ot">-&gt;</span> <span class="dt">Maybe</span> a
 <span class="ot">&gt;</span> dynamicIndexOf xs x <span class="fu">=</span> indexOf xs x <span class="fu">&lt;$&gt;</span> inferDynamic</code></pre>
-<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt; dynamicAt ::</span> <span class="dt">DynamicInfer</span> (<span class="kw">LT</span> n (<span class="dt">Length</span> is)) <span class="ot">=&gt;</span> <span class="dt">Vect</span> f is <span class="ot">-&gt;</span> <span class="dt">DNat</span> n <span class="ot">-&gt;</span> <span class="dt">Maybe</span> (f (<span class="dt">At</span> is n))
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt; dynamicAt ::</span> <span class="dt">DynamicInfer</span> (<span class="dt">LT</span> n (<span class="dt">Length</span> is)) <span class="ot">=&gt;</span> <span class="dt">Vect</span> f is <span class="ot">-&gt;</span> <span class="dt">DNat</span> n <span class="ot">-&gt;</span> <span class="dt">Maybe</span> (f (<span class="dt">At</span> is n))
 <span class="ot">&gt;</span> dynamicAt xs i <span class="fu">=</span> at xs i <span class="fu">&lt;$&gt;</span> inferDynamic</code></pre></article>
 <h1>Want to comment?</h1>
 <p> I’m @jonsterling on <a href="http://www.twitter.com/jonsterling">Twitter</a> and <a href="https://alpha.app.net/jonsterling">App.net</a>.</p>

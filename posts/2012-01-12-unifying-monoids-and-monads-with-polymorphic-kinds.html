@@ -87,27 +87,27 @@ A monad is just a monoid in the category of endofunctors, what’s the problem? 
 <span class="ot">&gt;</span> <span class="kw">import</span> Control.Monad (Monad(..))
 <span class="ot">&gt;</span> <span class="kw">import</span> Data.Monoid (Monoid(..))</code></pre>
 <p>First we define the type class <code>Monoidy</code>:</p>
-<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">class</span> <span class="dt">Monoidy</span> (<span class="fu">~&gt;</span>) comp <span class="fu">id</span> m <span class="fu">|</span> m (<span class="fu">~&gt;</span>) <span class="ot">→</span> comp <span class="fu">id</span> <span class="kw">where</span>
-<span class="ot">&gt;   munit ::</span> <span class="fu">id</span> <span class="fu">~&gt;</span> m
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">class</span> <span class="dt">Monoidy</span> (<span class="fu">~&gt;</span>) comp id m <span class="fu">|</span> m (<span class="fu">~&gt;</span>) <span class="ot">→</span> comp id <span class="kw">where</span>
+<span class="ot">&gt;   munit ::</span> id <span class="fu">~&gt;</span> m
 <span class="ot">&gt;   mjoin ::</span> m <span class="ot">`comp`</span> m <span class="fu">~&gt;</span> m</code></pre>
 <p>We use functional dependencies to help the typechecker understand that <code>m</code> and <code>~&gt;</code> uniquely determine <code>comp</code> (<span class="math">\(times\)</span>) and <code>id</code>.</p>
 <p>This kind of type class would not have been possible in previous versions of GHC; with the new kind system, however, we can abstract over kinds!<sup><a href="#fn2" class="footnoteRef" id="fnref2">2</a></sup> Now, let’s create types for the additive and multiplicative monoids over the natural numbers:</p>
-<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">newtype</span> <span class="dt">Sum</span> a <span class="fu">=</span> <span class="dt">Sum</span> a <span class="kw">deriving</span> <span class="kw">Show</span>
-<span class="ot">&gt;</span> <span class="kw">newtype</span> <span class="dt">Product</span> a <span class="fu">=</span> <span class="dt">Product</span> a <span class="kw">deriving</span> <span class="kw">Show</span>
-<span class="ot">&gt;</span> <span class="kw">instance</span> <span class="kw">Num</span> a <span class="ot">⇒</span> <span class="dt">Monoidy</span> (<span class="ot">→</span>) (,) () (<span class="dt">Sum</span> a) <span class="kw">where</span>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">newtype</span> <span class="dt">Sum</span> a <span class="fu">=</span> <span class="dt">Sum</span> a <span class="kw">deriving</span> <span class="dt">Show</span>
+<span class="ot">&gt;</span> <span class="kw">newtype</span> <span class="dt">Product</span> a <span class="fu">=</span> <span class="dt">Product</span> a <span class="kw">deriving</span> <span class="dt">Show</span>
+<span class="ot">&gt;</span> <span class="kw">instance</span> <span class="dt">Num</span> a <span class="ot">⇒</span> <span class="dt">Monoidy</span> (<span class="ot">→</span>) (,) () (<span class="dt">Sum</span> a) <span class="kw">where</span>
 <span class="ot">&gt;</span>   munit _ <span class="fu">=</span> <span class="dt">Sum</span> <span class="dv">0</span>
 <span class="ot">&gt;</span>   mjoin (<span class="dt">Sum</span> x, <span class="dt">Sum</span> y) <span class="fu">=</span> <span class="dt">Sum</span> <span class="fu">$</span> x <span class="fu">+</span> y
-<span class="ot">&gt;</span> <span class="kw">instance</span> <span class="kw">Num</span> a <span class="ot">⇒</span> <span class="dt">Monoidy</span> (<span class="ot">→</span>) (,) () (<span class="dt">Product</span> a) <span class="kw">where</span>
+<span class="ot">&gt;</span> <span class="kw">instance</span> <span class="dt">Num</span> a <span class="ot">⇒</span> <span class="dt">Monoidy</span> (<span class="ot">→</span>) (,) () (<span class="dt">Product</span> a) <span class="kw">where</span>
 <span class="ot">&gt;</span>   munit _ <span class="fu">=</span> <span class="dt">Product</span> <span class="dv">1</span>
 <span class="ot">&gt;</span>   mjoin (<span class="dt">Product</span> x, <span class="dt">Product</span> y) <span class="fu">=</span> <span class="dt">Product</span> <span class="fu">$</span> x <span class="fu">*</span> y</code></pre>
 <p>It will be slightly more complicated to make a monadic instance with <code>Monoidy</code>. First, we need to define the identity functor, a type for natural transformations, and a type for functor composition:</p>
-<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">newtype</span> <span class="dt">Id</span> α <span class="fu">=</span> <span class="dt">Id</span> {<span class="ot"> runId ::</span> α } <span class="kw">deriving</span> <span class="kw">Functor</span></code></pre>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">newtype</span> <span class="dt">Id</span> α <span class="fu">=</span> <span class="dt">Id</span> {<span class="ot"> runId ::</span> α } <span class="kw">deriving</span> <span class="dt">Functor</span></code></pre>
 <p>A natural transformation (<span class="math">\(\Lambda f\,g\,\alpha. (f\,\alpha)\to(g\,\alpha)\)</span>) may be encoded in Haskell as follows:</p>
 <pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">newtype</span> <span class="dt">NT</span> f g <span class="fu">=</span> <span class="dt">NT</span> {<span class="ot"> runNT ::</span> <span class="ot">∀</span> α. f α <span class="ot">→</span> g α }</code></pre>
 <p>Functor composition (<span class="math">\(\Lambda f\,g\,\alpha. f\ (g\,\alpha)\)</span>) is encoded as follows:</p>
 <pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">newtype</span> <span class="dt">FC</span> f g α <span class="fu">=</span> <span class="dt">FC</span> {<span class="ot"> runFC ::</span> f (g α) }</code></pre>
 <p>Now, let us define some type <code>T</code> which should be a monad:</p>
-<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">newtype</span> <span class="dt">Wrapper</span> a <span class="fu">=</span> <span class="dt">Wrapper</span> {<span class="ot"> runWrapper ::</span> a } <span class="kw">deriving</span> (<span class="kw">Show</span>, <span class="kw">Functor</span>)
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">newtype</span> <span class="dt">Wrapper</span> a <span class="fu">=</span> <span class="dt">Wrapper</span> {<span class="ot"> runWrapper ::</span> a } <span class="kw">deriving</span> (<span class="dt">Show</span>, <span class="dt">Functor</span>)
 <span class="ot">&gt;</span> <span class="kw">instance</span> <span class="dt">Monoidy</span> <span class="dt">NT</span> <span class="dt">FC</span> <span class="dt">Id</span> <span class="dt">Wrapper</span> <span class="kw">where</span>
 <span class="ot">&gt;</span>   munit <span class="fu">=</span> <span class="dt">NT</span> <span class="fu">$</span> <span class="dt">Wrapper</span> <span class="fu">.</span> runId
 <span class="ot">&gt;</span>   mjoin <span class="fu">=</span> <span class="dt">NT</span> <span class="fu">$</span> runWrapper <span class="fu">.</span> runFC</code></pre>
@@ -120,15 +120,15 @@ ghci<span class="fu">&gt;</span> runNT mjoin <span class="fu">$</span> <span cla
       <span class="dt">Wrapper</span> {runWrapper <span class="fu">=</span> <span class="st">&quot;hello, world&quot;</span> }</code></pre>
 <p>We can even provide a special binary operator for the appropriate monoids as follows:</p>
 <pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt; (&lt;+&gt;) ::</span> <span class="dt">Monoidy</span> (<span class="ot">→</span>) (,) () m <span class="ot">⇒</span> m <span class="ot">→</span> m <span class="ot">→</span> m
-<span class="ot">&gt;</span> (<span class="fu">&lt;+&gt;</span>) <span class="fu">=</span> <span class="fu">curry</span> mjoin</code></pre>
+<span class="ot">&gt;</span> (<span class="fu">&lt;+&gt;</span>) <span class="fu">=</span> curry mjoin</code></pre>
 <pre class="sourceCode haskell"><code class="sourceCode haskell">ghci<span class="fu">&gt;</span> <span class="dt">Sum</span> <span class="dv">1</span> <span class="fu">&lt;+&gt;</span> <span class="dt">Sum</span> <span class="dv">2</span> <span class="fu">&lt;+&gt;</span> <span class="dt">Sum</span> <span class="dv">4</span>
       <span class="dt">Sum</span> <span class="dv">7</span></code></pre>
 <p>Now, all the extra wrapping that Haskell requires for encoding this is rather cumbersome in actual use. So, we can give traditional <code>Monad</code> and <code>Monoid</code> instances for instances of <code>Monoidy</code>:</p>
 <pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">instance</span> <span class="dt">Monoidy</span> (<span class="ot">→</span>) (,) () m <span class="ot">⇒</span> <span class="dt">Monoid</span> m <span class="kw">where</span>
 <span class="ot">&gt;</span>   mempty <span class="fu">=</span> munit ()
-<span class="ot">&gt;</span>   mappend <span class="fu">=</span> <span class="fu">curry</span> mjoin</code></pre>
-<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">instance</span> (<span class="kw">Functor</span> m, <span class="dt">Monoidy</span> <span class="dt">NT</span> <span class="dt">FC</span> <span class="dt">Id</span> m) <span class="ot">⇒</span> <span class="kw">Monad</span> m <span class="kw">where</span>
-<span class="ot">&gt;</span>   <span class="fu">return</span> x <span class="fu">=</span> runNT munit <span class="fu">$</span> <span class="dt">Id</span> x
+<span class="ot">&gt;</span>   mappend <span class="fu">=</span> curry mjoin</code></pre>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">instance</span> (<span class="dt">Functor</span> m, <span class="dt">Monoidy</span> <span class="dt">NT</span> <span class="dt">FC</span> <span class="dt">Id</span> m) <span class="ot">⇒</span> <span class="dt">Monad</span> m <span class="kw">where</span>
+<span class="ot">&gt;</span>   return x <span class="fu">=</span> runNT munit <span class="fu">$</span> <span class="dt">Id</span> x
 <span class="ot">&gt;</span>   x <span class="fu">&gt;&gt;=</span> f <span class="fu">=</span> runNT mjoin <span class="fu">$</span> <span class="dt">FC</span> (f <span class="ot">`fmap`</span> x)</code></pre>
 <p>And so the following works:</p>
 <pre class="sourceCode haskell"><code class="sourceCode haskell">ghci<span class="fu">&gt;</span> mappend mempty (<span class="dt">Sum</span> <span class="dv">2</span>)
@@ -137,7 +137,7 @@ ghci<span class="fu">&gt;</span> mappend (<span class="dt">Product</span> <span 
       <span class="dt">Product</span> <span class="dv">6</span>
 ghci<span class="fu">&gt;</span> join <span class="fu">$</span> <span class="dt">Wrapper</span> <span class="fu">$</span> <span class="dt">Wrapper</span> <span class="st">&quot;hello&quot;</span>
       <span class="dt">Wrapper</span> {runWrapper <span class="fu">=</span> <span class="st">&quot;hello&quot;</span> }
-ghci<span class="fu">&gt;</span> <span class="dt">Wrapper</span> <span class="st">&quot;hello, world&quot;</span> <span class="fu">&gt;&gt;=</span> <span class="fu">return</span>
+ghci<span class="fu">&gt;</span> <span class="dt">Wrapper</span> <span class="st">&quot;hello, world&quot;</span> <span class="fu">&gt;&gt;=</span> return
       <span class="dt">Wrapper</span> {runWrapper <span class="fu">=</span> <span class="st">&quot;hello, world&quot;</span> }</code></pre>
 <h3 id="if-you-got-this-far">If you got this far…</h3>
 <p>I hope you enjoyed that! I can’t express enough my thanks to the people who came before me and helped me indirectly to refine my ideas and understanding of the relationship between monads and monoids. Additionally, a shout-out to the GHC team for adding kind polymorphism!</p>

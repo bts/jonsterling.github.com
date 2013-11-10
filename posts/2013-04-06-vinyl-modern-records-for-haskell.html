@@ -67,7 +67,7 @@ cabal install vinyl</code></pre>
 <p>Now, let’s try to make an entity that represents a man:</p>
 <pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> jon <span class="fu">=</span> name <span class="fu">=:</span> <span class="st">&quot;jon&quot;</span>
 <span class="ot">&gt;</span>    <span class="fu">&lt;+&gt;</span> age <span class="fu">=:</span> <span class="dv">20</span>
-<span class="ot">&gt;</span>    <span class="fu">&lt;+&gt;</span> sleeping <span class="fu">=:</span> <span class="kw">False</span></code></pre>
+<span class="ot">&gt;</span>    <span class="fu">&lt;+&gt;</span> sleeping <span class="fu">=:</span> <span class="dt">False</span></code></pre>
 <p>We could make an alias for the sort of entity that <code>jon</code> is:</p>
 <pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">type</span> <span class="dt">LifeForm</span> <span class="fu">=</span> [<span class="st">&quot;name&quot;</span> <span class="ot">::</span><span class="fu">:</span> <span class="dt">String</span>, <span class="st">&quot;age&quot;</span> <span class="ot">::</span><span class="fu">:</span> <span class="dt">Int</span>, <span class="st">&quot;sleeping&quot;</span> <span class="ot">::</span><span class="fu">:</span> <span class="dt">Bool</span>]
 <span class="ot">&gt; jon ::</span> <span class="dt">PlainRec</span> <span class="dt">LifeForm</span></code></pre>
@@ -75,21 +75,21 @@ cabal install vinyl</code></pre>
 <pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> master <span class="fu">=</span> <span class="dt">Field</span><span class="ot"> ::</span> <span class="st">&quot;master&quot;</span> <span class="ot">::</span><span class="fu">:</span> <span class="dt">PlainRec</span> <span class="dt">LifeForm</span></code></pre>
 <pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> tucker <span class="fu">=</span> name <span class="fu">=:</span> <span class="st">&quot;tucker&quot;</span>
 <span class="ot">&gt;</span>       <span class="fu">&lt;+&gt;</span> age <span class="fu">=:</span> <span class="dv">7</span>
-<span class="ot">&gt;</span>       <span class="fu">&lt;+&gt;</span> sleeping <span class="fu">=:</span> <span class="kw">True</span>
+<span class="ot">&gt;</span>       <span class="fu">&lt;+&gt;</span> sleeping <span class="fu">=:</span> <span class="dt">True</span>
 <span class="ot">&gt;</span>       <span class="fu">&lt;+&gt;</span> master <span class="fu">=:</span> jon</code></pre>
 <h2 id="using-lenses">Using Lenses</h2>
 <p>Now, if we want to wake entities up, we don’t want to have to write a separate wake-up function for both dogs and men (even though they are of different type). Luckily, we can use the built-in lenses to focus on a particular field in the record for access and update, without losing additional information:</p>
 <pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt; wakeUp ::</span> ((<span class="st">&quot;sleeping&quot;</span> <span class="ot">::</span><span class="fu">:</span> <span class="dt">Bool</span>) ∈ fields) <span class="ot">=&gt;</span> <span class="dt">PlainRec</span> fields <span class="ot">-&gt;</span> <span class="dt">PlainRec</span> fields
-<span class="ot">&gt;</span> wakeUp <span class="fu">=</span> sleeping <span class="ot">`rPut`</span> <span class="kw">False</span></code></pre>
+<span class="ot">&gt;</span> wakeUp <span class="fu">=</span> sleeping <span class="ot">`rPut`</span> <span class="dt">False</span></code></pre>
 <p>Now, the type annotation on <code>wakeUp</code> was not necessary; I just wanted to show how intuitive the type is. Basically, it takes as an input any record that has a <code>BOOL</code> field labelled <code>sleeping</code>, and the modifies that specific field in the record accordingly.</p>
 <pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> tucker' <span class="fu">=</span> wakeUp tucker
 <span class="ot">&gt;</span> jon' <span class="fu">=</span> wakeUp jon</code></pre>
 <p>We can also access the entire lens for a field using the <code>rLens</code> function; since lenses are composable, it’s super easy to do deep update on a record:</p>
 <pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt; masterSleeping ::</span> ((<span class="st">&quot;master&quot;</span> <span class="ot">::</span><span class="fu">:</span> <span class="dt">PlainRec</span> <span class="dt">LifeForm</span>) ∈ fields) <span class="ot">=&gt;</span> <span class="dt">SimpleLens</span> (<span class="dt">PlainRec</span> fields) <span class="dt">Bool</span>
 <span class="ot">&gt;</span> masterSleeping <span class="fu">=</span> rLens master <span class="fu">.</span> rLens sleeping</code></pre>
-<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> tucker'' <span class="fu">=</span> masterSleeping <span class="fu">.~</span> <span class="kw">True</span> <span class="fu">$</span> tucker'</code></pre>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> tucker'' <span class="fu">=</span> masterSleeping <span class="fu">.~</span> <span class="dt">True</span> <span class="fu">$</span> tucker'</code></pre>
 <p>Again, the type annotation is unnecessary. In fact, the seperate definition is also unnecessary, and we could just define:</p>
-<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> tucker''' <span class="fu">=</span> rLens master <span class="fu">.</span> rLens sleeping <span class="fu">.~</span> <span class="kw">True</span> <span class="fu">$</span> tucker'</code></pre>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> tucker''' <span class="fu">=</span> rLens master <span class="fu">.</span> rLens sleeping <span class="fu">.~</span> <span class="dt">True</span> <span class="fu">$</span> tucker'</code></pre>
 <h2 id="subtyping-relation-and-coercion">Subtyping Relation and Coercion</h2>
 <p>A record <code>PlainRec xs</code> is a subtype of a record <code>PlainRec ys</code> if <code>ys ⊆ xs</code>; that is to say, if one record can do everything that another record can, the former is a subtype of the latter. As such, we should be able to provide an upcast operator which “forgets” whatever makes one record different from another (whether it be extra data, or different order).</p>
 <p>Therefore, the following works:</p>
@@ -118,7 +118,7 @@ cabal install vinyl</code></pre>
 <span class="ot">&gt;</span>   vName <span class="fu">=</span> validateName (rGet name p)
 <span class="ot">&gt;</span>   vAge  <span class="fu">=</span> validateAge  (rGet age p)
 <span class="ot">&gt;</span> 
-<span class="ot">&gt;</span>   validateName str <span class="fu">|</span> <span class="fu">all</span> <span class="fu">isAlpha</span> str <span class="fu">=</span> <span class="dt">Success</span> str
+<span class="ot">&gt;</span>   validateName str <span class="fu">|</span> all isAlpha str <span class="fu">=</span> <span class="dt">Success</span> str
 <span class="ot">&gt;</span>   validateName _ <span class="fu">=</span> <span class="dt">Failure</span> [ <span class="st">&quot;name must be alphabetic&quot;</span> ]
 <span class="ot">&gt;</span>   validateAge i <span class="fu">|</span> i <span class="fu">&gt;=</span> <span class="dv">0</span> <span class="fu">=</span> <span class="dt">Success</span> i
 <span class="ot">&gt;</span>   validateAge _ <span class="fu">=</span> <span class="dt">Failure</span> [ <span class="st">&quot;age must be positive&quot;</span> ]</code></pre>
@@ -129,7 +129,7 @@ cabal install vinyl</code></pre>
 <p>Let’s parameterize a record by it: when we do, then an element of type <code>a</code> should be a function <code>Identity a -&gt; Result e a</code>:</p>
 <pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt; vperson ::</span> <span class="dt">Rec</span> <span class="dt">Person</span> (<span class="dt">Validator</span> [<span class="dt">String</span>])
 <span class="ot">&gt;</span> vperson <span class="fu">=</span> <span class="dt">NT</span> validateName <span class="fu">:&amp;</span> <span class="dt">NT</span> validateAge <span class="fu">:&amp;</span> <span class="dt">RNil</span> <span class="kw">where</span>
-<span class="ot">&gt;</span>    validateName (<span class="dt">Identity</span> str) <span class="fu">|</span> <span class="fu">all</span> <span class="fu">isAlpha</span> str <span class="fu">=</span> <span class="dt">Success</span> str
+<span class="ot">&gt;</span>    validateName (<span class="dt">Identity</span> str) <span class="fu">|</span> all isAlpha str <span class="fu">=</span> <span class="dt">Success</span> str
 <span class="ot">&gt;</span>    validateName _ <span class="fu">=</span> <span class="dt">Failure</span> [ <span class="st">&quot;name must be alphabetic&quot;</span> ]
 <span class="ot">&gt;</span>    validateAge (<span class="dt">Identity</span> i) <span class="fu">|</span> i <span class="fu">&gt;=</span> <span class="dv">0</span> <span class="fu">=</span> <span class="dt">Success</span> i
 <span class="ot">&gt;</span>    validateAge _ <span class="fu">=</span> <span class="dt">Failure</span> [ <span class="st">&quot;age must be positive&quot;</span> ]</code></pre>
@@ -145,9 +145,9 @@ badPersonResult  <span class="fu">===</span> name <span class="fu">:=:</span> <s
 runBadPerson  <span class="fu">===</span> <span class="dt">Failure</span> [<span class="st">&quot;name must be alphabetic&quot;</span>]</code></pre>
 <h2 id="fixing-a-polymorphic-record-into-the-identity-functor">Fixing a polymorphic record into the Identity Functor</h2>
 <p>If you produced a record using <code>(=:)</code> and <code>(&lt;+&gt;)</code> without providing a type annotation, then its type is something like this:</p>
-<pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">record ::</span> <span class="kw">Applicative</span> f <span class="ot">=&gt;</span> <span class="dt">Record</span> [ <span class="fu">&lt;</span>bunch <span class="kw">of</span> stuff<span class="fu">&gt;</span> ] f</code></pre>
+<pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">record ::</span> <span class="dt">Applicative</span> f <span class="ot">=&gt;</span> <span class="dt">Record</span> [ <span class="fu">&lt;</span>bunch <span class="kw">of</span> stuff<span class="fu">&gt;</span> ] f</code></pre>
 <p>The problem is then we can’t do anything with the record that requires us to know what its functor is. For instance, <code>cast</code> will fail. So, we might try to provide a type annotation, but that can be a bit brittle and frustrating to have to do. To alleviate this problem, <code>fixRecord</code> is provided:</p>
-<pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">fixRecord ::</span> (forall f<span class="fu">.</span> <span class="kw">Applicative</span> f <span class="ot">=&gt;</span> <span class="dt">Rec</span> rs f) <span class="ot">-&gt;</span> <span class="dt">PlainRec</span> rs</code></pre></article>
+<pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">fixRecord ::</span> (forall f<span class="fu">.</span> <span class="dt">Applicative</span> f <span class="ot">=&gt;</span> <span class="dt">Rec</span> rs f) <span class="ot">-&gt;</span> <span class="dt">PlainRec</span> rs</code></pre></article>
 <h1>Want to comment?</h1>
 <p> I’m @jonsterling on <a href="http://www.twitter.com/jonsterling">Twitter</a> and <a href="https://alpha.app.net/jonsterling">App.net</a>.</p>
 
