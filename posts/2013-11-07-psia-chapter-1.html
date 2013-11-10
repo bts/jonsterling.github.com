@@ -49,14 +49,14 @@ MathJax.Hub.Config({
 <article><p>As I read Bell’s <em>A Primer of Smooth Infinitesimal Analysis</em>, I thought it would be useful for me to write down my workings of the exercises as I went. The proofs are in the language of Intuitionistic Type Theory; according to common practice, I will sometimes omit arguments from application which can easily be inferred from the others.</p>
 <!--more-->
 
-<p>Bell gives several properties of the order relation <span class="math">\(&lt; \)</span> on <span class="math">\(\mathbb{R}\)</span>, which we will express as follows:</p>
+<p>Bell gives several properties of the order relation <span class="math">\(&lt; \)</span> on <span class="math">\(\mR\)</span>, which we will express as follows:</p>
 <p><span class="math">\[\begin{align}
-~\mathsf{transitivity} &amp;: \prod_{a,b,c: \mathbb{R}} a &lt; b \to b &lt; c \to a &lt; c\tag{1}\\
-\mathsf{strictness} &amp;: \prod_{a:\mathbb{R}} a &lt; a \to \bot\tag{2}\\
-\mathsf{compat}_+ &amp;: \prod_{a,b,c:\mathbb{R}} a + c &lt; b + c\tag{3}\\
-\mathsf{compat}_\times &amp;: \prod_{a,b,c:\mathbb{R}} a &lt; b \to 0 &lt; c \to a\times c &lt; b\times c\tag{4}\\
-\mathsf{distinction} &amp;: \prod_{a:\mathbb{R}} 0 &lt; a \lor a &lt; 1\tag{5}\\
-\mathsf{ordering} &amp;: \prod_{a,b:\mathbb{R}} (a = b \to \bot) \to a &lt; b \lor b &lt; a\tag{6}
+~\mathsf{transitivity} &amp;: \prod_{a,b,c: \mR} a &lt; b \to b &lt; c \to a &lt; c\tag{1}\\
+\mathsf{strictness} &amp;: \prod_{a:\mR} a &lt; a \to \bot\tag{2}\\
+\mathsf{compat}_+ &amp;: \prod_{a,b,c:\mR} a + c &lt; b + c\tag{3}\\
+\mathsf{compat}_\times &amp;: \prod_{a,b,c:\mR} a &lt; b \to 0 &lt; c \to a\times c &lt; b\times c\tag{4}\\
+\mathsf{distinction} &amp;: \prod_{a:\mR} 0 &lt; a \lor a &lt; 1\tag{5}\\
+\mathsf{ordering} &amp;: \prod_{a,b:\mR} (a = b \to \bot) \to a &lt; b \lor b &lt; a\tag{6}
 \end{align}\]</span></p>
 <div class="theorem">
 <strong>Exercise 1.1</strong> Show that (i) <span class="math">\(0 &lt; a\)</span> implies <span class="math">\(0\neq a\)</span>; (ii) <span class="math">\(0 &lt; a\)</span> iff <span class="math">\(-a &lt; 0\)</span>; (iii) <span class="math">\(0 &lt; 1 + 1\)</span>; and (iv) <span class="math">\((a &lt; 0 \lor 0 &lt; a)\)</span> implies <span class="math">\(0 &lt; a^2\)</span>.
@@ -82,7 +82,7 @@ MathJax.Hub.Config({
 </div>
 <div class="proof">
 Classically, we can show that from <span class="math">\(a\neq b\)</span>, then <span class="math">\(\lnot (a = x \land b = x)\)</span>, and thence by DM <span class="math">\(a\neq x \lor b \neq x\)</span>, and thence by case analysis we arrive at the goal. Intuitionistically, the proof is a bit different: <span class="math">\[\begin{align}
-&amp;(p: a &lt; b) \mapsto (x: \mathbb{R})\mapsto \\
+&amp;(p: a &lt; b) \mapsto (x: \mR)\mapsto \\
 &amp;\qquad \mathbf{let}\ (q: 0 &lt; b - a) :\equiv \mathsf{compat}_+\ p\ \mathbf{in}\\
 &amp;\qquad \mathbf{let}\ (r : 0 &lt; \frac{x-a}{b-a} \lor \frac{x-a}{b-a} &lt; 1) = \mathsf{distinction}\ \mathbf{in}\\
 &amp;\qquad \mathsf{induction}_\lor\ (\_ \mapsto a &lt; x \lor x &lt; b)\\
@@ -96,14 +96,14 @@ Classically, we can show that from <span class="math">\(a\neq b\)</span>, then <
 </div>
 <div class="proof">
 By the definition of the open interval, the goal for one side of the equivalence is: <span class="math">\[
-\mathsf{from}\ :\ (a &lt; b \to \bot) \to \sum_{x:\mathbb{R}} a &lt; x \land x &lt; b \to \bot
+\mathsf{from}\ :\ (a &lt; b \to \bot) \to \sum_{x:\mR} a &lt; x \land x &lt; b \to \bot
 \]</span> We can construct a term for this as follows: <span class="math">\[
 \mathsf{from}\ :\equiv\ p \mapsto \langle x, (q, r) \rangle \mapsto p\ (\mathsf{transitivity} \ q\ r)
 \]</span> Therefore, <span class="math">\(\lnot (a &lt; b)\)</span> implies that <span class="math">\()a,b( = \emptyset\)</span>. The statement of the other side of the equivalence is as follows: <span class="math">\[
-\mathsf{to}\ :\ \left(\sum_{x:\mathbb{R}}a &lt; x \land x &lt; b \to \bot\right) \to a &lt; b \to \bot
+\mathsf{to}\ :\ \left(\sum_{x:\mR}a &lt; x \land x &lt; b \to \bot\right) \to a &lt; b \to \bot
 \]</span> This is given by the following <em>reductio ad absurdum</em>: <span class="math">\[\begin{align}
 &amp;\mathsf{to} :\equiv p \mapsto (q : a &lt; b) \mapsto\\
-&amp;\qquad \mathbf{let}\ (x : \mathbb{R}) :\equiv \frac{b - a}{2}\ \mathbf{in}\\
+&amp;\qquad \mathbf{let}\ (x : \mR) :\equiv \frac{b - a}{2}\ \mathbf{in}\\
 &amp;\qquad \mathbf{let}\ (s : a &lt; a + x) :\equiv \mathsf{compat}_+\ (\mathsf{compat}_\times\ (\mathsf{compat}_+\ q)\ \mathsf{trivial})\  \mathbf{in}\\
 &amp;\qquad \mathbf{let}\ (t : b - x &lt; b) :\equiv \mathsf{trivial}\ \mathbf{in}\\
 &amp;\qquad \mathbf{let}\ (u : b = a + (b - a)) :\equiv \mathsf{trivial}\ \mathbf{in}\\
