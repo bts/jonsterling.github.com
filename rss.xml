@@ -69,9 +69,10 @@ By the definition of the open interval, the goal for one side of the equivalence
 &amp;p \mapsto (q : a &lt; b) \mapsto\\
 &amp;\qquad \mathbf{let}\ (x : \mathbb{R}) :\equiv \frac{b - a}{2}\ \mathbf{in}\\
 &amp;\qquad \mathbf{let}\ (s : a &lt; a + x) :\equiv \mathsf{compat}_+\ (\mathsf{compat}_\times\ (\mathsf{compat}_+\ q)\ \mathsf{trivial})\  \mathbf{in}\\
-&amp;\qquad \mathbf{let}\ (u : b - x &lt; b) :\equiv \mathsf{trivial}\ \mathbf{in}\\
-&amp;\qquad \mathbf{let}\ (v : b = a + (b - a)) :\equiv \mathsf{trivial}\ \mathbf{in}\\
-&amp;\qquad p\ \langle a + x,\ (s,\ \mathsf{transport}\ (z\mapsto z - x &lt; b)\ v\ u)\rangle
+&amp;\qquad \mathbf{let}\ (t : b - x &lt; b) :\equiv \mathsf{trivial}\ \mathbf{in}\\
+&amp;\qquad \mathbf{let}\ (u : b = a + (b - a)) :\equiv \mathsf{trivial}\ \mathbf{in}\\
+&amp;\qquad \mathbf{let}\ (v : a + x &lt; b) :\equiv \mathsf{transport}\ (z\mapsto z - x &lt; b)\ u\ t\ \mathbf{in}\\
+&amp;\qquad p\ \langle a + x,\ (s,\ v)\rangle
 \end{align}\]</span>
 </div>]]></description>
     <pubDate>Thu, 07 Nov 2013 00:00:00 UT</pubDate>
