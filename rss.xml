@@ -66,7 +66,7 @@ By the definition of the open interval, the goal for one side of the equivalence
 \]</span> Therefore, <span class="math">\(\lnot (a &lt; b)\)</span> implies that <span class="math">\()a,b( = \emptyset\)</span>. The statement of the other side of the equivalence is as follows: <span class="math">\[
 \mathsf{to}\ :\ \left(\sum_{x:\mathbb{R}}a &lt; x \land x &lt; b \to \bot\right) \to a &lt; b \to \bot
 \]</span> This is given by the following <em>reductio ad absurdum</em>: <span class="math">\[\begin{align}
-&amp;p \mapsto (q : a &lt; b) \mapsto\\
+&amp;\mathsf{to} :\equiv p \mapsto (q : a &lt; b) \mapsto\\
 &amp;\qquad \mathbf{let}\ (x : \mathbb{R}) :\equiv \frac{b - a}{2}\ \mathbf{in}\\
 &amp;\qquad \mathbf{let}\ (s : a &lt; a + x) :\equiv \mathsf{compat}_+\ (\mathsf{compat}_\times\ (\mathsf{compat}_+\ q)\ \mathsf{trivial})\  \mathbf{in}\\
 &amp;\qquad \mathbf{let}\ (t : b - x &lt; b) :\equiv \mathsf{trivial}\ \mathbf{in}\\
