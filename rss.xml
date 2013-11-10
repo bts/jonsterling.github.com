@@ -8,9 +8,9 @@
                    type="application/rss+xml" />
         <lastBuildDate>Thu, 07 Nov 2013 00:00:00 UT</lastBuildDate>
         <item>
-    <title>A Primer of Infinitesimal Analysis: Some Exercises from Chapter 1</title>
+    <title>A Primer of Smooth Infinitesimal Analysis: Some Exercises from Chapter 1</title>
     <link>http://www.jonmsterling.com//posts/2013-11-07-psia-chapter-1.html</link>
-    <description><![CDATA[<p>As I read Bell’s <em>A Primer of Infinitesimal Analysis</em>, I thought it would be useful for me to write down my workings of the exercises as I went. The proofs are in the language of Intuitionistic Type Theory; according to common practice, I will sometimes omit arguments from application which can easily be inferred from the others.</p>
+    <description><![CDATA[<p>As I read Bell’s <em>A Primer of Smooth Infinitesimal Analysis</em>, I thought it would be useful for me to write down my workings of the exercises as I went. The proofs are in the language of Intuitionistic Type Theory; according to common practice, I will sometimes omit arguments from application which can easily be inferred from the others.</p>
 <!--more-->
 
 <p>Bell gives several properties of the order relation <span class="math">\(&lt; \)</span> on <span class="math">\(\mathbb{R}\)</span>, which we will express as follows:</p>
