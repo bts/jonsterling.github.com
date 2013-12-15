@@ -464,58 +464,6 @@ Y/Z \quad X/Y &amp;\Rightarrow_\color{red}{\mathbf{???}} X/Z\tag{not provided, b
     <guid>http://www.jonmsterling.com//posts/2013-09-02-scrambling-in-ancient-greek.html</guid>
 </item>
 <item>
-    <title>Towards Univalent Observational Type Theory: First Steps</title>
-    <link>http://www.jonmsterling.com//posts/2013-07-07-towards-univalent-ott.html</link>
-    <description><![CDATA[<p>Last week I <a href="/posts/2013-06-30-terms-indexed-by-canonicity-admit-coercion-across-isomorphism.html">proposed</a> a way to embed non-canonical equality proofs in a type theory in such a way as to force that they are eliminated prior to evaluation. This approach has a few problems. Today, I shall reformulate equality internally after the manner of Altenkirch, McBride <em>et al</em>,<sup><a href="#fn1" class="footnoteRef" id="fnref1">1</a></sup> and again shy away from the problem of computing congruence or substitution over functions, which is quite a bit more difficult.<sup><a href="#fn2" class="footnoteRef" id="fnref2">2</a></sup></p>
-<!--more-->
-
-<p>Let us begin with a very simple inductive-recursive universe  (because we are working almost exclusively in the object language, we shall elide the customary quotation marks which indicate that these are <em>codes</em> for types, not types themselves):</p>
-<p><span class="math">\[\begin{align}
-\mathcal{U} &amp;:\equiv \{\mathbf{0}, \mathbf{1}, \mathbf{2},
-\prod_{\cdot\,:\,\cdot}\cdot, \sum_{\cdot\,:\,\cdot}\cdot \}
-\end{align}\]</span></p>
-<p>And let each code in <span class="math">\(\mathcal{U}\)</span> be translated to the equivalent thing in the metalanguage; we also use <span class="math">\(\cdot\to\cdot\)</span> and <span class="math">\(\cdot\times\cdot\)</span> as shorthands for non-dependent products and sums respectively. We have not included a primitive code of equality in the universe, because it will actually be <em>computed</em> in a type-directed manner. We use a heterogeneous equality code <span class="math">\(x:S\,=\,y:T\)</span> which specifies the kind of evidence required to say that two terms are equivalent up to observation.</p>
-<p><span class="math">\[\begin{align}
-S:\mathcal{U}\,&amp;=\,T:\mathcal{U} &amp;&amp;\mapsto
-\sum_{f:S\to T}\sum_{g:T\to S}((f\circ g):(T\to
-T)\,=\,\text{id}_T:(T\to T))\times((g\circ f):(S\to
-S)\,=\,\text{id}_S:(S\to S))\\
-\_:\mathbf{0}\, &amp;=\,\_:\mathbf{0} &amp;&amp;\mapsto \mathbf{1}\\
-\_:\mathbf{1}\, &amp;=\,\_:\mathbf{1} &amp;&amp;\mapsto \mathbf{1}\\
-\text{true}:\mathbf{2}\,&amp;=\,\text{true}:\mathbf{2} &amp;&amp;\mapsto
-\mathbf{1}\\
-\text{false}:\mathbf{2}\,&amp;=\,\text{false}:\mathbf{2} &amp;&amp;\mapsto
-\mathbf{1}\\
-f:\prod_{x:S}T\, x\,&amp;=\,g:\prod_{y:S&#39;}T&#39;\,y &amp;&amp;\mapsto \prod_{x:S} \prod_{y:S&#39;}
-(x:S\,=\,y:S&#39;) \to (f\,x):(T\,x)\,=\,(g\,y):(T&#39;\,y)\\
-a:\sum_{x:S}T\,x\,&amp;=\,b:\sum_{y:S&#39;}T&#39;\,y &amp;&amp;\mapsto
-(\pi_1a:S\,=\,\pi_1b:S&#39;) \times (\pi_2a:T\, (\pi_1a)\,=\,\pi_2b:T&#39;\, (\pi_1b))\\
-\_:\_\,&amp;=\,\_:\_ &amp;&amp;\mapsto \mathbf{0}
-\end{align}\]</span></p>
-<p>By this definition, equality for functions is pointwise and equality for types is by isomorphism!</p>
-<p>Let us note here that in making isomorphism suffice for a proof of observational equality between types, we must sacrifice proof irrelevance, something included in the original formulation of OTT. Since there may be multiple computationally different proofs that types are isomorphic (such as the isomorphisms of <span class="math">\(\mathbf{2}\)</span> with itself over identity and negation), we cannot truncate proofs in that way if we hope to have proper coercions which make sense.</p>
-<p>As a side effect of our modifications to OTT, it’s now quite a bit easier to implement the coercion function across equal types, since now it suffices to simply apply the left side of the isomorphism:</p>
-<p><span class="math">\[\begin{align}
-s [Q:S\,=\,T\rangle:T \mapsto (\pi_1Q)\,s
-\end{align}\]</span></p>
-<h3 id="exercises">Exercises</h3>
-<ul>
-<li><strong>Exercise 1</strong>. Prove that <span class="math">\(\lnot\circ(\lnot\circ\lnot):(\mathbf{2}\to\mathbf{2})\,=\,\text{id}_\mathbf{2}:(\mathbf{2}\to\mathbf{2})\)</span>.</li>
-<li><strong>Exercise 2.</strong> Construct two distinct proofs that <span class="math">\(\mathbf{2}:\mathcal{U}\,=\,\mathbf{2}:\mathcal{U}\)</span> and demonstrate that coercion <span class="math">\(s[Q\rangle\)</span> respects the particular isomorphism <span class="math">\(Q\)</span> chosen.</li>
-<li><strong>Exercise 3.</strong> Construct a proof <span class="math">\(Q\)</span> that for all <span class="math">\(S,T:\mathcal{U}\)</span>, <span class="math">\(S\times T:\mathcal{U}\,=\,T\times S:\mathcal{U}\)</span>, and demonstrate that for all <span class="math">\(x,y\)</span>, coercion <span class="math">\((x,y)[Q\rangle\mapsto(y,x)\)</span>.</li>
-<li><strong>Exercise 4.</strong> Extend the type theory we have developed to include computable quotients <span class="math">\(S/R:\mathcal{U}\)</span> without introducing non-computable axioms to the metalanguage.</li>
-</ul>
-<div class="footnotes">
-<hr />
-<ol>
-<li id="fn1"><p>Altenkirch, McBride &amp; Swierstra. <a href="http://www.cs.nott.ac.uk/~txa/publ/obseqnow.pdf">Observational Equality, Now!</a><a href="#fnref1">↩</a></p></li>
-<li id="fn2"><p>Serendipitously, the formidable Twan van Laarhoven has been thinking about Univalent OTT lately, and has written <a href="http://twanvl.nl/blog/agda/subst-from-cong">two</a> <a href="http://twanvl.nl/blog/agda/cong-from-refl">pieces</a> about the difficulties in getting proper congruence and induction for identity types in such a theory.<a href="#fnref2">↩</a></p></li>
-</ol>
-</div>]]></description>
-    <pubDate>Sun, 07 Jul 2013 00:00:00 UT</pubDate>
-    <guid>http://www.jonmsterling.com//posts/2013-07-07-towards-univalent-ott.html</guid>
-</item>
-<item>
     <title>Combinatory Categorial Grammar for Ancient Greek</title>
     <link>http://www.jonmsterling.com//posts/2013-05-20-combinatory-categorial-grammar-for-greek.html</link>
     <description><![CDATA[<p>This is the first in a series I intend to write in regard to the syntax of Ancient Greek hyperbaton, and what can be done about it formally using a combinatory categorial grammar<sup><a href="#fn1" class="footnoteRef" id="fnref1">1</a></sup>. We will begin with a pathological example of <span class="math">\(Y_1\)</span> hyperbaton from Sophocles’ <em>Trachinian Women</em>:</p>
