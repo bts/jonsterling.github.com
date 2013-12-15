@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="readability-verification" content="cG3MqZcEVveKZ6mnEFkePAL3Ug79Jxxp5Fn27CM7" />
+<title>JS ⊢ Ditransitives &amp; Datives Without Movement: A Multi-Modal Approach</title>
+<link rel="stylesheet" type="text/css" href="../css/screen.css" />
+<link rel="stylesheet" type="text/css" href="../css/syntax.css" />
+<link rel="stylesheet" type="text/css" href="../css/coqdoc.css" />
+<style type="text/css">
+    @import url(http://nmashton.ca/css/gloss-0.0.1.css);
+</style>
+<script type="text/javascript" src="http://code.jquery.com/jquery-1.8.3.min.js"></script>
+<script type="text/javascript" src="http://nmashton.ca/js/gloss-0.0.1.js"></script>
+<link rel="alternate" type="application/rss+xml" title="Jonathan Sterling" href="../rss.xml" />
+
+
+<!--[if IE]>
+  <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+<!--[if lte IE 7]>
+  <script src="js/IE8.js" type="text/javascript"></script><![endif]-->
+<!--[if lt IE 7]>
+<link rel="stylesheet" type="text/css" media="all" href="css/ie6.css"/><![endif]-->
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+MathJax.Hub.Config({
+  showMathMenu: false,
+  showProcessingMessages: false,
+  messageStyle: "none",
+  'HTML-CSS': {
+    availableFonts: [],
+    webFont: 'TeX',
+  },
+  TeX: {
+    Macros: {
+      gk: ["\\style{font-family:Junicode!important; font-size:1.3em;}{\\text{#1}}", 1]
+    }
+  }
+});
+</script>
+</head>
+<body>
+
+<header>
+<h1><a href="../index.html"><span class="title">Ditransitives &amp; Datives Without Movement: A Multi-Modal Approach.</span></a></h1>
+</header>
+
+<section class="post">
+<article><p>The issue of verbs which appear to take multiple arguments has long been a sticking point for Chomskyan grammarians, with various proposals having taken shape. Here, I’ll describe current approaches in transformational grammar, and demonstrate another approach in Multi-Modal Combinatorial Categorial Grammar. Finally, I’ll discuss the pros and cons of each approach.</p>
+<!--more-->
+
+<p>A common way to address verbs with indirect objects is two have a two-level verbal shell system, where the inner one represents a relational predicate, and the outer one expresses causation and assigns the <span class="math">\(\textit{Agent}\)</span> role. Then, because the outer head is empty, the inner head can move upwards, and we get the word order which we had hoped for. A nice stab at an explanation of how the double object construction works in contrast to the prepositional goal construction is given in a draft by Harley (2007).<sup><a href="#fn1" class="footnoteRef" id="fnref1">1</a></sup></p>
+<p>We wish to address the following constructions:</p>
+<ol style="list-style-type: decimal">
+<li><em>“John gave Mary a book.”</em> (double object construction)</li>
+<li><em>“John gave a book to Mary.”</em> (dative construction)</li>
+<li><em>“John gave to Mary a book.”</em> (dative construction w/ heavy noun shift)</li>
+<li><span style="color:red">*</span><em>“John gave a book Mary.”</em></li>
+</ol>
+<p>In the case of the double object version, we have the inner <span class="math">\(V\)</span> head representing possession: its internal object is the book (the theme), and the external object is Mary (the goal). The outer <span class="math">\(v\)</span> head is causation; <span class="math">\(V\)</span> adjoins with <span class="math">\(v\)</span> and we thence arrive at the surface order. The derivation is:</p>
+<p><span class="math">\[\begin{align}
+&amp;\text{John}\ [v_{caus}\ [\text{Mary}\ [\color{gray}{\text{have}}\ [\text{a book}]]]]\\
+\mapsto
+&amp;\text{John}\ [(v_{caus},\ \color{gray}{\text{have}}_i)\ [\text{Mary}\ [-_i\ [\text{a book}]]]]\tag{head movement}\\
+\mapsto
+&amp;\text{John}\ [\text{gave}_i\ [\text{Mary}\ [-_i\ [\text{a book}]]]]\tag{spell out}
+\end{align}\]</span></p>
+<p>In the case of the prepositional version, the syntax is different: the inner <span class="math">\(V\)</span> head represents some sort of availability relation, taking the goal <span class="math">\(PP\)</span> as its internal object and the theme as its external object. The derivation then is something like this:</p>
+<p><span class="math">\[\begin{align}
+&amp;\text{John}\ [v_{caus}\ [[\text{a book}]\ [\color{gray}{\text{be}}\ [\text{to Mary}]]]]\\
+\mapsto
+&amp;\text{John}\ [(v_{caus},\ \color{gray}{\text{be}}_i)\ [[\text{a book}]\ [-_i\ [\text{to Mary}]]]]\tag{head movement}\\
+\mapsto
+&amp;\text{John}\ [\text{gave}_i\ [[\text{a book}] [-_i\ [\text{to Mary}]]]]\tag{spell out}
+\end{align}\]</span></p>
+<p>We’ll ignore for now the version with heavy <span class="math">\(NP\)</span> shift, since the explanation of that is not very complicated.</p>
+<h3 id="a-multi-modal-combinatorial-approach">A multi-modal combinatorial approach</h3>
+<p>Let us first admit the attractions of the two verbal shells, and attempt to retain it. Our goal will be simply to pare down the state of lexical confusion that we have been thrown into by the above explanations. We should like to have a single lexical entry for the syntactic term which gets pronounced as “gave”, for instance (whereas the above approach requires having two different lexemes which, when combined with <span class="math">\(v_{caus}\)</span> are then pronounced as “gave”—I consider this less than elegant).</p>
+<p>So for both the double object and the dative versions, we will use a structure which is very much in the spirit of Larson (1988)<sup><a href="#fn2" class="footnoteRef" id="fnref2">2</a></sup>; this is the structure which was used in the dative version above, where the theme is the external argument of the inner <span class="math">\(V\)</span> head, and the internal argument is the goal <span class="math">\(PP\)</span>.</p>
+<p>In the beginning, we will follow the example of Harley and simply give two different lexical entries to be pronounced as “gave”, with the one following the double object construction and the other the dative construction. Here is our lexicon (I shall assume the slash operators are left-associative to avoid an explosion of parentheses; I also omit modalities where they do not elucidate the derivation):</p>
+<ul>
+<li><span class="math">\(v_{caus} : vP\backslash NP_{AG}/VP\)</span></li>
+<li><span class="math">\(\text{gave} : VP/NP_{TH}/_\star PP_{GL}\)</span></li>
+<li><span class="math">\(\text{gave}' :  VP/NP_{TH}/_\diamond NP_{GL}\)</span></li>
+<li><span class="math">\(\text{a} : NP/N\)</span></li>
+<li><span class="math">\(\text{book}: N\)</span></li>
+</ul>
+<p>In either case <span class="math">\(\text{gave}(')\)</span> has the interpretation <span class="math">\(\lambda x.\lambda y. x\ \textbf{exists for}\ y\)</span>.</p>
+<p>Recall the Baldridge modalities <span class="math">\(\{\star, \times, \diamond, \cdot\}\)</span> from <a href="http://www.jonmsterling.com/posts/2013-10-26-resource-sensitivity-in-ccg.html">Hyperbaton &amp; Resource Sensitivity in CCG</a>: in terms of composition, the <span class="math">\(\times\)</span> licenses only the crossed variant, <span class="math">\(\diamond\)</span> only the harmonic, <span class="math">\(\star\)</span> both, and <span class="math">\(\cdot\)</span> neither.</p>
+<p>This is sufficient for us to generate all the good forms above, and rule out the bad ones. Observe that <em>“John gave a book to Mary”</em> is given by the following CCG term:</p>
+<p><span class="math">\[\text{John}\ [[[v_{caus} \circ_\diamond [\text{gave} \circ_\times [\text{a book}]^\uparrow]]\ [\text{to Mary}]]\]</span></p>
+<p>This elaborates (mechanically) to the following typing derivation, which is a proof of syntactic well-formedness, and in fact, semantic well-formedness by the transparent interface between syntax and semantics in CCG.</p>
+<p><span class="math">\[
+\dfrac{
+  \dfrac{\textit{John}}{NP_{AG}}
+  \quad
+  \dfrac{
+    \dfrac{
+      \dfrac{v_{caus}}{vP\backslash NP_{AG}/VP}
+      \quad
+      \dfrac{
+        \dfrac{\textit{gave}}{VP/NP_{TH}/_\star PP_{GL}}
+        \quad
+        \dfrac{\dfrac{\textit{a book}}{NP}}{VP\backslash (VP/NP_{TH})}&lt;\mathbf{T}
+      }{
+        VP/_\star PP_{GL}
+      }&lt;\mathbf{B_\times}
+    }{
+      vP\backslash NP_{AG}/PP_{GL}
+    }&gt;\mathbf{B_\diamond}
+    \quad
+    \dfrac{\textit{to Mary}}{PP_{GL}}
+  }{
+    vP\backslash NP_{AG}
+  }&gt;
+}{
+  v
+}&lt;
+\]</span></p>
+<p>We could achieve the version with heavy <span class="math">\(NP\)</span> shift by applying <span class="math">\(\textit{gave}\)</span> directly to the <span class="math">\(PP\)</span>, rather than doing the crossed-composition dance (for the remainder of this post, I shall elide the typing derivations, since they are quite a pain to type out by hand):</p>
+<p><span class="math">\[
+\text{John}\ [v_{caus}\ [[\text{gave}\ [\text{to Mary}]]\ [\text{a book}]]]
+\]</span></p>
+<p>Some, including Steedman, believe that <span class="math">\(NP\)</span> arguments should be type-raised and then composed into place for case assignment to occur; if we followed this approach, then the <span class="math">\(NP\)</span> shift version would be sufficiently ugly as to not appear simpler than the unshifted one, an intuition we should like to respect.</p>
+<p>The version with the double object construction likewise has a <em>very</em> simple term, though it could be brought closer to the canonical dative version again by type-raising the arguments (which was necessary there, but is optional here).</p>
+<p><span class="math">\[
+\text{John}\ [v_{caus}\ [[\text{gave}'\ \text{Mary}]\ [\text{a book}]]]
+\]</span></p>
+<p>In this term, no advanced combinators were required at all, though we could construct another term which used harmonic composition if we had wanted.</p>
+<p>Note, <span style="color:red">*</span><em>“John gave a book Mary”</em> is unconstructible, because it would require crossed composition of <span class="math">\(\text{gave}'\)</span> with <span class="math">\([\text{a} &gt; \text{book}]^\uparrow\)</span>, which is blocked by the fact that the former has a <span class="math">\(\diamond\)</span> modality, which only licenses harmonic composition. So you can see how very cleanly the multi-modal approach scales to the task of allowing good word order, and blocking the bad.</p>
+<h3 id="ideas-to-reduce-such-verbs-to-a-single-lexical-entry">Ideas to reduce such verbs to a single lexical entry</h3>
+<p>Given polymorphism and the ability eliminate categories into modalities, then we could give a single lexical entry for <span class="math">\(\text{gave}\)</span>:</p>
+<p><span class="math">\[
+\text{gave}: \forall[\sigma\in\{NP,PP\}].\ (VP/NP_{TH})/_{M[\sigma]} \sigma\\
+\begin{align}
+\textbf{where}\ M[PP] \mapsto \star\\
+M[NP] \mapsto \diamond
+\end{align}\]</span></p>
+<p>I’ll admit it’s a bit of a cheat to include it in a lexical entry, but it’s not so crazy to think of it living in the metalanguage (that is, the grammar of the lexicon itself). Certainly this would be a useful rule for English, since it perfectly describes the behavior of ditransitives which double as taking a dative argument.</p>
+<p>It is not difficult to imagine grammars of grammars of grammars, where the smallest is a lexicon which generates strings in a particular language, the next largest is a metalexicon which generates lexical entries, and the largest is a meta-metalexicon which describes the rules by which we may define what may go into a lexicon. The last one would be powerful enough to encode rules like the one described, such that in the middle one, we could give such a rule, and then use it in the small one.</p>
+<h3 id="critical-analysis-comparison">Critical Analysis &amp; Comparison</h3>
+<p>The solution given by Harley is a precious one, particularly in how it is applied to demonstrate the common syntactic origin of ungrammaticalities such as <span style="color:red">*</span><em>“He showed John off the car”</em> and <span style="color:red">*</span><em>“He exhibited John the car”</em>; I unfortunately find myself doubting very strongly that the <em>ex-</em> in <em>exhibit</em> is still being split from the rest of the word in the syntax synchronically. As a Historical Linguist, I must protest that some things be left for us to do!</p>
+<p>Harley’s argument also very nicely explains why it is in particular a prepositional phrase which is the argument in the construction which has <span class="math">\(V\)</span> headed by some sort of relational thing: for one would indeed expect a dative in that position, whereas one would not expect a dative when <span class="math">\(V\)</span> is headed by something with the interpretation <span class="math">\(\lambda x. \lambda y. y\ \textbf{has}\ x\)</span>; and so the accusative in that instance is perfectly natural and expected.</p>
+<p>What I have said above of course only holds if you believe that the only way to construct a dative in English is with a preposition; if Harley is allowed the delusion that a long-calcified syntactic process is still occurring synchronically, then I am certainly allowed the notion that English has a bare dative case in addition to the prepositional one which may be used in restricted syntactic positions.</p>
+<p>Diachronic processes by their very nature result in arbitrariness in the grammar; so I do not find it concerning to end up with a bare dative in one place, and one guarded by a preposition in another, so long as the lexicon is expressive enough to demand one or the other in particular arguments. The notion of a weak dative and a strong dative, to borrow the parlance of my home country, suffices to satisfy my curiosity.</p>
+<p>Finally, it should be noted that we very well could have constructed a version of all this in CCG which mirrored exactly Harley’s solution. One of the things that you find as you begin working in CCG, though, is that whilst it is expressive enough to construct all of transformational grammar, it is often easier to look at simpler constructions which are also allowed, as we have done here. It is uncommon in the CCG community to use empty categories in fact, but it can certainly be done, as I have demonstrated here. The more natural approach would have been to omit it, and then allow the verb to subcategorize for three arguments rather than two. I suggest that much of the additional structure which transformational grammarians introduce in order to derive both word order <em>and</em> sound semantics simultaneously are side effects of the representational language, and become less important when you have a more advanced notion of <em>MERGE</em> which makes <em>MOVE</em> redundant.</p>
+<p>Often, a very complicated tree with a lot of empty space and traces is preferred to a very simple tree, simply because in some cases, there is enough semantic content to populate the entire tree (whereas in my strawman, there is not). It remains to be seen whether this is the correct approach.</p>
+<div class="footnotes">
+<hr />
+<ol>
+<li id="fn1"><p>Harley (2007). <em>The bipartite structure of verbs cross-linguistically, or Why Mary can’t “exhibit John her paintings”</em>. <a href="http://ling.auf.net/lingbuzz/000435">http://ling.auf.net/lingbuzz/000435</a><a href="#fnref1">↩</a></p></li>
+<li id="fn2"><p>Larson (1988). <em>On the double object construction</em>.<a href="#fnref2">↩</a></p></li>
+</ol>
+</div></article>
+<h1>Want to comment?</h1>
+<p> I’m @jonsterling on <a href="http://www.twitter.com/jonsterling">Twitter</a> and <a href="https://alpha.app.net/jonsterling">App.net</a>.</p>
+
+
+<script src="//static.getclicky.com/js" type="text/javascript"></script>
+<script type="text/javascript">try{ clicky.init(66625087);
+    }catch(e){}</script>
+<noscript><p><img alt="Clicky" width="1" height="1" src="//in.getclicky.com/66625087ns.gif" /></p></noscript>
+
+<a rel="me" href="http://twitter.com/jonsterling"></a>
+<a rel="me" href="https://alpha.app.net/jonsterling"></a>
+</body>
+</html>
+
