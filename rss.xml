@@ -21,7 +21,7 @@
 <li><em>“John gave to Mary a book.”</em> (dative construction w/ heavy noun shift)</li>
 <li><span style="color:red">*</span><em>“John gave a book Mary.”</em></li>
 </ol>
-<p>In the case of the double object version, we have the inner <span class="math">\(V\)</span> head representing possession: its internal object is the book (the theme), and the external object is Mary (the goal). The outer <span class="math">\(v\)</span> head is causation; <span class="math">\(V\)</span> adjoins with <span class="math">\(v\)</span> and we thence arrive at the surface order. The derivation is:</p>
+<p>In the case of the double object version, we have the inner <span class="math">\(V\)</span> head representing possession: its internal object is the book, and the external object is Mary. The outer <span class="math">\(v\)</span> head is causation; <span class="math">\(V\)</span> adjoins with <span class="math">\(v\)</span> and we thence arrive at the surface order. The derivation is:</p>
 <p><span class="math">\[\begin{align}
 &amp;\text{John}\ [v_{caus}\ [\text{Mary}\ [\color{gray}{\text{have}}\ [\text{a book}]]]]\\
 \mapsto
@@ -29,7 +29,7 @@
 \mapsto
 &amp;\text{John}\ [\text{gave}_i\ [\text{Mary}\ [-_i\ [\text{a book}]]]]\tag{spell out}
 \end{align}\]</span></p>
-<p>In the case of the prepositional version, the syntax is different: the inner <span class="math">\(V\)</span> head represents some sort of availability relation, taking the goal <span class="math">\(PP\)</span> as its internal object and the theme as its external object. The derivation then is something like this:</p>
+<p>In the case of the prepositional version, the syntax is different: the inner <span class="math">\(V\)</span> head represents some sort of availability relation, taking the <span class="math">\(PP\)</span> as its internal object and the <span class="math">\(NP\)</span> as its external object. The derivation then is something like this:</p>
 <p><span class="math">\[\begin{align}
 &amp;\text{John}\ [v_{caus}\ [[\text{a book}]\ [\color{gray}{\text{be}}\ [\text{to Mary}]]]]\\
 \mapsto
@@ -40,7 +40,7 @@
 <p>We’ll ignore for now the version with heavy <span class="math">\(NP\)</span> shift, since the explanation of that is not very complicated.</p>
 <h3 id="a-multi-modal-combinatorial-approach">A multi-modal combinatorial approach</h3>
 <p>Let us first admit the attractions of the two verbal shells, and attempt to retain it. Our goal will be simply to pare down the state of lexical confusion that we have been thrown into by the above explanations. We should like to have a single lexical entry for the syntactic term which gets pronounced as “gave”, for instance (whereas the above approach requires having two different lexemes which, when combined with <span class="math">\(v_{caus}\)</span> are then pronounced as “gave”—I consider this less than elegant).</p>
-<p>So for both the double object and the dative versions, we will use a structure which is very much in the spirit of Larson (1988)<sup><a href="#fn2" class="footnoteRef" id="fnref2">2</a></sup>; this is the structure which was used in the dative version above, where the theme is the external argument of the inner <span class="math">\(V\)</span> head, and the internal argument is the goal <span class="math">\(PP\)</span>.</p>
+<p>So for both the double object and the dative versions, we will use a structure which is very much in the spirit of Larson (1988)<sup><a href="#fn2" class="footnoteRef" id="fnref2">2</a></sup>; this is the structure which was used in the dative version above, where the <span class="math">\(NP\)</span> is the external argument of the inner <span class="math">\(V\)</span> head, and the internal argument is the <span class="math">\(PP\)</span>.</p>
 <p>In the beginning, we will follow the example of Harley and simply give two different lexical entries to be pronounced as “gave”, with the one following the double object construction and the other the dative construction. Here is our lexicon (I shall assume the slash operators are left-associative to avoid an explosion of parentheses; I also omit modalities where they do not elucidate the derivation):</p>
 <ul>
 <li><span class="math">\(v_{caus} : vP\backslash NP_{AG}/VP\)</span></li>
