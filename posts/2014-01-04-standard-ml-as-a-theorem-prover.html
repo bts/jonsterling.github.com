@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="readability-verification" content="cG3MqZcEVveKZ6mnEFkePAL3Ug79Jxxp5Fn27CM7" />
+<title>JS ⊢ Standard ML as a Theorem Prover, without GADTs</title>
+<link rel="stylesheet" type="text/css" href="../css/screen.css" />
+<link rel="stylesheet" type="text/css" href="../css/syntax.css" />
+<link rel="stylesheet" type="text/css" href="../css/coqdoc.css" />
+<style type="text/css">
+    @import url(http://nmashton.ca/css/gloss-0.0.1.css);
+</style>
+<script type="text/javascript" src="http://code.jquery.com/jquery-1.8.3.min.js"></script>
+<script type="text/javascript" src="http://nmashton.ca/js/gloss-0.0.1.js"></script>
+<link rel="alternate" type="application/rss+xml" title="Jonathan Sterling" href="../rss.xml" />
+
+
+<!--[if IE]>
+  <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+<!--[if lte IE 7]>
+  <script src="js/IE8.js" type="text/javascript"></script><![endif]-->
+<!--[if lt IE 7]>
+<link rel="stylesheet" type="text/css" media="all" href="css/ie6.css"/><![endif]-->
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+MathJax.Hub.Config({
+  showMathMenu: false,
+  showProcessingMessages: false,
+  messageStyle: "none",
+  'HTML-CSS': {
+    availableFonts: [],
+    webFont: 'TeX',
+  },
+  TeX: {
+    Macros: {
+      gk: ["\\style{font-family:Junicode!important; font-size:1.3em;}{\\text{#1}}", 1]
+    }
+  }
+});
+</script>
+</head>
+<body>
+
+<header>
+<h1><a href="../index.html"><span class="title">Standard ML as a Theorem Prover, without GADTs.</span></a></h1>
+</header>
+
+<section class="post">
+<article><p>It is well known that generalized algebraic data types (a sort of phase-locked inductive family) suffice in languages like Haskell<sup><a href="#fn1" class="footnoteRef" id="fnref1">1</a></sup> and OCaml to be used as a deductive system for intuitionistic logic. For instance, the Identity type can be given in OCaml quite simply:</p>
+<pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span class="kw">type</span> (_,_) eq =
+  | <span class="dt">Refl</span> : ('a, 'a) eq</code></pre>
+<p>From there, the various properties of <code>eq</code> can be proved, and then it can be used to prove other things (such as the fact that double negation of the booleans is the identity, etc.). The lack of GADTs in Standard ML might lead one to think that there is no proving to be done there, but we are not quite so bad off as that.</p>
+<p>We can, in fact, speculate that it were possible to construct a datatype which behaved as a congruence relation, even if we cannot construct it in a direct fashion (unless we are Oleg). We simply proceed in an axiomatic fashion:</p>
+<pre class="sourceCode ocaml"><code class="sourceCode ocaml">signature <span class="dt">EQ</span> =
+<span class="kw">sig</span>
+  <span class="kw">type</span> ('a, 'b) eq
+  <span class="kw">val</span> refl  : ('a, 'a) eq
+  <span class="kw">val</span> symm  : ('a, 'b) eq -&gt; ('b, 'a) eq
+  <span class="kw">val</span> trans : ('a, 'b) eq -&gt; ('b, 'c) eq -&gt; ('a, 'c) eq
+
+  <span class="kw">functor</span> <span class="dt">CONG</span> (<span class="dt">P</span> : <span class="kw">sig</span> <span class="kw">type</span> 'a p <span class="kw">end</span>) :
+  <span class="kw">sig</span>
+    <span class="kw">val</span> cong : ('a, 'b) eq -&gt; ('a P<span class="kw">.</span>p, 'b P<span class="kw">.</span>p) eq
+  <span class="kw">end</span>
+<span class="kw">end</span></code></pre>
+<p>The signature above embodies a congruent equivalence relation. The functor for <code>cong</code> (that’s <span class="math">\(\mathsf{ap}\)</span> for the homotopy type theorests) is necessary because type variables in Standard ML range only over monotypes. We can use the same trick to give the booleans and their induction principle:</p>
+<pre class="sourceCode ocaml"><code class="sourceCode ocaml">signature <span class="dt">BOOL</span> =
+<span class="kw">sig</span>
+  <span class="kw">type</span> tt
+  <span class="kw">type</span> ff
+
+  <span class="kw">functor</span> <span class="dt">IND</span> (<span class="dt">P</span> : <span class="kw">sig</span> <span class="kw">type</span> 'b p <span class="kw">end</span>) :
+  <span class="kw">sig</span>
+    <span class="kw">val</span> induction : tt P<span class="kw">.</span>p -&gt; ff P<span class="kw">.</span>p -&gt; 'b P<span class="kw">.</span>p
+  <span class="kw">end</span>
+<span class="kw">end</span></code></pre>
+<p>We can then use <code>eq</code> to model functions by spelling out their equations as axioms:</p>
+<pre class="sourceCode ocaml"><code class="sourceCode ocaml">signature <span class="dt">BOOL_LIB</span> =
+<span class="kw">sig</span>
+  <span class="ot">include</span> BOOL <span class="dt">EQ</span>
+
+  <span class="kw">type</span> 'b not
+  <span class="kw">val</span> not_tt : (tt not, ff) eq
+  <span class="kw">val</span> not_ff : (ff not, tt) eq
+
+  <span class="kw">type</span> ('a, 'b) conj
+  <span class="kw">val</span> tt_and_x ((tt, 'x) conj, 'x) eq
+  <span class="kw">val</span> ff_and_x ((ff, 'x) conj, ff) eq
+<span class="kw">end</span></code></pre>
+<p>It is evident that this is not nearly as good as if we were able to define actual functions using GADTs or proper dependent types, since these equations only hold propositionally: the normal form of <code>tt not</code> is <code>tt not</code>, but we have posited a path from that to <code>ff</code>. So it’s also very important that the axioms we assert are consistent, since we can otherwise very easily collapse our entire system.</p>
+<p>As jerry-rigged as this seems, it will suffice for us to prove a few basic theorems about the booleans; we will speculate that there is an implementation for <code>BOOL_LIB</code> as follows:</p>
+<pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span class="kw">functor</span> <span class="dt">PROOFS</span> (<span class="dt">B</span> : <span class="dt">BOOL_LIB</span>) =
+<span class="kw">struct</span>
+  <span class="ot">open</span> B
+
+  <span class="co">(* Π[x : bool]. not (not x) = x *)</span>
+  <span class="kw">functor</span> <span class="dt">NOTNOT_ID</span> (<span class="dt">X</span> : <span class="kw">sig</span> <span class="kw">type</span> x <span class="kw">end</span>) =
+  <span class="kw">struct</span>
+    <span class="kw">type</span> 'b goal = ('b not not, 'b) eq
+
+    structure <span class="dt">CONG</span> = <span class="dt">CONG</span>(<span class="kw">type</span> 'a p = 'a not)
+    structure <span class="dt">IND</span> = <span class="dt">IND</span>(<span class="kw">type</span> 'b p = 'b goal)
+
+    <span class="kw">val</span> proof : X<span class="kw">.</span>x goal =
+      <span class="kw">let</span> <span class="ot">open</span> IND <span class="dt">CONG</span> <span class="kw">in</span>
+        induction (trans (cong not_tt) not_ff) (trans (cong not_ff) not_tt)
+      <span class="kw">end</span>
+  <span class="kw">end</span>
+
+  <span class="co">(* Π[x,y : bool]. x &amp; y = y &amp; x *)</span>
+  <span class="kw">functor</span> <span class="dt">CONJ_COMMUTATIVE</span> (<span class="dt">X</span> : <span class="kw">sig</span> <span class="kw">type</span> x <span class="kw">type</span> y <span class="kw">end</span>) =
+  <span class="kw">struct</span>
+    <span class="kw">type</span> ('x, 'y) goal = (('x, 'y) conj, ('y, 'x) conj) eq
+
+    structure <span class="dt">IND_x</span> = <span class="dt">IND</span>(<span class="kw">type</span> 'b p = ('b, X<span class="kw">.</span>y) goal)
+    structure <span class="dt">IND_tt_y</span> = <span class="dt">IND</span>(<span class="kw">type</span> 'b p = (tt, 'b) goal)
+    structure <span class="dt">IND_ff_y</span> = <span class="dt">IND</span>(<span class="kw">type</span> 'b p = (ff, 'b) goal)
+
+    <span class="kw">val</span> proof : (X<span class="kw">.</span>x, X<span class="kw">.</span>y) goal =
+      IND_x<span class="kw">.</span>induction
+        (IND_tt_y<span class="kw">.</span>induction refl (trans tt_and_x (symm ff_and_x)))
+        (IND_ff_y<span class="kw">.</span>induction (trans ff_and_x (symm tt_and_x)) refl)
+  <span class="kw">end</span>
+end</code></pre>
+<p>As you can see, <span class="math">\(\prod\)</span> types are given by functors, and <span class="math">\(\sum\)</span> types may be given by structures.</p>
+<h3 id="exercises-for-the-reader">Exercises for the Reader</h3>
+<ol style="list-style-type: decimal">
+<li>Construct the natural numbers and the addition function, and demonstrate its basic properties. Here’s a start:</li>
+</ol>
+<pre class="sourceCode ocaml"><code class="sourceCode ocaml">signature <span class="dt">NAT</span> =
+<span class="kw">sig</span>
+  <span class="kw">type</span> z
+  <span class="kw">type</span> 'n s
+
+  <span class="kw">functor</span> <span class="dt">IND</span>(<span class="dt">P</span> : <span class="kw">sig</span> <span class="kw">type</span> 'n p <span class="kw">end</span>) :
+  <span class="kw">sig</span>
+    <span class="kw">val</span> induction : z P<span class="kw">.</span>p -&gt; 'x s P<span class="kw">.</span>p -&gt; 'n P<span class="kw">.</span>p
+  <span class="kw">end</span>
+<span class="kw">end</span></code></pre>
+<ol start="2" style="list-style-type: decimal">
+<li><strong>(Challenge)</strong> I couldn’t figure out how to express Martin-Löf’s <span class="math">\(J\)</span> eliminator using signatures and functors, but perhaps you can:</li>
+</ol>
+<p><span class="math">\[
+\frac{\Gamma, x:A, y:A, p:\mathsf{Id}_A(x,y) \vdash C(x,y,p):Type \qquad \Gamma, x:A \vdash t : C(x,x,\mathsf{refl}_x)} {\Gamma, x:A, y:A, p:\mathsf{Id}_A(x,y) \vdash J(t;x,y,p) : C(x,y,p)}
+\]</span></p>
+<div class="footnotes">
+<hr />
+<ol>
+<li id="fn1"><p>I would be remiss if I did not note here that Haskell has neither algebraic data types nor inductive families, because of the impossibility of induction under a lazy semantics. But, in the spirit of <a href="http://www.cse.chalmers.se/~nad/publications/danielsson-et-al-popl2006.html">fast-and-loose reasoning</a>, we’ll just pretend.<a href="#fnref1">↩</a></p></li>
+</ol>
+</div></article>
+<h1>Want to comment?</h1>
+<p> I’m @jonsterling on <a href="http://www.twitter.com/jonsterling">Twitter</a> and <a href="https://alpha.app.net/jonsterling">App.net</a>.</p>
+
+
+<script src="//static.getclicky.com/js" type="text/javascript"></script>
+<script type="text/javascript">try{ clicky.init(66625087);
+    }catch(e){}</script>
+<noscript><p><img alt="Clicky" width="1" height="1" src="//in.getclicky.com/66625087ns.gif" /></p></noscript>
+
+<a rel="me" href="http://twitter.com/jonsterling"></a>
+<a rel="me" href="https://alpha.app.net/jonsterling"></a>
+</body>
+</html>
+
