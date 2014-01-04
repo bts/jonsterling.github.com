@@ -89,7 +89,7 @@
         (IND_ff_y<span class="kw">.</span>induction (trans ff_and_x (symm tt_and_x)) refl)
   <span class="kw">end</span>
 end</code></pre>
-<p>As you can see, <span class="math">\(\prod\)</span> types are given by functors, and <span class="math">\(\sum\)</span> types may be given by structures.</p>
+<p>As you can see, <span class="math">\(\prod\)</span> types are given by functors, and <span class="math">\(\sum\)</span> types may be given by structures. I’d like to note that the approach is asserting types, constructors, computational rules and induction principles as axioms, whatever its limitations, is exactly what you may do in any system when you wish to express a type which cannot be constructed natively. For instance, when doing higher inductive types in Agda and Coq, we must postulate the paths which are not reflexivity, and give their computational rules as posited propositional equalities. The same limitation (that things don’t compute nicely) applies, but it is still usable for proving things.</p>
 <h3 id="exercises-for-the-reader">Exercises for the Reader</h3>
 <ol style="list-style-type: decimal">
 <li>Construct the natural numbers and the addition function, and demonstrate its basic properties. Here’s a start:</li>
