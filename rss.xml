@@ -10,7 +10,10 @@
         <item>
     <title>Standard ML as a Theorem Prover, without GADTs</title>
     <link>http://www.jonmsterling.com//posts/2014-01-04-standard-ml-as-a-theorem-prover.html</link>
-    <description><![CDATA[<p>It is well known that generalized algebraic data types (a sort of phase-locked inductive family) suffice in languages like Haskell<sup><a href="#fn1" class="footnoteRef" id="fnref1">1</a></sup> and OCaml to be used as a deductive system for intuitionistic logic. For instance, the Identity type can be given in OCaml quite simply:</p>
+    <description><![CDATA[<p>It is well known that generalized algebraic data types (a sort of phase-locked inductive family) suffice in languages like Haskell<sup><a href="#fn1" class="footnoteRef" id="fnref1">1</a></sup> and OCaml to be used as a deductive system for intuitionistic logic. I’ll demonstrate how type-level axioms can be given and used in Standard ML, using only signatures and functors.</p>
+<!--more-->
+
+<p>The Identity type can be given in OCaml quite simply:</p>
 <pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span class="kw">type</span> (_,_) eq =
   | <span class="dt">Refl</span> : (&#39;a, &#39;a) eq</code></pre>
 <p>From there, the various properties of <code>eq</code> can be proved, and then it can be used to prove other things (such as the fact that double negation of the booleans is the identity, etc.). The lack of GADTs in Standard ML might lead one to think that there is no proving to be done there, but we are not quite so bad off as that.</p>
