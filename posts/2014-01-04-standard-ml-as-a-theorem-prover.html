@@ -51,7 +51,7 @@ MathJax.Hub.Config({
 
 <p>Before we get started, a small update:</p>
 <blockquote>
-<p><strong>As Bob Atkey reminded me</strong>, there’s of course a very unfortunate caveat with this whole thing: since there’s no way to abstract over signatures, there’s no way that I can tell to enforce that the scrutinee of an induction is actually of the right kind; so, sadly, we could perform boolean induction on a scrutinee which was not a boolean, and thence prove anything at all. Not so great. If you’re willing to look past this problem, read on.</p>
+<p><strong>As Bob Atkey reminded me</strong>, there’s of course a very unfortunate caveat with this whole thing: since there’s no way to abstract over signatures, there’s no way that I can tell to enforce that the scrutinee of an induction is actually of the right kind; so, sadly, we could perform boolean induction on a scrutinee which was not a boolean, and thence prove anything at all. Furthermore, Bob has actually constructed an <a href="https://gist.github.com/bobatkey/8272004">encoding of GADTs</a> in ML which computes, so I recommend you have a look at that rather than reading this, which I’ll leave up for historical reasons..</p>
 </blockquote>
 <p>The Identity type can be given in OCaml quite simply:</p>
 <pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span class="kw">type</span> (_,_) eq =
