@@ -13,6 +13,10 @@
     <description><![CDATA[<p>It is well known that generalized algebraic data types (a sort of phase-locked inductive family) suffice in languages like Haskell<sup><a href="#fn1" class="footnoteRef" id="fnref1">1</a></sup> and OCaml to be used as a deductive system for intuitionistic logic. I’ll demonstrate how type-level axioms can be given and used in Standard ML, using only signatures and functors.</p>
 <!--more-->
 
+<p>Before we get started, a small update:</p>
+<blockquote>
+<p><strong>As Bob Atkey reminded me</strong>, there’s of course a very unfortunate caveat with this whole thing: since there’s no way to abstract over signatures, there’s no way that I can tell to enforce that the scrutinee of an induction is actually of the right kind; so, sadly, we could perform boolean induction on a scrutinee which was not a boolean, and thence prove anything at all. Not so great. If you’re willing to look past this problem, read on.</p>
+</blockquote>
 <p>The Identity type can be given in OCaml quite simply:</p>
 <pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span class="kw">type</span> (_,_) eq =
   | <span class="dt">Refl</span> : (&#39;a, &#39;a) eq</code></pre>
@@ -101,7 +105,7 @@ end</code></pre>
 
   <span class="kw">functor</span> <span class="dt">IND</span>(<span class="dt">P</span> : <span class="kw">sig</span> <span class="kw">type</span> &#39;n p <span class="kw">end</span>) :
   <span class="kw">sig</span>
-    <span class="kw">val</span> induction : z P<span class="kw">.</span>p -&gt; &#39;x s P<span class="kw">.</span>p -&gt; &#39;n P<span class="kw">.</span>p
+    <span class="kw">val</span> induction : z P<span class="kw">.</span>p -&gt; (&#39;x P<span class="kw">.</span>p -&gt; &#39;x s P<span class="kw">.</span>p) -&gt; &#39;n P<span class="kw">.</span>p
   <span class="kw">end</span>
 <span class="kw">end</span></code></pre>
 <ol start="2" style="list-style-type: decimal">
