@@ -59,7 +59,7 @@ MathJax.Hub.Config({
 \end{align}\]</span></p>
 <p>Then, we have a loop around <span class="math">\(\mathsf{contract}(\mathsf{base})\)</span> over <span class="math">\(\mathsf{loop}\)</span> by dependent action on paths:</p>
 <p><span class="math">\[\begin{align}
-\mathsf{contrBaseLoop} &amp;: \mathsf{contract}(\mathsf{base}) =^{x\mapsto\mathsf{base}=x}_\mathsf{loop} \mathsf{contract}{\mathsf{base}}\\
+\mathsf{contrBaseLoop} &amp;: \mathsf{contract}(\mathsf{base}) =^{x\mapsto\mathsf{base}=x}_\mathsf{loop} \mathsf{contract}(\mathsf{base})\\
 \mathsf{contrBaseLoop} &amp;:\equiv \mathsf{apd}_\mathsf{contract}\mathsf{loop}
 \end{align}\]</span></p>
 <p>Then by symmetry and composition with <strong>Lemma 2.11.2</strong> from the HoTT book (<span class="math">\(\mathsf{transPathfrom}\)</span>), we have <span class="math">\(\mathsf{contract}(\mathsf{base})=\mathsf{contract}(\mathsf{base})\centerdot\mathsf{loop}\)</span>; finally, we cancel out the repeated elements on either side of the equation to derive a proof that the loop is trivial:</p>
