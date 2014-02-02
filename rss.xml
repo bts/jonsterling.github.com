@@ -6,8 +6,50 @@
         <description><![CDATA[Jonathan Sterling writes about Types, Linguistics and Philology]]></description>
         <atom:link href="http://www.jonmsterling.com//rss.xml" rel="self"
                    type="application/rss+xml" />
-        <lastBuildDate>Sat, 04 Jan 2014 00:00:00 UT</lastBuildDate>
+        <lastBuildDate>Sat, 01 Feb 2014 00:00:00 UT</lastBuildDate>
         <item>
+    <title>The Circle Is Not Contractible: A Short Proof</title>
+    <link>http://www.jonmsterling.com//posts/2014-02-01-the-circle-is-not-contractible.html</link>
+    <description><![CDATA[<p>To those of us without a background in topology, it may have initially been surprising that the unit circle <span class="math">\(S^1\)</span> is not contractible. In this post, I’ll outline a homotopy type-theoretic proof for why this is in fact the case.</p>
+<!--more-->
+
+<p>Recall that to prove a space <span class="math">\(X\)</span> is contractible, it suffices to exhibit a base point <span class="math">\(x\)</span> and (continuously) a path from <span class="math">\(x\)</span> to every other point <span class="math">\(y\)</span>: <span class="math">\[\begin{align}
+\mathsf{isContr}(X) &amp;:\equiv \sum_{x:X}\,\prod_{y:X}\,x = y
+\end{align}\]</span></p>
+<p>Let <span class="math">\(P(x):\equiv\prod_{y:S^1}x=y\)</span>. Suppose a proof <span class="math">\(c\)</span> that <span class="math">\(S^1\)</span> is contractible; then for every point <span class="math">\(y:S^1\)</span> we have a path <span class="math">\(\mathsf{contract}(y):\mathsf{base}=y\)</span> by transport:</p>
+<p><span class="math">\[\begin{align}
+\mathsf{contract} &amp;: P(\mathsf{base})\\
+\mathsf{contract} &amp;:\equiv \mathsf{transport}^P(\pi_2\,c\ \mathsf{base})\ (\pi_2\,c)
+\end{align}\]</span></p>
+<p>Then, we have a loop around <span class="math">\(\mathsf{contract}(\mathsf{base})\)</span> over <span class="math">\(\mathsf{loop}\)</span> by dependent action on paths:</p>
+<p><span class="math">\[\begin{align}
+\mathsf{contrBaseLoop} &amp;: \mathsf{contract}(\mathsf{base}) =^{x\mapsto\mathsf{base}=x}_\mathsf{loop} \mathsf{contract}{\mathsf{base}}\\
+\mathsf{contrBaseLoop} &amp;:\equiv \mathsf{apd}_\mathsf{contract}\mathsf{loop}
+\end{align}\]</span></p>
+<p>Then by symmetry and composition <strong>Lemma 2.11.2</strong> from the HoTT book (<span class="math">\(\mathsf{transPathfrom}\)</span>), we have <span class="math">\(\mathsf{contract}(\mathsf{base})=\mathsf{contract}(\mathsf{base})\centerdot\mathsf{loop}\)</span>; finally, we cancel out the repeated elements on either side of the equation to derive a proof that the loop is trivial:</p>
+<p><span class="math">\[\begin{align}
+\mathsf{loopTrivial} &amp;: \mathsf{loop} = \mathsf{idp}\\
+\mathsf{loopTrivial} &amp;:\equiv \mathsf{sym}(\mathsf{cancel}(\mathsf{sym}(\mathsf{contrBaseLoop})\centerdot\mathsf{transPathfrom}(\mathsf{loop}, \mathsf{contract}(\mathsf{base})))
+\end{align}\]</span></p>
+<p>But because we can decode paths in <span class="math">\(S^1\)</span> to integers as described in <strong>Section 8.1</strong>, we can observe a difference between <span class="math">\(\mathsf{loop}\)</span> and <span class="math">\(\mathsf{idp}\)</span>. Specifically, we have the following identities:<sup><a href="#fn1" class="footnoteRef" id="fnref1">1</a></sup></p>
+<p><span class="math">\[\begin{align}
+\mathsf{encode}(\mathsf{idp})&amp;\equiv 0\\
+\mathsf{encode}(\mathsf{loop})&amp;\equiv 1
+\end{align}\]</span></p>
+<p>By congruence, then we have an absurd identity <span class="math">\(\mathsf{pathZeroOne}:0=1\)</span>: <span class="math">\[\begin{align}
+\mathsf{pathZeroOne}&amp;:\equiv \mathsf{ap}_{\mathsf{encode}}(\mathsf{loopTrivial})
+\end{align}\]</span></p>
+<p>Then, interpret integers into <span class="math">\(\mathcal{U}\)</span> such that <span class="math">\([0]:\equiv \mathbf{0}\)</span> and <span class="math">\([z]:\equiv \mathbf{1}\)</span> for all other integers <span class="math">\(z\)</span>. Finally by <span class="math">\(\mathsf{transport}^{[-]}(\mathsf{pathZeroOne}, \mathsf{tt})\)</span>, we arrive at absurdity. <span style="float:right"><span class="math">\(\blacksquare\)</span></span></p>
+<div class="footnotes">
+<hr />
+<ol>
+<li id="fn1"><p>In the HoTT book presentation, computation rules for paths like <span class="math">\(\mathsf{loop}\)</span> hold only propositionally, not definitionally; so if I am not mistaken, we would end up having only <span class="math">\(\mathsf{encode}(\mathsf{loop})=1\)</span>. However, it would appear that the new cubical implementation, <span class="math">\(ap\)</span> computes judgmentally on paths for HITs; this is indeed preferable, since it means we can complete the proof using <span class="math">\(\mathsf{ap}\)</span>, whereas otherwise we’d have to plumb around a bunch of explicit coercions to make things work.<a href="#fnref1">↩</a></p></li>
+</ol>
+</div>]]></description>
+    <pubDate>Sat, 01 Feb 2014 00:00:00 UT</pubDate>
+    <guid>http://www.jonmsterling.com//posts/2014-02-01-the-circle-is-not-contractible.html</guid>
+</item>
+<item>
     <title>Standard ML as a Proof System, without GADTs</title>
     <link>http://www.jonmsterling.com//posts/2014-01-04-standard-ml-as-a-theorem-prover.html</link>
     <description><![CDATA[<p>It is well known that generalized algebraic data types (a sort of phase-locked inductive family) suffice in languages like Haskell<sup><a href="#fn1" class="footnoteRef" id="fnref1">1</a></sup> and OCaml to be used as a deductive system for intuitionistic logic. I’ll demonstrate how type-level axioms can be given and used in Standard ML, using only signatures and functors.</p>
