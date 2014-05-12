@@ -64,7 +64,7 @@ MathJax.Hub.Config({
 <span class="ot">&gt;</span> <span class="ot">{-# LANGUAGE IncoherentInstances #-}</span>
 <span class="ot">&gt;</span> <span class="ot">{-# LANGUAGE UnicodeSyntax #-}</span></code></pre>
 <pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">module</span> <span class="dt">ChurchPair</span> <span class="kw">where</span>
-<span class="ot">&gt;</span> <span class="kw">import</span> Prelude <span class="kw">hiding</span> (fst, snd)</code></pre>
+<span class="ot">&gt;</span> <span class="kw">import </span><span class="dt">Prelude</span> <span class="kw">hiding</span> (fst, snd)</code></pre>
 <p>The first order of business will be to implement the disjunction constraint (<span class="math">\(\Lambda\alpha\beta. \alpha\lor\beta\)</span>) in Haskell. To do this, we can use a type class:</p>
 <pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">class</span> <span class="dt">TypeOr</span> α β γ</code></pre>
 <p>and inhabit it with the proper combinations:</p>

@@ -46,7 +46,7 @@ MathJax.Hub.Config({
 </header>
 
 <section class="post">
-<article><p>Perhaps the greatest sin in the common body of Cocoa design patterns is the pervasiveness of “stringly-typed” code:<sup><a href="#fn1" class="footnoteRef" id="fnref1">1</a></sup> it frequently comes up in KVO and bindings, among other things. Various macros have arisen to allow type checking of keypaths, largely thanks to <a href="https://github.com/jspahrsummers/libextobjc/blob/master/extobjc/EXTKeyPathCoding.h">efforts</a> by Justin Spahr-Summers and myself. Today, I’d like to talk a bit about some ideas for enforcing statically trusted boundaries for checked keypaths.</p>
+<article><p>Perhaps the greatest sin in the common body of Cocoa design patterns is the pervasiveness of “stringly-typed” code:<a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a> it frequently comes up in KVO and bindings, among other things. Various macros have arisen to allow type checking of keypaths, largely thanks to <a href="https://github.com/jspahrsummers/libextobjc/blob/master/extobjc/EXTKeyPathCoding.h">efforts</a> by Justin Spahr-Summers and myself. Today, I’d like to talk a bit about some ideas for enforcing statically trusted boundaries for checked keypaths.</p>
 <!--more-->
 
 <h3 id="the-problem-sometimes-we-lie">The Problem: Sometimes We Lie</h3>
@@ -57,7 +57,7 @@ MathJax.Hub.Config({
          options: nil];</code></pre>
 <p>But the other half of the problem remains: when our own APIs use keypaths, it would be nice to enforce that these keypaths be checked. If we’re just accepting strings and hoping the client code is clever enough to use our <code>@keypath</code> macro, all is well until we begin to lie. And we all lie.</p>
 <h3 id="trusted-boundaries-types-for-certified-keypaths">Trusted Boundaries: Types For Certified Keypaths</h3>
-<p>Whilst we really can’t do anything about Cocoa’s APIs, we should like to force keypaths passed into our own APIs to be checked. We can do this with a type, and some clever higgle-piggling about with deprecation annotations:<sup><a href="#fn2" class="footnoteRef" id="fnref2">2</a></sup></p>
+<p>Whilst we really can’t do anything about Cocoa’s APIs, we should like to force keypaths passed into our own APIs to be checked. We can do this with a type, and some clever higgle-piggling about with deprecation annotations:<a href="#fn2" class="footnoteRef" id="fnref2"><sup>2</sup></a></p>
 <table class="sourceCode ObjectiveC numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
 2
 3
@@ -86,7 +86,7 @@ _Pragma(<span class="st">&quot;clang diagnostic push&quot;</span>)\
 _Pragma(<span class="st">&quot;clang diagnostic ignored </span><span class="ch">\&quot;</span><span class="st">-Wdeprecated</span><span class="ch">\&quot;</span><span class="st">&quot;</span>)\
     (strchr(# PATH, '.') + <span class="dv">1</span>).unsafeMarshalKeypath \
 _Pragma(<span class="st">&quot;clang diagnostic pop&quot;</span>)</code></pre></td></tr></table>
-<p>Now, the real trick is in the <code>@keypath</code> macro definition above; feel free to swap in something more advanced for the meat of the definition. The important part is that the macro includes pragmas<sup><a href="#fn3" class="footnoteRef" id="fnref3">3</a></sup> to suppress warnings about deprecated methods, and then goes ahead and uses <code>-unsafeMarshalKeypath</code> in that scope. In this way, we can be reasonably assured (though not entirely, of course) that the only way anyone will <em>ever</em> create a term of type <code>CheckedKeyPath</code> is by using this macro.</p>
+<p>Now, the real trick is in the <code>@keypath</code> macro definition above; feel free to swap in something more advanced for the meat of the definition. The important part is that the macro includes pragmas<a href="#fn3" class="footnoteRef" id="fnref3"><sup>3</sup></a> to suppress warnings about deprecated methods, and then goes ahead and uses <code>-unsafeMarshalKeypath</code> in that scope. In this way, we can be reasonably assured (though not entirely, of course) that the only way anyone will <em>ever</em> create a term of type <code>CheckedKeyPath</code> is by using this macro.</p>
 <p>Now, in our APIs, we can expose only safe interfaces for keypaths by accepting <code>CheckedKeyPath</code> rather than <code>NSString</code>; when a keypath needs to be passed to Cocoa, we can then trivially throw away the certification by sending <code>-stringValue</code>.</p>
 <div class="footnotes">
 <hr />

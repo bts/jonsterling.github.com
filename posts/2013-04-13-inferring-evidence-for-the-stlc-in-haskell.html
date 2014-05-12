@@ -74,7 +74,7 @@ The Syntax of the STLC
 <span class="ot">&gt;</span>   <span class="fu">|</span> <span class="dt">Z</span>              <span class="co">-- ^ zero</span>
 <span class="ot">&gt;</span>   <span class="fu">|</span> <span class="dt">S</span> <span class="dt">Term</span>         <span class="co">-- ^ successor</span>
 <span class="ot">&gt;</span>   <span class="fu">|</span> Λ <span class="dt">Term</span>         <span class="co">-- ^ abstraction</span>
-<span class="ot">&gt;</span>   <span class="fu">|</span> (<span class="fu">#</span>) <span class="dt">Term</span> <span class="dt">Term</span>  <span class="co">-- ^ application</span>
+<span class="ot">&gt;</span>   <span class="fu">|</span> (<span class="st">#) Term Term  -- ^ application</span>
 <span class="ot">&gt;</span>   <span class="fu">|</span> <span class="dt">V</span> <span class="dt">Term</span>         <span class="co">-- ^ variables</span></code></pre>
 <p>It may seem odd that, for instance, we parameterize <code>Set</code> and <code>V</code> by <code>Term</code>, since it’s clear that we should want natural numbers there. But this will get nailed down when we make our family of typing rules.</p>
 <p>Contexts are either empty or are extended by a type:</p>
@@ -111,7 +111,7 @@ Typing Rules for the STLC
 <p>Given a term <code>f</code> in <code>σ ~&gt; τ</code> and a term <code>x</code> in <code>σ</code>, <code>f # x</code> is in <code>τ</code>.</p>
 <pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span>   <span class="dt">TApp</span><span class="ot">  ::</span>  γ ⊢ f ∈ (σ <span class="fu">~&gt;</span> τ) <span class="ot">→</span> γ ⊢ x ∈ σ
 <span class="ot">&gt;</span>           <span class="fu">--------------------------------</span>
-<span class="ot">&gt;</span>          <span class="ot">→</span>         γ ⊢ f <span class="fu">#</span> x ∈ τ</code></pre>
+<span class="ot">&gt;</span>          <span class="ot">→</span>         γ ⊢ f <span class="st"># x ∈ τ</span></code></pre>
 <p>Now we provide evidence that a variable of a given type is within a context.</p>
 <pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span>   <span class="dt">TVTop</span><span class="ot"> ::</span> <span class="fu">-------------------------------</span>
 <span class="ot">&gt;</span>                  τ <span class="fu">:&gt;</span> γ ⊢ <span class="dt">V</span> <span class="dt">Z</span> ∈ τ
@@ -143,7 +143,7 @@ plusOne' <span class="fu">=</span> <span class="dt">TLam</span> (<span class="dt
 <span class="ot">&gt;</span>   infer <span class="fu">=</span> <span class="dt">TS</span> infer</code></pre>
 <pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">instance</span> <span class="dt">Infer</span> l τ (σ <span class="fu">:&gt;</span> γ) <span class="ot">⇒</span> <span class="dt">Infer</span> (Λ l) (σ <span class="fu">~&gt;</span> τ) γ <span class="kw">where</span>
 <span class="ot">&gt;</span>   infer <span class="fu">=</span> <span class="dt">TLam</span> infer
-<span class="ot">&gt;</span> <span class="kw">instance</span> (<span class="dt">Infer</span> f (σ <span class="fu">~&gt;</span> τ) γ, <span class="dt">Infer</span> x σ γ) <span class="ot">⇒</span> <span class="dt">Infer</span> (f <span class="fu">#</span> x) τ γ <span class="kw">where</span>
+<span class="ot">&gt;</span> <span class="kw">instance</span> (<span class="dt">Infer</span> f (σ <span class="fu">~&gt;</span> τ) γ, <span class="dt">Infer</span> x σ γ) <span class="ot">⇒</span> <span class="dt">Infer</span> (f <span class="st"># x) τ γ where</span>
 <span class="ot">&gt;</span>   infer <span class="fu">=</span> <span class="dt">TApp</span> infer infer</code></pre>
 <pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">instance</span> <span class="dt">Infer</span> (<span class="dt">V</span> <span class="dt">Z</span>) τ (τ <span class="fu">:&gt;</span> γ) <span class="kw">where</span>
 <span class="ot">&gt;</span>   infer <span class="fu">=</span> <span class="dt">TVTop</span>

@@ -53,7 +53,7 @@ MathJax.Hub.Config({
 <p>For the moment, we shall leave our working grammar of Greek overly permissive and consider words modulo the direction in which they satisfy their arguments. As such, rather than the directional slash notation traditional in CCG, we shall be using bars to indicate unsatisfied arguments. So, we arrive at a grammar of types given by <span class="math">\(N, D, V, P, \cdot|\cdot\)</span>. Finally, I shall work in a restricted subset of CCG which does not include the type raising operator.</p>
 </blockquote>
 <h3 id="the-problem">The problem</h3>
-<p>When you are satisfying only one argument, its position in relation to the head is structurally unimportant, given that <strong>MERGE</strong> may occur in either direction. With two or more arguments, though, it becomes more complicated. Let us consider the sentence <span lang="gk">ὁ στρατηγὸς ἀπέκτεινε τοὺς πέρσας</span> (“The general killed the Persians”);<sup><a href="#fn1" class="footnoteRef" id="fnref1">1</a></sup> if we assign the word <span lang="gk">ἀπέκτεινε</span> the type <span class="math">\((V\,|D_\textit{nom})|D_\textit{acc}\)</span>, then four permutations are permissable:</p>
+<p>When you are satisfying only one argument, its position in relation to the head is structurally unimportant, given that <strong>MERGE</strong> may occur in either direction. With two or more arguments, though, it becomes more complicated. Let us consider the sentence <span lang="gk">ὁ στρατηγὸς ἀπέκτεινε τοὺς πέρσας</span> (“The general killed the Persians”);<a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a> if we assign the word <span lang="gk">ἀπέκτεινε</span> the type <span class="math">\((V\,|D_\textit{nom})|D_\textit{acc}\)</span>, then four permutations are permissable:</p>
 <p><span class="math">\[
 \dfrac{
   \dfrac{\gk{ὁ στρατηγός}}{D_\textit{nom}}
@@ -106,7 +106,7 @@ MathJax.Hub.Config({
 \]</span></p>
 <p>But any word order which places <span lang="gk">ὁ στρατηγὸς</span> closer to the verb than <span lang="gk">τοὺς πέρσας</span> cannot be constructed, because of the order of arguments given by <span lang="gk">ἀπέκτεινε</span>. And so there, for instance, is no derivation for the very grammatical sentence, <span lang="gk">ἀπέκτεινε ὁ στρατηγὸς τοὺς πέρσας</span>.</p>
 <h3 id="hoffmans-approach-multiset-combinatory-categorial-grammar-mccg">Hoffman’s Approach: Multiset Combinatory Categorial Grammar (MCCG)</h3>
-<p>Beryl Hoffman in her 1995 dissertation<sup><a href="#fn2" class="footnoteRef" id="fnref2">2</a></sup> presents a solution to the above problem by extending the CCG to include multisets for the arguments of function types. In essence, can now give the type for <span lang="gk">ἀπέκτεινε</span> as <span class="math">\(V\{|D_\textit{acc}, |D_\textit{nom}\}\)</span>, reformulating the typing rules for application from</p>
+<p>Beryl Hoffman in her 1995 dissertation<a href="#fn2" class="footnoteRef" id="fnref2"><sup>2</sup></a> presents a solution to the above problem by extending the CCG to include multisets for the arguments of function types. In essence, can now give the type for <span lang="gk">ἀπέκτεινε</span> as <span class="math">\(V\{|D_\textit{acc}, |D_\textit{nom}\}\)</span>, reformulating the typing rules for application from</p>
 <p><span class="math">\[
 \dfrac{\vdash e : Y\,|X \quad \vdash e' : X}{\vdash e &gt; e' : Y \quad
 \vdash e' &lt; e : Y}
@@ -129,7 +129,7 @@ MathJax.Hub.Config({
 }{V}&gt;
 \]</span></p>
 <p>This all seems very nice and good, but in the course of this extension, we have inadvertently ended up sacrificing one of the most desirable aspects of the CCG, which is the transparent and deterministic interface between the semantics and the syntax of a construction. That is, unlike in plain CCG, from one syntactic derivation, I can construct two distinct semantic propositions. Let’s look at a pathological example brought about by the double-accusative construction in Greek.</p>
-<p>Our sentence will be <span lang="gk">ταῦτα ἔβλαψα ἐκεῖνα</span>,<sup><a href="#fn3" class="footnoteRef" id="fnref3">3</a></sup> which has two semantic interpretations: “I harmed these things in those respects” or “I harmed those things in these respects”. If the interpreter from syntactic to logical form is deterministic (which we should like very much to be the case), then we should only be able to derive one semantic interpretation per syntactic derivation. But it turns out, we can’t decide which one to do!</p>
+<p>Our sentence will be <span lang="gk">ταῦτα ἔβλαψα ἐκεῖνα</span>,<a href="#fn3" class="footnoteRef" id="fnref3"><sup>3</sup></a> which has two semantic interpretations: “I harmed these things in those respects” or “I harmed those things in these respects”. If the interpreter from syntactic to logical form is deterministic (which we should like very much to be the case), then we should only be able to derive one semantic interpretation per syntactic derivation. But it turns out, we can’t decide which one to do!</p>
 <p>Take the following derivation:</p>
 <p><span class="math">\[
 \dfrac{

@@ -60,8 +60,8 @@ MathJax.Hub.Config({
 <span class="ot">&gt;</span> <span class="ot">{-# LANGUAGE ViewPatterns, UnicodeSyntax #-}</span>
 <span class="ot">&gt;</span> <span class="ot">{-# LANGUAGE RankNTypes, GADTs #-}</span></code></pre>
 <pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">module</span> <span class="dt">FakingIt</span> <span class="kw">where</span></code></pre>
-<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">import</span> Prelude <span class="kw">hiding</span> (lookup)
-<span class="ot">&gt;</span> <span class="kw">import</span> GHC.TypeLits</code></pre>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">import </span><span class="dt">Prelude</span> <span class="kw">hiding</span> (lookup)
+<span class="ot">&gt;</span> <span class="kw">import </span><span class="dt">GHC.TypeLits</span></code></pre>
 <p>Now, in order to simulate dependent types, we need to allow data to exist in three forms:</p>
 <ol style="list-style-type: decimal">
 <li><p>Terms under types (we get this for free when we define data types).</p></li>

@@ -57,7 +57,7 @@ MathJax.Hub.Config({
 <span class="ot">&gt;</span> <span class="ot">{-# LANGUAGE StandaloneDeriving #-}</span>
 <span class="ot">&gt;</span> <span class="ot">{-# LANGUAGE TypeFamilies #-}</span></code></pre>
 <pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">module</span> <span class="dt">PhasedConstraints</span> <span class="kw">where</span>
-<span class="ot">&gt;</span> <span class="kw">import</span> Control.Applicative ((&lt;$&gt;))</code></pre>
+<span class="ot">&gt;</span> <span class="kw">import </span><span class="dt">Control.Applicative</span> ((&lt;$&gt;))</code></pre>
 <pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">data</span> <span class="dt">Nat</span> <span class="fu">=</span> <span class="dt">Z</span> <span class="fu">|</span> <span class="dt">S</span> <span class="dt">Nat</span>
 <span class="ot">&gt;</span> <span class="kw">infixr</span> <span class="fu">:&gt;</span>
 <span class="ot">&gt;</span> <span class="kw">data</span> <span class="dt">Vect</span><span class="ot"> ::</span> <span class="fu">*</span> <span class="ot">-&gt;</span> <span class="dt">Nat</span> <span class="ot">-&gt;</span> <span class="fu">*</span> <span class="kw">where</span>

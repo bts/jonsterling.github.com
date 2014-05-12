@@ -49,7 +49,7 @@ MathJax.Hub.Config({
 <article><blockquote>
 <p>The latest versions of the Clang compiler extend the Objective-C language with related return types, which allow a limited form of covariance to be expressed. Methods with certain names (<code>alloc</code>, <code>init</code>, etc.) are inferred to return an object of the instance type for the receiver; other methods can participate in this covariance by using the <code>instancetype</code> keyword for the return type annotation.</p>
 </blockquote>
-<p>Typically, this feature is used for convenience constructors which would previously have returned <code>id</code>. However, we can also use it to encode statically-typed collections without full-blown generics.<sup><a href="#fn1" class="footnoteRef" id="fnref1">1</a></sup></p>
+<p>Typically, this feature is used for convenience constructors which would previously have returned <code>id</code>. However, we can also use it to encode statically-typed collections without full-blown generics.<a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a></p>
 <!--more-->
 
 <h2 id="decorating-types-with-protocols">Decorating Types with Protocols</h2>
@@ -62,7 +62,7 @@ MathJax.Hub.Config({
 - (V)at:(NSUInteger)index;
 - (<span class="dt">void</span>)put:(V)object;
 <span class="kw">@end</span></code></pre></td></tr></table>
-<p>With <code>instancetype</code>, we support a subset of parametric polymorphism: that is, we can abstract over one type (the type of an instance of the implementing class), and we are limited to referring to this type in method return types.<sup><a href="#fn2" class="footnoteRef" id="fnref2">2</a></sup> So, we can approximate something rather close, but slightly less safe and precise:</p>
+<p>With <code>instancetype</code>, we support a subset of parametric polymorphism: that is, we can abstract over one type (the type of an instance of the implementing class), and we are limited to referring to this type in method return types.<a href="#fn2" class="footnoteRef" id="fnref2"><sup>2</sup></a> So, we can approximate something rather close, but slightly less safe and precise:</p>
 <table class="sourceCode ObjectiveC numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
 2
 3
@@ -432,7 +432,7 @@ MathJax.Hub.Config({
 
 <span class="kw">@end</span></code></pre></td></tr></table>
 <h3 id="collection-constructors">Collection Constructors</h3>
-<p>To construct a collection of some class, we send a message to that class with a covariant return type; unfortunately, we cannot decorate <code>instancetype</code> with any further protocols. So, ideally <code>+orderedCollection</code> would return <code>instancetype &lt;OrderedCollection&gt;</code>, but this is currently impossible; thus, you will have to provide the type decoration yourself.<sup><a href="#fn3" class="footnoteRef" id="fnref3">3</a></sup></p>
+<p>To construct a collection of some class, we send a message to that class with a covariant return type; unfortunately, we cannot decorate <code>instancetype</code> with any further protocols. So, ideally <code>+orderedCollection</code> would return <code>instancetype &lt;OrderedCollection&gt;</code>, but this is currently impossible; thus, you will have to provide the type decoration yourself.<a href="#fn3" class="footnoteRef" id="fnref3"><sup>3</sup></a></p>
 <table class="sourceCode ObjectiveC numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
 2
 3

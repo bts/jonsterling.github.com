@@ -50,6 +50,26 @@ MathJax.Hub.Config({
     <article class="digest">
 
     <h3>
+        <a href="./posts/2014-05-11-records-are-sheaves-of-types.html">Records are Sheaves of Types</a>
+        <span class="date">May 11, 2014</span>
+    </h3>
+    
+        <p>Let us define a record type as being given by a type <span class="math">\(X\)</span> of <strong>keys</strong> and an interpretation function <span class="math">\(F\)</span> which maps every key <span class="math">\(x:X\)</span> to a type. We assume the existence of a powerset functor <span class="math">\(\mathcal{P}: \mathbf{Type}_i\to\mathbf{Type}_j\)</span>, which endows the discrete topology on <span class="math">\(X\)</span>. Then a record type is the product of the image of <span class="math">\(F\)</span> over a subset of <span class="math">\(X\)</span>: <span class="math">\[
+\mbox{for}\ U\subseteq X,\quad \mathsf{Rec}(U,F) :\equiv \prod_{s:U} F(s)
+\]</span></p>
+
+    
+
+    <div class="read_more">
+        <a href="./posts/2014-05-11-records-are-sheaves-of-types.html">
+           more …
+        </a>
+    </div>
+    </article>
+
+    <article class="digest">
+
+    <h3>
         <a href="./posts/2014-02-01-the-circle-is-not-contractible.html">The Circle Is Not Contractible: A Short Proof</a>
         <span class="date">February  1, 2014</span>
     </h3>
@@ -72,7 +92,7 @@ MathJax.Hub.Config({
         <span class="date">January  4, 2014</span>
     </h3>
     
-        <p>It is well known that generalized algebraic data types (a sort of phase-locked inductive family) suffice in languages like Haskell<sup><a href="#fn1" class="footnoteRef" id="fnref1">1</a></sup> and OCaml to be used as a deductive system for intuitionistic logic. I’ll demonstrate how type-level axioms can be given and used in Standard ML, using only signatures and functors.</p>
+        <p>It is well known that generalized algebraic data types (a sort of phase-locked inductive family) suffice in languages like Haskell<a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a> and OCaml to be used as a deductive system for intuitionistic logic. I’ll demonstrate how type-level axioms can be given and used in Standard ML, using only signatures and functors.</p>
 
     
 
@@ -162,7 +182,7 @@ MathJax.Hub.Config({
         <span class="date">May 20, 2013</span>
     </h3>
     
-        <p>This is the first in a series I intend to write in regard to the syntax of Ancient Greek hyperbaton, and what can be done about it formally using a combinatory categorial grammar<sup><a href="#fn1" class="footnoteRef" id="fnref1">1</a></sup>. We will begin with a pathological example of <span class="math">\(Y_1\)</span> hyperbaton from Sophocles’ <em>Trachinian Women</em>:</p>
+        <p>This is the first in a series I intend to write in regard to the syntax of Ancient Greek hyperbaton, and what can be done about it formally using a combinatory categorial grammar<a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a>. We will begin with a pathological example of <span class="math">\(Y_1\)</span> hyperbaton from Sophocles’ <em>Trachinian Women</em>:</p>
 <div class="gloss">
 <div class="aligned" language="gk">
 τὴν Εὐρυτείαν οἶσθα δῆτα παρθένον;<br /> the-*acc* of-Eurytus-*acc* know-*2.sing* of-course girl-*acc*
@@ -301,7 +321,7 @@ MathJax.Hub.Config({
         <span class="date">December 20, 2012</span>
     </h3>
     
-        <p>Perhaps the greatest sin in the common body of Cocoa design patterns is the pervasiveness of “stringly-typed” code:<sup><a href="#fn1" class="footnoteRef" id="fnref1">1</a></sup> it frequently comes up in KVO and bindings, among other things. Various macros have arisen to allow type checking of keypaths, largely thanks to <a href="https://github.com/jspahrsummers/libextobjc/blob/master/extobjc/EXTKeyPathCoding.h">efforts</a> by Justin Spahr-Summers and myself. Today, I’d like to talk a bit about some ideas for enforcing statically trusted boundaries for checked keypaths.</p>
+        <p>Perhaps the greatest sin in the common body of Cocoa design patterns is the pervasiveness of “stringly-typed” code:<a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a> it frequently comes up in KVO and bindings, among other things. Various macros have arisen to allow type checking of keypaths, largely thanks to <a href="https://github.com/jspahrsummers/libextobjc/blob/master/extobjc/EXTKeyPathCoding.h">efforts</a> by Justin Spahr-Summers and myself. Today, I’d like to talk a bit about some ideas for enforcing statically trusted boundaries for checked keypaths.</p>
 
     
 
@@ -440,7 +460,7 @@ prover based on the <a href="http://en.wikipedia.org/wiki/Calculus_of_inductive_
         <blockquote>
 <p>The latest versions of the Clang compiler extend the Objective-C language with related return types, which allow a limited form of covariance to be expressed. Methods with certain names (<code>alloc</code>, <code>init</code>, etc.) are inferred to return an object of the instance type for the receiver; other methods can participate in this covariance by using the <code>instancetype</code> keyword for the return type annotation.</p>
 </blockquote>
-<p>Typically, this feature is used for convenience constructors which would previously have returned <code>id</code>. However, we can also use it to encode statically-typed collections without full-blown generics.<sup><a href="#fn1" class="footnoteRef" id="fnref1">1</a></sup></p>
+<p>Typically, this feature is used for convenience constructors which would previously have returned <code>id</code>. However, we can also use it to encode statically-typed collections without full-blown generics.<a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a></p>
 
     
 

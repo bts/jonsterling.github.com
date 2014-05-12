@@ -54,7 +54,7 @@ MathJax.Hub.Config({
 <!--more-->
 
 <h3 id="narrowing-static-type-with-refinement-protocols">Narrowing Static Type with Refinement Protocols</h3>
-<p>In a static-dynamic language like Objective-C, the static type of an object is distinct from its runtime type; in fact, because of mechanisms like forwarding, the runtime type of an object is really quite difficult to pin down (and may change over time)<sup><a href="#fn1" class="footnoteRef" id="fnref1">1</a></sup>.</p>
+<p>In a static-dynamic language like Objective-C, the static type of an object is distinct from its runtime type; in fact, because of mechanisms like forwarding, the runtime type of an object is really quite difficult to pin down (and may change over time)<a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a>.</p>
 <p>We can take advantage of this disparity by enforcing further restrictions on an object’s interface at compiletime, this eliminating some common sources of programmer error, as well as removing the need for downcasts in many cases.</p>
 <h3 id="a-protocol-for-dictionaries-of-numbers">A protocol for dictionaries of numbers</h3>
 <p>Take, for instance, the following protocols:</p>
@@ -127,7 +127,7 @@ GenericMutableProtocol(NSMutableDictionary, E, Dictionary,\
   - (<span class="dt">void</span>)addEntriesFromDictionary:(id &lt;E##Dictionary&gt;)otherDictionary;\
   - (<span class="dt">void</span>)setDictionary:(id &lt;E##Dictionary&gt;)otherDictionary;
 )</code></pre>
-<p>Finally, we can instantiate typed dictionary protocols for various object types:<sup><a href="#fn2" class="footnoteRef" id="fnref2">2</a></sup></p>
+<p>Finally, we can instantiate typed dictionary protocols for various object types:<a href="#fn2" class="footnoteRef" id="fnref2"><sup>2</sup></a></p>
 <pre class="sourceCode ObjectiveC"><code class="sourceCode objectivec">@DictProtocol(NSNumber);
 @DictProtocol(NSString);
 @DictProtocol(NSData);
