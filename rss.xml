@@ -24,7 +24,7 @@
 <ol style="list-style-type: decimal">
 <li><p><em>The empty set of keys is taken to a terminal object in <span class="math">\(\mathbf{Type}\)</span>.</em> This follows very simply from the fact that the empty set is an initial object: <span class="math">\[\mathcal{R}(\mathbf{0}) \equiv \prod_{s:\mathbf{0}} F(s) = \mathbf{1}\]</span></p></li>
 <li><p><em>That for an open cover <span class="math">\(U = \bigcup_iU_i\)</span> of <span class="math">\(U\)</span>, the following diagram is an equalizer:</em> <span class="math">\[
-F(U)\xrightarrow{\;\mathrm{e}\;} \prod_iF(U_i){{p\atop {\Large\longrightarrow}}\atop{{\Large\longrightarrow}\atop q}}\prod_{i,j}F(U_i\cap U_j)\\
+\mathcal{R}(U)\xrightarrow{\;\mathrm{e}\;} \prod_i\mathcal{R}(U_i){{p\atop {\Large\longrightarrow}}\atop{{\Large\longrightarrow}\atop q}}\prod_{i,j}\mathcal{R}(U_i\cap U_j)\\
 \]</span> where <span class="math">\[\begin{align}
 e &amp;:\equiv x\mapsto x|_{U_i}\\
 p &amp;:\equiv f\mapsto(i,j)\mapsto f(i)|_{(U_i\cap U_j)}\\
