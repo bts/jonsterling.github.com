@@ -6,8 +6,51 @@
         <description><![CDATA[Jonathan Sterling writes about Types, Linguistics and Philology]]></description>
         <atom:link href="http://www.jonmsterling.com//rss.xml" rel="self"
                    type="application/rss+xml" />
-        <lastBuildDate>Sat, 01 Feb 2014 00:00:00 UT</lastBuildDate>
+        <lastBuildDate>Sun, 11 May 2014 00:00:00 UT</lastBuildDate>
         <item>
+    <title>Records are Sheaves of Types</title>
+    <link>http://www.jonmsterling.com//posts/2014-05-11-records-are-sheaves-of-types.html</link>
+    <description><![CDATA[<p>Let us define a record type as being given by a type <span class="math">\(X\)</span> of <strong>keys</strong> and an interpretation function <span class="math">\(F\)</span> which maps every key <span class="math">\(x:X\)</span> to a type. We assume the existence of a powerset functor <span class="math">\(\mathcal{P}: \mathbf{Type}\to\mathbf{Type}\)</span>, which endows the discrete topology on <span class="math">\(X\)</span>. Then a record type is the product of the image of <span class="math">\(F\)</span> over a subset of <span class="math">\(X\)</span>: <span class="math">\[
+\mbox{for}\ U\subseteq X,\quad \mathsf{Rec}(U,F) :\equiv \prod_{s:U} F(s)
+\]</span></p>
+<!--more-->
+
+<p><span class="math">\(\mathsf{Rec}(-,F)\)</span> gives rise to a presheaf <span class="math">\(\mathcal{R}\)</span> on <span class="math">\(X\)</span> (a functor <span class="math">\(\mathcal{P}(X)^{\mathrm{op}}\to\mathbf{Type}\)</span>): <span class="math">\[\begin{align}
+\mbox{for}\ U\subseteq X,\quad \mathcal{R}(U) &amp;:\equiv \mathsf{Rec}(U,F)\\
+\mbox{for}\ i : V\hookrightarrow U,\quad \mathcal{R}(i) &amp;:\equiv xs \mapsto xs\circ i
+\end{align}\]</span></p>
+<p>Concretely, we can think of the presheaf <span class="math">\(\mathcal{R}\)</span> as taking subsets of the key space <span class="math">\(X\)</span> into records over <span class="math">\(U\)</span> interpreted by <span class="math">\(F\)</span>; and subset inclusions <span class="math">\(V\hookrightarrow U\)</span> to coercions or casts from larger records <span class="math">\(\mathcal{R}(U)\)</span> to smaller records <span class="math">\(\mathcal{R}(V)\)</span>. We leave an inclusion <span class="math">\(i:V\hookrightarrow U\)</span> as implicit when <span class="math">\(V\subseteq U\)</span>, and denote the restriction <span class="math">\(xs\circ i\)</span> as <span class="math">\(xs|_V\)</span>.</p>
+<p>Then the sheaf condition for <span class="math">\(\mathcal{R}\)</span> reduces to the following properties:</p>
+<ol style="list-style-type: decimal">
+<li><p><em>The empty set of keys is taken to a terminal object in <span class="math">\(\mathbf{Type}\)</span>.</em> This follows very simply from the fact that the empty set is an initial object: <span class="math">\[\mathcal{R}(\mathbf{0}) \equiv \prod_{s:\mathbf{0}} F(s) = \mathbf{1}\]</span></p></li>
+<li><p><em>That for an open cover <span class="math">\(U = \bigcup_iU_i\)</span> of <span class="math">\(U\)</span>, the following diagram commutes and is an equalizer:</em> <span class="math">\[
+\mathcal{R}(U)\xrightarrow{\;\mathrm{e}\;} \prod_i\mathcal{R}(U_i){{p\atop {\Large\longrightarrow}}\atop{{\Large\longrightarrow}\atop q}}\prod_{i,j}\mathcal{R}(U_i\cap U_j)\\
+\]</span> where <span class="math">\[\begin{align}
+e &amp;:\equiv x\mapsto x|_{U_i}\\
+p &amp;:\equiv f\mapsto(i,j)\mapsto f(i)|_{(U_i\cap U_j)}\\
+q &amp;:\equiv f\mapsto(i,j)\mapsto f(j)|_{(U_i\cap U_j)}\\
+\end{align}\]</span></p></li>
+</ol>
+<p>That the diagram commutes amounts to the following equation: <span class="math">\[p\circ e = q\circ e\]</span> By function extensionality then, for all <span class="math">\(x:\mathcal{R}(U)\)</span>: <span class="math">\[\left((i,j)\mapsto (x|_{U_i})|_{(U_i\cap U_j)}\right) = \left((i,j)\mapsto (x|_{U_j})|_{(U_i\cap U_j)}\right)\]</span> By eta and function extensionality, for all <span class="math">\(i,j\)</span> in the index of <span class="math">\(U\)</span>: <span class="math">\[(x|_{U_i})|_{(U_i\cap U_j)} = (x|_{U_j})|_{(U_i\cap U_j)}\]</span></p>
+<p>In terms of records, this boils down to the claim that for a record <span class="math">\(x\)</span> over <span class="math">\(U\)</span>, and two elements <span class="math">\(U_i\)</span> and <span class="math">\(U_j\)</span> of the cover <span class="math">\(U\)</span>, casting from <span class="math">\(U\)</span> to <span class="math">\(U_i\)</span> and thence to the common part of <span class="math">\(U_i\)</span> and <span class="math">\(U_j\)</span> yields the same result as first casting to <span class="math">\(U_j\)</span> and thence to the common part. In case <span class="math">\(U_i\)</span> does not intersect <span class="math">\(U_j\)</span>, the proposition is equivalent to <span class="math">\(\mathbf{1} = \mathbf{1}\)</span>, which is trivial. When they do intersect, it suffices to show that the operation which “forgets” the extra fields on a record does nothing at all except that.</p>
+<p>That is, imagine that when you cast from <span class="math">\(U\)</span> to <span class="math">\(U_i\)</span> for any <span class="math">\(i\)</span>, we made some change on the record’s data: then, we could tell which cast came first and produce an evil program which would violate the sheaf condition. But there is nothing we can do: we cannot add more structure to the record, since the structure of the record is given transparently as a function from keys to values: there cannot be any information attached which could ever be observed, at least not without changing the type of the record.</p>
+<p>Moreover, we could not simply increment or otherwise change one of the existing fields, because we don’t know anything about the fields, much less their interpretations, from inside the implementation of <span class="math">\(\mathsf{Rec}\)</span>: indeed, the fact that this diagram commutes follows directly from parametricity.</p>
+<p>To show that the diagram is an equalizer, we must show that for any object <span class="math">\(\Gamma\)</span> and any family of “partial records” <span class="math">\(m:\Gamma\to\prod_i\mathcal{R}(U_i)\)</span>, there is a unique “total record” <span class="math">\(u:\Gamma\to\mathcal{R}(U)\)</span>—that is, there is precisely one way to paste together each partial record into a coherent total record.</p>
+<p>It suffices to consider the case where <span class="math">\(\Gamma\)</span> is <span class="math">\(\mathbf{1}\)</span>.<a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a> We can come up with a total record <span class="math">\(u:\mathcal{R}(U)\)</span> from our family of partial records <span class="math">\(m:\prod_i\mathcal{R}(U_i)\)</span> by pasting together all the partial records; for <span class="math">\(u\)</span> to be unique, we need to show that none of the members of <span class="math">\(m\)</span> are inconsistent with respect to their shared parts (if this holds, then the only total record to be had from the family is the one got by pasting together all the fields and omitting the duplicates).</p>
+<p>But this condition already stands as a consequence of the requirement that the diagram commute, more specifically that <span class="math">\(p\circ m = q\circ m\)</span> (suppose that we can exhibit a family of partial records <span class="math">\(m:\prod_i\mathcal{R}(U_i)\)</span> whose points are not internally consistent as to their overlaps; that is, <span class="math">\(m(i)(x) \neq m(j)(x)\)</span> where <span class="math">\(x\in U_i\cap U_j\)</span>—then the diagram does not commute).</p>
+<p>Records are sheaves of types.</p>
+<h4 id="acknowledgments">Acknowledgments</h4>
+<p>Many thanks to Bob Atkey for once again coming to my rescue! Originally, I had only proved the fact that the diagram commuted, but neglected to justify the claim that it was an equalizer.</p>
+<div class="footnotes">
+<hr />
+<ol>
+<li id="fn1"><p>Let us identify arrows from a terminal object with their destinations. Then for <span class="math">\(f:A\to B\)</span>, we have <span class="math">\(\mathsf{Reader}_C(f) : (C\to A) \to (C\to B)\)</span> where <span class="math">\(\mathsf{Reader}_C\)</span> is the representable functor for <span class="math">\(C\)</span>.<a href="#fnref1">↩</a></p></li>
+</ol>
+</div>]]></description>
+    <pubDate>Sun, 11 May 2014 00:00:00 UT</pubDate>
+    <guid>http://www.jonmsterling.com//posts/2014-05-11-records-are-sheaves-of-types.html</guid>
+</item>
+<item>
     <title>The Circle Is Not Contractible: A Short Proof</title>
     <link>http://www.jonmsterling.com//posts/2014-02-01-the-circle-is-not-contractible.html</link>
     <description><![CDATA[<p>To those of us without a background in topology, it may have initially been surprising that the unit circle <span class="math">\(S^1\)</span> is not contractible. In this post, I’ll outline a homotopy type-theoretic proof for why this is in fact the case.</p>
