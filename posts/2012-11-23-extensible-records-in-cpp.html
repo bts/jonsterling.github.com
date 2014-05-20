@@ -77,7 +77,7 @@ MathJax.Hub.Config({
     <span class="dt">static</span> <span class="dt">char</span> <span class="dt">const</span> *symbol() { <span class="kw">return</span> sym; }
 };</code></pre>
 <p>Making this metadata is quite simple:</p>
-<pre class="sourceCode Cpp"><code class="sourceCode cpp"><span class="kw">extern</span> <span class="dt">char</span> <span class="dt">const</span> address_sym[] = <span class="st">&quot;address&quot;</span>;
+<pre class="sourceCode Cpp"><code class="sourceCode cpp"><span class="dt">extern</span> <span class="dt">char</span> <span class="dt">const</span> address_sym[] = <span class="st">&quot;address&quot;</span>;
 <span class="kw">typedef</span> Field&lt;address, <span class="dt">char</span> <span class="dt">const</span>*, &amp;address::address, address_sym&gt; address_meta;</code></pre>
 <!-- _--->
 
@@ -93,10 +93,10 @@ MathJax.Hub.Config({
   : Field&lt;address, <span class="dt">const</span> <span class="dt">char</span>*, &amp;address::address, address_sym&gt;
 { };</code></pre>
 <p>And so we will now be able to access metadata for some field <code>T</code> using only <code>FieldTable&lt;T&gt;</code>! Now we’re getting somewhere. Let’s automate that:</p>
-<pre class="sourceCode Cpp"><code class="sourceCode cpp"><span class="ot">#define mk_field(T, sym) \</span>
-    <span class="kw">extern</span> <span class="dt">char</span> <span class="dt">const</span> sym##_symbol[] = #sym;\
+<pre class="sourceCode Cpp"><code class="sourceCode cpp"><span class="ot">#define mk_field(T, sym) </span>\
+    <span class="dt">extern</span> <span class="dt">char</span> <span class="dt">const</span> sym<span class="er">##</span>_symbol[] = <span class="er">#</span>sym;\
     <span class="kw">struct</span> sym { T sym; };\
-    <span class="kw">template</span> &lt;&gt; <span class="kw">struct</span> FieldTable&lt;sym&gt; : Field&lt;sym, T, &amp;sym::sym, sym##_symbol&gt; {};</code></pre>
+    <span class="kw">template</span> &lt;&gt; <span class="kw">struct</span> FieldTable&lt;sym&gt; : Field&lt;sym, T, &amp;sym::sym, sym<span class="er">##</span>_symbol&gt; {};</code></pre>
 <h4 id="record-representation">Record Representation</h4>
 <p>A record is a just a variadic class template, defined inductively:</p>
 <pre class="sourceCode Cpp"><code class="sourceCode cpp"><span class="kw">template</span> &lt;<span class="kw">class</span>... rows&gt; <span class="kw">struct</span> Record;</code></pre>
@@ -137,7 +137,7 @@ MathJax.Hub.Config({
 
     <span class="kw">template</span> &lt;<span class="kw">class</span> g&gt;
     Record modify(Endomorphism&lt;<span class="kw">typename</span> FieldTable&lt;g&gt;::Type&gt; func) <span class="dt">const</span> {
-        <span class="dt">auto</span> value = func(<span class="kw">this</span>-&gt;*(FieldTable&lt;g&gt;::access()));
+        <span class="kw">auto</span> value = func(<span class="kw">this</span>-&gt;*(FieldTable&lt;g&gt;::access()));
         <span class="kw">return</span> set&lt;g&gt;(value);
     }
 }</code></pre>
@@ -166,11 +166,11 @@ R tick_tock(R <span class="dt">const</span>&amp; rec) {
 <p>Let’s try making up some records now:</p>
 <pre class="sourceCode Cpp"><code class="sourceCode cpp"><span class="dt">void</span> test_records() {
     <span class="dt">const</span> Record&lt;&gt; empty;
-    <span class="dt">const</span> <span class="dt">auto</span> step1 = empty.insert&lt;name&gt;(<span class="st">&quot;jon&quot;</span>);
-    <span class="dt">const</span> <span class="dt">auto</span> step2 = step1.insert&lt;age&gt;(<span class="dv">20</span>);
-    <span class="dt">const</span> <span class="dt">auto</span> step3 = step2.insert&lt;favorite_food&gt;(<span class="st">&quot;icecream&quot;</span>);
-    <span class="dt">const</span> <span class="dt">auto</span> step4 = step3.set&lt;favorite_food&gt;(<span class="st">&quot;calzone&quot;</span>);
-    <span class="dt">const</span> <span class="dt">auto</span> step5 = tick_tock(step3);
+    <span class="dt">const</span> <span class="kw">auto</span> step1 = empty.insert&lt;name&gt;(<span class="st">&quot;jon&quot;</span>);
+    <span class="dt">const</span> <span class="kw">auto</span> step2 = step1.insert&lt;age&gt;(<span class="dv">20</span>);
+    <span class="dt">const</span> <span class="kw">auto</span> step3 = step2.insert&lt;favorite_food&gt;(<span class="st">&quot;icecream&quot;</span>);
+    <span class="dt">const</span> <span class="kw">auto</span> step4 = step3.set&lt;favorite_food&gt;(<span class="st">&quot;calzone&quot;</span>);
+    <span class="dt">const</span> <span class="kw">auto</span> step5 = tick_tock(step3);
 
     std::cout &lt;&lt; step1 &lt;&lt; std::endl;
     <span class="co">// =&gt; name : jon, {}</span>
@@ -187,9 +187,9 @@ R tick_tock(R <span class="dt">const</span>&amp; rec) {
 <p>A few changes would have to be made to our design to allow for <em>removing</em> fields from records nicely: our record representation would have to be recursive rather than flat for the proper return type to be readily computable.</p>
 <p>It would also be interesting to see how difficult it would be to derive generic equality for records using <code>operator==</code>.</p>
 <p>Finally, the most interesting thing to do would be to have some notion of compositional lenses to allow deep update. For instance, imagine if the following were possible:</p>
-<pre class="sourceCode Cpp"><code class="sourceCode cpp"><span class="dt">auto</span> changed = man.modify&lt;brother,dog,fur,color&gt;(<span class="st">&quot;orange&quot;</span>);</code></pre></article>
+<pre class="sourceCode Cpp"><code class="sourceCode cpp"><span class="kw">auto</span> changed = man.modify&lt;brother,dog,fur,color&gt;(<span class="st">&quot;orange&quot;</span>);</code></pre></article>
 <h1>Want to comment?</h1>
-<p> I’m @jonsterling on <a href="http://www.twitter.com/jonsterling">Twitter</a> and <a href="https://alpha.app.net/jonsterling">App.net</a>.</p>
+<p> I’m @jonsterling on <a href="http://www.twitter.com/jonsterling">Twitter</a>.
 
 
 <script src="//static.getclicky.com/js" type="text/javascript"></script>

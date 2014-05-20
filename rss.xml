@@ -6,8 +6,19 @@
         <description><![CDATA[Jonathan Sterling writes about Types, Linguistics and Philology]]></description>
         <atom:link href="http://www.jonmsterling.com//rss.xml" rel="self"
                    type="application/rss+xml" />
-        <lastBuildDate>Sun, 11 May 2014 00:00:00 UT</lastBuildDate>
+        <lastBuildDate>Mon, 19 May 2014 00:00:00 UT</lastBuildDate>
         <item>
+    <title>Programming in Vinyl (BayHac 2014 Slides & Video)</title>
+    <link>http://www.jonmsterling.com//posts/2014-05-19-programming-in-vinyl-bayhac.html</link>
+    <description><![CDATA[<p>I lectured on Vinyl and its denotation in Type Theory at <a href="http://www.haskell.org/haskellwiki/BayHac2014">BayHac</a>. Slides are available <a href="https://github.com/VinylRecords/BayHac2014-Talk/blob/master/Talk.pdf">here</a>, and there is a (screen) video of he presentation <a href="https://vimeo.com/95694918">here</a>. Among other things, I presented my new idea for records as sheaves, and my setting of Vinyl-style records in the context of the existing Containers research.</p>
+<!--more-->
+
+
+]]></description>
+    <pubDate>Mon, 19 May 2014 00:00:00 UT</pubDate>
+    <guid>http://www.jonmsterling.com//posts/2014-05-19-programming-in-vinyl-bayhac.html</guid>
+</item>
+<item>
     <title>Records are Sheaves of Types</title>
     <link>http://www.jonmsterling.com//posts/2014-05-11-records-are-sheaves-of-types.html</link>
     <description><![CDATA[<p>Let us define a record type as being given by a type <span class="math">\(X\)</span> of <strong>keys</strong> and an interpretation function <span class="math">\(F\)</span> which maps every key <span class="math">\(x:X\)</span> to a type. We assume the existence of a powerset functor <span class="math">\(\mathcal{P}: \mathbf{Type}\to\mathbf{Type}\)</span>, which endows the discrete topology on <span class="math">\(X\)</span>. Then a record type is the product of the image of <span class="math">\(F\)</span> over a subset of <span class="math">\(X\)</span>: <span class="math">\[
@@ -926,7 +937,7 @@ plusOne <span class="fu">=</span> <span class="dt">TLam</span> (<span class="dt"
 <pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">plusOne&#39; ::</span> <span class="dt">E</span> ⊢ (Λ <span class="dt">S</span> (<span class="dt">V</span> <span class="dt">Z</span>)) ∈ (ℕ <span class="fu">~&gt;</span> ℕ)
 plusOne&#39; <span class="fu">=</span> <span class="dt">TLam</span> (<span class="dt">TS</span> <span class="dt">TVTop</span>)</code></pre>
 <p>It would be nice if we could get the process of generating typing derivations automated for us! Since it’s the case that the typing derivation for well-typed expressions usually resembles the structure of the term very nicely anyway, this should be possible. We can start with this type class:</p>
-<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">class</span> <span class="dt">Infer</span> (<span class="ot">x ::</span> <span class="dt">Term</span>) (τ <span class="ot">::</span> <span class="dt">Term</span>) (γ <span class="ot">::</span> <span class="dt">Cx</span>) <span class="fu">|</span> x γ <span class="ot">→</span> τ <span class="kw">where</span>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">class</span> <span class="dt">Infer</span> (<span class="ot">x ::</span> <span class="dt">Term</span>) (τ<span class="ot"> ::</span> <span class="dt">Term</span>) (γ<span class="ot"> ::</span> <span class="dt">Cx</span>) <span class="fu">|</span> x γ <span class="ot">→</span> τ <span class="kw">where</span>
 <span class="ot">&gt;   infer ::</span> γ ⊢ x ∈ τ</code></pre>
 <p>It turns out that we’ll basically just be recapitulating the typing rules wholesale, in such a way as to get Haskell’s constraint solver to infer them for us:</p>
 <pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">instance</span> <span class="dt">Infer</span> ℓ ℕ <span class="dt">E</span> <span class="ot">⇒</span> <span class="dt">Infer</span> (<span class="dt">Set</span> ℓ) (<span class="dt">Set</span> (<span class="dt">S</span> ℓ)) γ <span class="kw">where</span>
@@ -1139,7 +1150,7 @@ runBadPerson  <span class="fu">===</span> <span class="dt">Failure</span> [<span
 <p>Likewise, <span class="math">\(\hbox{≡-congruence}\)</span> is not provable in C++ for the same reasons; we’ll have to fudge the implementation, trusting the axioms.</p>
 <pre class="sourceCode Cpp"><code class="sourceCode cpp">    <span class="kw">template</span> &lt;<span class="kw">template</span> &lt;<span class="kw">class</span>&gt; <span class="kw">class</span> F, <span class="kw">class</span> A, <span class="kw">class</span> B&gt;
     Eq&lt;F&lt;A&gt;,F&lt;B&gt;&gt; cong(Eq&lt;A,B&gt; refl) {
-        <span class="dt">auto</span> fudge = Eq&lt;F&lt;A&gt;,F&lt;A&gt;&gt;();
+        <span class="kw">auto</span> fudge = Eq&lt;F&lt;A&gt;,F&lt;A&gt;&gt;();
         <span class="kw">return</span> *(Eq&lt;F&lt;A&gt;,F&lt;B&gt;&gt;*)&amp;fudge;
     }</code></pre>
 <p>Finally, <span class="math">\(\hbox{≡-transport}\)</span> can be defined in terms of what we’ve already done:</p>
@@ -2103,7 +2114,7 @@ to this post and see what you can improve!</p>
     <span class="dt">static</span> <span class="dt">char</span> <span class="dt">const</span> *symbol() { <span class="kw">return</span> sym; }
 };</code></pre>
 <p>Making this metadata is quite simple:</p>
-<pre class="sourceCode Cpp"><code class="sourceCode cpp"><span class="kw">extern</span> <span class="dt">char</span> <span class="dt">const</span> address_sym[] = <span class="st">&quot;address&quot;</span>;
+<pre class="sourceCode Cpp"><code class="sourceCode cpp"><span class="dt">extern</span> <span class="dt">char</span> <span class="dt">const</span> address_sym[] = <span class="st">&quot;address&quot;</span>;
 <span class="kw">typedef</span> Field&lt;address, <span class="dt">char</span> <span class="dt">const</span>*, &amp;address::address, address_sym&gt; address_meta;</code></pre>
 <!-- _--->
 
@@ -2119,10 +2130,10 @@ to this post and see what you can improve!</p>
   : Field&lt;address, <span class="dt">const</span> <span class="dt">char</span>*, &amp;address::address, address_sym&gt;
 { };</code></pre>
 <p>And so we will now be able to access metadata for some field <code>T</code> using only <code>FieldTable&lt;T&gt;</code>! Now we’re getting somewhere. Let’s automate that:</p>
-<pre class="sourceCode Cpp"><code class="sourceCode cpp"><span class="ot">#define mk_field(T, sym) \</span>
-    <span class="kw">extern</span> <span class="dt">char</span> <span class="dt">const</span> sym##_symbol[] = #sym;\
+<pre class="sourceCode Cpp"><code class="sourceCode cpp"><span class="ot">#define mk_field(T, sym) </span>\
+    <span class="dt">extern</span> <span class="dt">char</span> <span class="dt">const</span> sym<span class="er">##</span>_symbol[] = <span class="er">#</span>sym;\
     <span class="kw">struct</span> sym { T sym; };\
-    <span class="kw">template</span> &lt;&gt; <span class="kw">struct</span> FieldTable&lt;sym&gt; : Field&lt;sym, T, &amp;sym::sym, sym##_symbol&gt; {};</code></pre>
+    <span class="kw">template</span> &lt;&gt; <span class="kw">struct</span> FieldTable&lt;sym&gt; : Field&lt;sym, T, &amp;sym::sym, sym<span class="er">##</span>_symbol&gt; {};</code></pre>
 <h4 id="record-representation">Record Representation</h4>
 <p>A record is a just a variadic class template, defined inductively:</p>
 <pre class="sourceCode Cpp"><code class="sourceCode cpp"><span class="kw">template</span> &lt;<span class="kw">class</span>... rows&gt; <span class="kw">struct</span> Record;</code></pre>
@@ -2163,7 +2174,7 @@ to this post and see what you can improve!</p>
 
     <span class="kw">template</span> &lt;<span class="kw">class</span> g&gt;
     Record modify(Endomorphism&lt;<span class="kw">typename</span> FieldTable&lt;g&gt;::Type&gt; func) <span class="dt">const</span> {
-        <span class="dt">auto</span> value = func(<span class="kw">this</span>-&gt;*(FieldTable&lt;g&gt;::access()));
+        <span class="kw">auto</span> value = func(<span class="kw">this</span>-&gt;*(FieldTable&lt;g&gt;::access()));
         <span class="kw">return</span> set&lt;g&gt;(value);
     }
 }</code></pre>
@@ -2192,11 +2203,11 @@ R tick_tock(R <span class="dt">const</span>&amp; rec) {
 <p>Let’s try making up some records now:</p>
 <pre class="sourceCode Cpp"><code class="sourceCode cpp"><span class="dt">void</span> test_records() {
     <span class="dt">const</span> Record&lt;&gt; empty;
-    <span class="dt">const</span> <span class="dt">auto</span> step1 = empty.insert&lt;name&gt;(<span class="st">&quot;jon&quot;</span>);
-    <span class="dt">const</span> <span class="dt">auto</span> step2 = step1.insert&lt;age&gt;(<span class="dv">20</span>);
-    <span class="dt">const</span> <span class="dt">auto</span> step3 = step2.insert&lt;favorite_food&gt;(<span class="st">&quot;icecream&quot;</span>);
-    <span class="dt">const</span> <span class="dt">auto</span> step4 = step3.set&lt;favorite_food&gt;(<span class="st">&quot;calzone&quot;</span>);
-    <span class="dt">const</span> <span class="dt">auto</span> step5 = tick_tock(step3);
+    <span class="dt">const</span> <span class="kw">auto</span> step1 = empty.insert&lt;name&gt;(<span class="st">&quot;jon&quot;</span>);
+    <span class="dt">const</span> <span class="kw">auto</span> step2 = step1.insert&lt;age&gt;(<span class="dv">20</span>);
+    <span class="dt">const</span> <span class="kw">auto</span> step3 = step2.insert&lt;favorite_food&gt;(<span class="st">&quot;icecream&quot;</span>);
+    <span class="dt">const</span> <span class="kw">auto</span> step4 = step3.set&lt;favorite_food&gt;(<span class="st">&quot;calzone&quot;</span>);
+    <span class="dt">const</span> <span class="kw">auto</span> step5 = tick_tock(step3);
 
     std::cout &lt;&lt; step1 &lt;&lt; std::endl;
     <span class="co">// =&gt; name : jon, {}</span>
@@ -2213,7 +2224,7 @@ R tick_tock(R <span class="dt">const</span>&amp; rec) {
 <p>A few changes would have to be made to our design to allow for <em>removing</em> fields from records nicely: our record representation would have to be recursive rather than flat for the proper return type to be readily computable.</p>
 <p>It would also be interesting to see how difficult it would be to derive generic equality for records using <code>operator==</code>.</p>
 <p>Finally, the most interesting thing to do would be to have some notion of compositional lenses to allow deep update. For instance, imagine if the following were possible:</p>
-<pre class="sourceCode Cpp"><code class="sourceCode cpp"><span class="dt">auto</span> changed = man.modify&lt;brother,dog,fur,color&gt;(<span class="st">&quot;orange&quot;</span>);</code></pre>]]></description>
+<pre class="sourceCode Cpp"><code class="sourceCode cpp"><span class="kw">auto</span> changed = man.modify&lt;brother,dog,fur,color&gt;(<span class="st">&quot;orange&quot;</span>);</code></pre>]]></description>
     <pubDate>Fri, 23 Nov 2012 00:00:00 UT</pubDate>
     <guid>http://www.jonmsterling.com//posts/2012-11-23-extensible-records-in-cpp.html</guid>
 </item>
@@ -2308,7 +2319,7 @@ R tick_tock(R <span class="dt">const</span>&amp; rec) {
 <span class="ot">  (:|-) ::</span> <span class="dt">Sing</span> x <span class="ot">→</span> pred x <span class="ot">→</span> Σ kind pred</code></pre>
 <p>Last, we put the final touches on by making this into a record:</p>
 <pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">data</span> Σ (<span class="ot">kind ::</span> k) (pred<span class="ot"> ::</span> k <span class="ot">→</span> <span class="fu">*</span>) <span class="kw">where</span>
-<span class="ot">&gt;   (:|-) ::</span> { proj₁ <span class="ot">::</span> Π (<span class="ot">x ::</span> k), proj₂ <span class="ot">::</span> pred x } <span class="ot">→</span> Σ kind pred</code></pre>
+<span class="ot">&gt;   (:|-) ::</span> { proj₁<span class="ot"> ::</span> Π (<span class="ot">x ::</span> k), proj₂<span class="ot"> ::</span> pred x } <span class="ot">→</span> Σ kind pred</code></pre>
 <p>Since in most cases, the kind over which the predicate operates is inferrable from the predicate itself, we provide the following convenience synonym:</p>
 <pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">type</span> <span class="dt">Exists</span> (pred<span class="ot"> ::</span> k <span class="ot">→</span> <span class="fu">*</span>) <span class="fu">=</span> Σ <span class="dt">Kind</span> pred</code></pre>
 <p>So, we could, for instance, make a function that takes a number which is not one:</p>
@@ -3235,7 +3246,7 @@ A monad is just a monoid in the category of endofunctors, what’s the problem? 
 <p>It will be slightly more complicated to make a monadic instance with <code>Monoidy</code>. First, we need to define the identity functor, a type for natural transformations, and a type for functor composition:</p>
 <pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">newtype</span> <span class="dt">Id</span> α <span class="fu">=</span> <span class="dt">Id</span> {<span class="ot"> runId ::</span> α } <span class="kw">deriving</span> <span class="dt">Functor</span></code></pre>
 <p>A natural transformation (<span class="math">\(\Lambda f\,g\,\alpha. (f\,\alpha)\to(g\,\alpha)\)</span>) may be encoded in Haskell as follows:</p>
-<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">newtype</span> <span class="dt">NT</span> f g <span class="fu">=</span> <span class="dt">NT</span> {<span class="ot"> runNT ::</span> <span class="ot">∀</span> α. f α <span class="ot">→</span> g α }</code></pre>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">newtype</span> <span class="dt">NT</span> f g <span class="fu">=</span> <span class="dt">NT</span> {<span class="ot"> runNT ::</span> <span class="ot">∀</span> α<span class="fu">.</span> f α <span class="ot">→</span> g α }</code></pre>
 <p>Functor composition (<span class="math">\(\Lambda f\,g\,\alpha. f\ (g\,\alpha)\)</span>) is encoded as follows:</p>
 <pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">newtype</span> <span class="dt">FC</span> f g α <span class="fu">=</span> <span class="dt">FC</span> {<span class="ot"> runFC ::</span> f (g α) }</code></pre>
 <p>Now, let us define some type <code>T</code> which should be a monad:</p>
@@ -3311,7 +3322,7 @@ ghci<span class="fu">&gt;</span> <span class="dt">Wrapper</span> <span class="st
 <pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">instance</span> <span class="dt">TypeOr</span> α β α
 <span class="ot">&gt;</span> <span class="kw">instance</span> <span class="dt">TypeOr</span> α β β</code></pre>
 <p>Now, we can create a type synonym (for the sake of convenience) that encapsulates the structure of pairs:</p>
-<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">type</span> <span class="dt">Pair</span> α β <span class="fu">=</span> <span class="ot">∀</span> γ. <span class="dt">TypeOr</span> α β γ <span class="ot">⇒</span> (α <span class="ot">→</span> β <span class="ot">→</span> γ) <span class="ot">→</span> γ</code></pre>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">type</span> <span class="dt">Pair</span> α β <span class="fu">=</span> <span class="ot">∀</span> γ<span class="fu">.</span> <span class="dt">TypeOr</span> α β γ <span class="ot">⇒</span> (α <span class="ot">→</span> β <span class="ot">→</span> γ) <span class="ot">→</span> γ</code></pre>
 <p>A <span class="math">\(\textbf{Pair}\)</span> over <span class="math">\((\alpha,\beta)\)</span> is function that takes a function that returns one of its elements. Note that we cannot specify within this non-dependent type system that the result of this accessor actually be one of the elements, but the <code>(TypeOr α β γ)</code> constraint allows us to at least ensure that the result is of the type of either element in the pair.</p>
 <p>And now, given two values, we can construct a <span class="math">\(\textbf{Pair}\)</span>:</p>
 <pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt; pair ::</span> α <span class="ot">→</span> β <span class="ot">→</span> <span class="dt">Pair</span> α β

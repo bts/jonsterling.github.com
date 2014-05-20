@@ -132,7 +132,7 @@ plusOne <span class="fu">=</span> <span class="dt">TLam</span> (<span class="dt"
 <pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">plusOne' ::</span> <span class="dt">E</span> ⊢ (Λ <span class="dt">S</span> (<span class="dt">V</span> <span class="dt">Z</span>)) ∈ (ℕ <span class="fu">~&gt;</span> ℕ)
 plusOne' <span class="fu">=</span> <span class="dt">TLam</span> (<span class="dt">TS</span> <span class="dt">TVTop</span>)</code></pre>
 <p>It would be nice if we could get the process of generating typing derivations automated for us! Since it’s the case that the typing derivation for well-typed expressions usually resembles the structure of the term very nicely anyway, this should be possible. We can start with this type class:</p>
-<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">class</span> <span class="dt">Infer</span> (<span class="ot">x ::</span> <span class="dt">Term</span>) (τ <span class="ot">::</span> <span class="dt">Term</span>) (γ <span class="ot">::</span> <span class="dt">Cx</span>) <span class="fu">|</span> x γ <span class="ot">→</span> τ <span class="kw">where</span>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">class</span> <span class="dt">Infer</span> (<span class="ot">x ::</span> <span class="dt">Term</span>) (τ<span class="ot"> ::</span> <span class="dt">Term</span>) (γ<span class="ot"> ::</span> <span class="dt">Cx</span>) <span class="fu">|</span> x γ <span class="ot">→</span> τ <span class="kw">where</span>
 <span class="ot">&gt;   infer ::</span> γ ⊢ x ∈ τ</code></pre>
 <p>It turns out that we’ll basically just be recapitulating the typing rules wholesale, in such a way as to get Haskell’s constraint solver to infer them for us:</p>
 <pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">instance</span> <span class="dt">Infer</span> ℓ ℕ <span class="dt">E</span> <span class="ot">⇒</span> <span class="dt">Infer</span> (<span class="dt">Set</span> ℓ) (<span class="dt">Set</span> (<span class="dt">S</span> ℓ)) γ <span class="kw">where</span>
@@ -192,7 +192,7 @@ Appendix: Pretty Pretting
 <span class="ot">&gt;</span>         <span class="ch">'9'</span> <span class="ot">→</span> <span class="ch">'₉'</span>
 <span class="ot">&gt;</span>         d   <span class="ot">→</span> d</code></pre></article>
 <h1>Want to comment?</h1>
-<p> I’m @jonsterling on <a href="http://www.twitter.com/jonsterling">Twitter</a> and <a href="https://alpha.app.net/jonsterling">App.net</a>.</p>
+<p> I’m @jonsterling on <a href="http://www.twitter.com/jonsterling">Twitter</a>.
 
 
 <script src="//static.getclicky.com/js" type="text/javascript"></script>

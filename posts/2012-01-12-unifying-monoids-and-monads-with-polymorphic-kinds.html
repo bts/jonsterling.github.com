@@ -103,7 +103,7 @@ A monad is just a monoid in the category of endofunctors, what’s the problem? 
 <p>It will be slightly more complicated to make a monadic instance with <code>Monoidy</code>. First, we need to define the identity functor, a type for natural transformations, and a type for functor composition:</p>
 <pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">newtype</span> <span class="dt">Id</span> α <span class="fu">=</span> <span class="dt">Id</span> {<span class="ot"> runId ::</span> α } <span class="kw">deriving</span> <span class="dt">Functor</span></code></pre>
 <p>A natural transformation (<span class="math">\(\Lambda f\,g\,\alpha. (f\,\alpha)\to(g\,\alpha)\)</span>) may be encoded in Haskell as follows:</p>
-<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">newtype</span> <span class="dt">NT</span> f g <span class="fu">=</span> <span class="dt">NT</span> {<span class="ot"> runNT ::</span> <span class="ot">∀</span> α. f α <span class="ot">→</span> g α }</code></pre>
+<pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">newtype</span> <span class="dt">NT</span> f g <span class="fu">=</span> <span class="dt">NT</span> {<span class="ot"> runNT ::</span> <span class="ot">∀</span> α<span class="fu">.</span> f α <span class="ot">→</span> g α }</code></pre>
 <p>Functor composition (<span class="math">\(\Lambda f\,g\,\alpha. f\ (g\,\alpha)\)</span>) is encoded as follows:</p>
 <pre class="sourceCode literate literatehaskell"><code class="sourceCode literatehaskell"><span class="ot">&gt;</span> <span class="kw">newtype</span> <span class="dt">FC</span> f g α <span class="fu">=</span> <span class="dt">FC</span> {<span class="ot"> runFC ::</span> f (g α) }</code></pre>
 <p>Now, let us define some type <code>T</code> which should be a monad:</p>
@@ -149,7 +149,7 @@ ghci<span class="fu">&gt;</span> <span class="dt">Wrapper</span> <span class="st
 </ol>
 </div></article>
 <h1>Want to comment?</h1>
-<p> I’m @jonsterling on <a href="http://www.twitter.com/jonsterling">Twitter</a> and <a href="https://alpha.app.net/jonsterling">App.net</a>.</p>
+<p> I’m @jonsterling on <a href="http://www.twitter.com/jonsterling">Twitter</a>.
 
 
 <script src="//static.getclicky.com/js" type="text/javascript"></script>
