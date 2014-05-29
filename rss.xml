@@ -102,8 +102,8 @@
 \frac{
   \begin{aligned}
   &amp;\Gamma, u:\textstyle\bigcup_{(x:A)}B(x)\vdash C(u):\mathbb{U} \\
-  &amp;\Gamma, x:A, y:B(a)\vdash c(a,b) : C(\langle\color{gray}{\{x\}},y\rangle)\\
-  &amp;\Gamma,x_0:A,x_1:A,(y:B(a))^=\vdash p : \|c(x,y)\|^=\\
+  &amp;\Gamma, x:A, y:B(x)\vdash c(x,y) : C(\langle\color{gray}{\{x\}},y\rangle)\\
+  &amp;\Gamma,x_0:A,x_1:A,(y:B(x))^=\vdash p : \|c(x,y)\|^=\\
   &amp;\Gamma\vdash u:\textstyle\bigcup_{(x:A)}B(x)
   \end{aligned}
 }{
