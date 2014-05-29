@@ -53,7 +53,7 @@
 \frac{
   \Gamma,x:A,u:B(x),\Delta \vdash c(u): C(u)
 }{
-  \Gamma,u:\bigcup_{(a:A)}B(x),\Delta\vdash c(u):C(u)
+  \Gamma,u:\bigcup_{(x:A)}B(x),\Delta\vdash c(u):C(u)
 }\tag{$\cup$-elimination$_\text{ext}$}
 \]</span></p>
 <p>Note that the <span class="math">\(\cup\)</span>-elimination<span class="math">\(_\text{ext}\)</span> rule entails that <span class="math">\(\Delta\)</span> may not depend on <span class="math">\(u\)</span>. Also notice the very extensional and non-symmetric nature of these rules: in order to make the particular index <span class="math">\(x:A\)</span> be irrelevant, it is actually quite forgotten in the course of type checking: it is not present in the terms of the union, only in their typing derivations. This mirrors precisely the way that ETT makes equality computationally irrelevant.</p>
