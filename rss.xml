@@ -10,7 +10,7 @@
         <item>
     <title>Dependent Union Types in Intensional Type Theory</title>
     <link>http://www.jonmsterling.com//posts/2014-05-28-dependent-unions-in-intensional-type-theory.html</link>
-    <description><![CDATA[<p>Dependent unions types have existed for a few years in Extensional Type Theory à la Nuprl;<a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a> here, I demonstrate a lightweight approach to adding them to Intensional Type Theory as an extension of Altenkirch, McBride, Swierstra’s OTT<a href="#fn2" class="footnoteRef" id="fnref2"><sup>2</sup></a>.</p>
+    <description><![CDATA[<p>Dependent unions types have existed for a few years in Extensional Type Theory à la Nuprl;<a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a> here, I demonstrate a lightweight approach to adding them to Intensional Type Theory as an extension of Altenkirch, McBride, Swierstra’s OTT.<a href="#fn2" class="footnoteRef" id="fnref2"><sup>2</sup></a></p>
 <!--more-->
 
 <h3 id="dependent-unions-in-nuprlctt">Dependent Unions in Nuprl/CTT</h3>
