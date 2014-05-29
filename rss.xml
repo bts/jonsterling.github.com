@@ -6,8 +6,136 @@
         <description><![CDATA[Jonathan Sterling writes about Types, Linguistics and Philology]]></description>
         <atom:link href="http://www.jonmsterling.com//rss.xml" rel="self"
                    type="application/rss+xml" />
-        <lastBuildDate>Mon, 19 May 2014 00:00:00 UT</lastBuildDate>
+        <lastBuildDate>Wed, 28 May 2014 00:00:00 UT</lastBuildDate>
         <item>
+    <title>Dependent Union Types in Intensional Type Theory</title>
+    <link>http://www.jonmsterling.com//posts/2014-05-28-dependent-unions-in-intensional-type-theory.html</link>
+    <description><![CDATA[<p>Dependent unions types have existed for a few years in Extensional Type Theory à la Nuprl;<a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a> here, I demonstrate a lightweight approach to adding them to Intensional Type Theory as an extension of Altenkirch, McBride, Swierstra’s OTT<a href="#fn2" class="footnoteRef" id="fnref2"><sup>2</sup></a>.</p>
+<!--more-->
+
+<h3 id="dependent-unions-in-nuprlctt">Dependent Unions in Nuprl/CTT</h3>
+<p>Dependent unions in Nuprl/CTT are characterized by the following judgments:</p>
+<p><span class="math">\[
+\frac{
+  \Gamma\vdash A:\mathbb{U} \quad
+  \Gamma, x: A \vdash B(x) : \mathbb{U}
+}{
+  \Gamma\vdash\bigcup_{(x:A)}B(x): \mathbb{U}
+}\tag{$\cup$-formation}
+\]</span></p>
+<p><span class="math">\[
+\frac{
+  \Gamma\vdash A=A&#39;:\mathbb{U} \quad
+  \Gamma,x: A\vdash B(x)=B&#39;(x):\mathbb{U}
+}{
+  \Gamma\vdash\bigcup_{(x: A)}B(x)=\bigcup_{(x:A&#39;)}B&#39;(x):\mathbb{U}
+}\tag{$\cup$-type-equality$_\text{ext}$}
+\]</span></p>
+<p><span class="math">\[
+\frac{
+  \Gamma\vdash a: A \quad
+  \Gamma\vdash b: B(a) \quad
+  \Gamma,x: A \vdash B(x) :\mathbb{U}
+}{
+  \Gamma\vdash b:\bigcup_{(x:A)}B(x)
+}\tag{$\cup$-introduction$_\text{ext}$}
+\]</span></p>
+<p><span class="math">\[
+\frac{
+  \Gamma\vdash a: A \quad
+  \Gamma\vdash b=b&#39;: B(a) \quad
+  \Gamma,x: A\vdash B(x):\mathbb{U}
+}{
+  \Gamma\vdash b=b&#39;:\bigcup_{(x:A)}B(x)
+}\tag{$\cup$-equality$_\text{ext}$}
+\]</span></p>
+<p><span class="math">\[
+\frac{
+  \Gamma,x:A,u:B(x),\Delta \vdash c(u): C(u)
+}{
+  \Gamma,u:\bigcup_{(a:A)}B(x),\Delta\vdash c(u):C(u)
+}\tag{$\cup$-elimination$_\text{ext}$}
+\]</span></p>
+<p>Note that the <span class="math">\(\cup\)</span>-elimination<span class="math">\(_\text{ext}\)</span> rule entails that <span class="math">\(\Delta\)</span> may not depend on <span class="math">\(u\)</span>. Also notice the very extensional and non-symmetric nature of these rules: in order to make the particular index <span class="math">\(x:A\)</span> be irrelevant, it is actually quite forgotten in the course of type checking: it is not present in the terms of the union, only in their typing derivations. This mirrors precisely the way that ETT makes equality computationally irrelevant.</p>
+<h3 id="equality-rules-in-ott">Equality rules in OTT</h3>
+<p>Before we get started, a quick exposition of how equality rules work under a heterogeneous equality like in OTT is in order. Equality rules in OTT are given algorithmically over an inductive-recursive universe rather than as judgments like in ETT; this is because the equality rules we are giving are <em>not</em> the judgmental equality, but rather the propositional equality, which is witnessed by terms inside the theory, <em>not</em> typing derivations. Moreover, in order to mimic the feel and ease of extensional equality, we use McBride’s heterogeneous “John Major” equality: that is, it’s plausible for any two things to be equal, but in fact, things are only equal to themselves.</p>
+<p>To give an example, recall that for any quantifier <span class="math">\(B\)</span>, type equality in OTT is characterized as follows: <span class="math">\[
+\frac{
+  B\ \mathsf{quantifier}
+}{
+  B_{(x:S)}T(x) = B_{(x:S&#39;)}T&#39;(x):\mathbb{U}
+  \leadsto (S=S&#39;:\mathbb{U})\times\prod_{x:S}\prod_{y:S&#39;}\prod_{p:x:S=y:S&#39;} T(x)=T(y):\mathbb{U}
+}
+\]</span></p>
+<p>This makes quite a noise! We’ll use some of Altenkirch’s more recent notation to clean it up: <span class="math">\[\begin{align}
+\|x:S\|^= &amp;\mapsto x_0:S_0=x_1:S_1\\
+(x:S)^= &amp;\mapsto x_0:S_0, x_1:S_1, x_{01}: \|x:S\|^=
+\end{align}\]</span> The former notation is a shorthand for term equalities, whereas the second notation can be seen as transating contexts <span class="math">\(\Gamma\)</span> by a kind of model construction into context <span class="math">\(\Gamma^=\)</span> (in this model in particular, <span class="math">\(\mathsf{resp}\)</span> and <span class="math">\(\mathsf{refl}\)</span> hold). When the type of <span class="math">\(x\)</span> is known, the <span class="math">\(:S\)</span> part may be omitted. And so we can give a cleaner version of the last rule: <span class="math">\[ \frac{ B\ \mathsf{quantifier} }{ \|B_{(x:S)}T(x)\|^= \leadsto \|S\|^=
+\times \prod_{(x:S)^=}\|T(x)\|^= }\tag{Binder-equality} \]</span></p>
+<h3 id="dependent-unions-in-ott">Dependent Unions in OTT</h3>
+<p>The type formation rule is already perfectly intensional, and may be retained as-is: <span class="math">\[
+\frac{
+  \Gamma\vdash A:\mathbb{U} \quad
+  \Gamma, x: A \vdash B(x) : \mathbb{U}
+}{
+  \Gamma\vdash\bigcup_{(x:A)}B(x): \mathbb{U}
+}\tag{$\cup$-formation}
+\]</span></p>
+<p>The interpretation of equality of union types is a special case of the Binder-equality rule above: <span class="math">\[
+\|\bigcup_{(x:S)}T(x)\|^= \leadsto \|S\|^= \times \prod_{(x:S)^=}\|T(x)\|^=
+\tag{$\cup$-equality}
+\]</span></p>
+<p>The introduction rule is going to be similar to the CTT one, but we will have to reify the index into the term in order to not make type checking undecidable; as such, we will have to find another way to “forget” it! <span class="math">\[
+\frac{
+  \Gamma\vdash a:A \quad
+  \Gamma\vdash b:B(a) \quad
+}{
+  \Gamma\vdash \langle\color{gray}{\{a\}}, b\rangle:\bigcup_{(x:A)}B(x)
+}\tag{$\cup$-introduction}
+\]</span></p>
+<p>Note that so far, we do not have anything different from a <span class="math">\(\Sigma\)</span>-type; but something interesting will happen in the equality and induction rules: <span class="math">\[
+\|\langle\color{gray}{\{a\}},b\rangle:\bigcup_{(x:A)}B(x)\|^=
+\leadsto
+\|b:B(x)\|^=
+\tag{$\cup$-equality}
+\]</span> Thus we make the index entirely irrelevant with respect to equality here: the only thing we care about is whether <span class="math">\(b_0,b_1\)</span> compute to equal values, regardless of <span class="math">\(a_0,a_1\)</span>. Now, we must endow unions with an induction rule which respects this equality: <span class="math">\[
+\frac{
+  \begin{aligned}
+  &amp;\Gamma, u:\textstyle\bigcup_{(x:A)}B(x)\vdash C(u):\mathbb{U} \\
+  &amp;\Gamma, x:A, y:B(a)\vdash c(a,b) : C(\langle\color{gray}{\{x\}},y\rangle)\\
+  &amp;\Gamma,x_0:A,x_1:A,(y:B(a))^=\vdash p : \|c(x,y)\|^=\\
+  &amp;\Gamma\vdash u:\textstyle\bigcup_{(x:A)}B(x)
+  \end{aligned}
+}{
+  \Gamma\vdash \mathsf{ind}_\cup[C](c; p; u) : C(u)
+}\tag{$\cup$-induction}
+\]</span> The computation rule for this is given as follows: <span class="math">\[
+\frac{
+  u\leadsto\langle\color{gray}{\{a\}},b\rangle
+}{
+  \mathsf{ind}_\cup[C](c; p; u)\leadsto c(a,b)
+}\tag{$\mathsf{ind}_\cup$-computation}
+\]</span></p>
+<p>Likewise, a recursion principle <span class="math">\(\mathsf{rec}_\cup\)</span> can be given in terms of <span class="math">\(\mathsf{ind}_\cup\)</span> (left as an exercise).</p>
+<h3 id="remarks">Remarks</h3>
+<p>The single important thing for our union type is that we <em>not</em> be able to discontinously extract their indices: that is, we must respect the fact that computation is not permitted to depend upon the index of the family. At first glance, it seems as though the induction principle does not prevent this: <span class="math">\[\begin{align}
+\mathsf{evil} &amp;: \textstyle\bigcup_{(x:A)}B(x) \to A\\
+\mathsf{evil} &amp;:\equiv
+\lambda u. \mathsf{ind}_\cup[A](x,y. x; x_0,x_1,\vec{y}. \color{orange}{[|???|]}; u)
+\end{align}\]</span> Can we use the induction principle for heterogeneous equality to fill our hole? It turns out that even this does not suffice (in Agda). And so we are safe.</p>
+<h3 id="future-work">Future Work</h3>
+<p>I am currently implementing a very basic observational universe inside of Idris; shortly, I intend to carry over this construction to there so I can see how nice it is to compute with. Assuming that this characterization of union types in Intensional Type Theory is indeed sound (and I believe that it is), a similar treatment can likewise be given for dependent intersections. Lastly, it should be possible to extend the syntax of OTT with implicit coercions from values in <span class="math">\(B(a)\)</span> for some <span class="math">\(a\)</span> to <span class="math">\(\bigcup_{(x:A)}B(x)\)</span>; the intensional nature of our theory does not place restrictions on how we <em>introduce</em> terms in unions, but rather only on how we <em>eliminate</em> them.</p>
+<div class="footnotes">
+<hr />
+<ol>
+<li id="fn1"><p>Alexei Pavlovich Kopylov (2004). <a href="http://metaprl.org/papers/thesis-kopylov.html">Type Theoretic Foundations for Data Structures, Classes, and Objects</a><a href="#fnref1">↩</a></p></li>
+<li id="fn2"><p>Thorsten Altenkirch, Conor McBride, Wouter Swierstra (2007). <a href="http://dl.acm.org/citation.cfm?id=1292597.1292608">Observational equality, now!</a><a href="#fnref2">↩</a></p></li>
+</ol>
+</div>]]></description>
+    <pubDate>Wed, 28 May 2014 00:00:00 UT</pubDate>
+    <guid>http://www.jonmsterling.com//posts/2014-05-28-dependent-unions-in-intensional-type-theory.html</guid>
+</item>
+<item>
     <title>Programming in Vinyl (BayHac 2014 Slides & Video)</title>
     <link>http://www.jonmsterling.com//posts/2014-05-19-programming-in-vinyl-bayhac.html</link>
     <description><![CDATA[<p>I lectured on Vinyl and its denotation in Type Theory at <a href="http://www.haskell.org/haskellwiki/BayHac2014">BayHac</a>. Slides are available <a href="https://github.com/VinylRecords/BayHac2014-Talk/blob/master/Talk.pdf">here</a>, and there is a (screen) video of the presentation <a href="https://vimeo.com/95694918">here</a>. Among other things, I presented my new idea for records as sheaves, and my setting of Vinyl-style records in the context of the existing Containers research.</p>
