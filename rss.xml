@@ -96,7 +96,7 @@
 <p>Note that so far, we do not have anything different from a <span class="math">\(\Sigma\)</span>-type; but something interesting will happen in the equality and induction rules: <span class="math">\[
 \|\langle\color{gray}{\{a\}},b\rangle:\bigcup_{(x:A)}B(x)\|^=
 \leadsto
-\|b:B(x)\|^=
+\|b:B(a)\|^=
 \tag{$\cup$-equality}
 \]</span> Thus we make the index entirely irrelevant with respect to equality here: the only thing we care about is whether <span class="math">\(b_0,b_1\)</span> compute to equal values, regardless of <span class="math">\(a_0,a_1\)</span>. Now, we must endow unions with an induction rule which respects this equality: <span class="math">\[
 \frac{
