@@ -157,7 +157,7 @@ MathJax.Hub.Config({
 <p>The single important thing for our union type is that we <em>not</em> be able to discontinously extract their indices: that is, we must respect the fact that computation is not permitted to depend upon the index of the family. At first glance, it seems as though the induction principle does not prevent this: <span class="math">\[\begin{align}
 \mathsf{evil} &amp;: \textstyle\bigcup_{(x:A)}B(x) \to A\\
 \mathsf{evil} &amp;:\equiv
-\lambda u. \mathsf{ind}_\cup[A](x,y. x; x_0,x_1,\vec{y}. \color{orange}{[|???|]}; u)
+\lambda u. \mathsf{ind}_\cup[A](x,y. x; x_0,x_1,y^=. \color{orange}{[|???|]}; u)
 \end{align}\]</span> Can we use the induction principle for heterogeneous equality to fill our hole? It turns out that even this does not suffice (in Agda). And so we are safe.</p>
 <h3 id="future-work">Future Work</h3>
 <p>I am currently implementing a very basic observational universe inside of Idris; shortly, I intend to carry over this construction to there so I can see how nice it is to compute with. Assuming that this characterization of union types in Intensional Type Theory is indeed sound (and I believe that it is), a similar treatment can likewise be given for dependent intersections. Lastly, it should be possible to extend the syntax of OTT with implicit coercions from values in <span class="math">\(B(a)\)</span> for some <span class="math">\(a\)</span> to <span class="math">\(\bigcup_{(x:A)}B(x)\)</span>; the intensional nature of our theory does not place restrictions on how we <em>introduce</em> terms in unions, but rather only on how we <em>eliminate</em> them.</p>
