@@ -435,7 +435,7 @@ end</code></pre>
 <h3 id="ideas-to-reduce-such-verbs-to-a-single-lexical-entry">Ideas to reduce such verbs to a single lexical entry</h3>
 <p>Given polymorphism and the ability eliminate categories into modalities, then we could give a single lexical entry for <span class="math">\(\text{gave}\)</span>:</p>
 <p><span class="math">\[
-\text{gave}: \forall[\sigma\in\{NP,PP\}].\ (VP/NP_{TH})/_{M[\sigma]} \sigma\\
+\text{gave}: \Pi[\sigma\in\{NP,PP\}].\ (VP/NP_{TH})/_{M[\sigma]} \sigma\\
 \begin{align}
 \textbf{where}\ M[PP] \mapsto \star\\
 M[NP] \mapsto \diamond
