@@ -8,13 +8,13 @@
                    type="application/rss+xml" />
         <lastBuildDate>Wed, 28 May 2014 00:00:00 UT</lastBuildDate>
         <item>
-    <title>Dependent Union Types in Intensional Type Theory</title>
-    <link>http://www.jonmsterling.com//posts/2014-05-28-dependent-unions-in-intensional-type-theory.html</link>
-    <description><![CDATA[<p>Dependent unions types have existed for a few years in Extensional Type Theory à la Nuprl;<a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a> here, I demonstrate a lightweight approach to adding them to Intensional Type Theory as an extension of Altenkirch, McBride, Swierstra’s OTT.<a href="#fn2" class="footnoteRef" id="fnref2"><sup>2</sup></a></p>
+    <title>Family Union Types in Intensional Type Theory</title>
+    <link>http://www.jonmsterling.com//posts/2014-05-28-family-unions-in-intensional-type-theory.html</link>
+    <description><![CDATA[<p>Family unions types have existed for a few years in Extensional Type Theory à la Nuprl;<a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a> here, I demonstrate a lightweight approach to adding them to Intensional Type Theory as an extension of Altenkirch, McBride, Swierstra’s OTT.<a href="#fn2" class="footnoteRef" id="fnref2"><sup>2</sup></a></p>
 <!--more-->
 
-<h3 id="dependent-unions-in-nuprlctt">Dependent Unions in Nuprl/CTT</h3>
-<p>Dependent unions in Nuprl/CTT are characterized by the following judgments:</p>
+<h3 id="family-unions-in-nuprlctt">Family Unions in Nuprl/CTT</h3>
+<p>Family unions in Nuprl/CTT are characterized by the following judgments:</p>
 <p><span class="math">\[
 \frac{
   \Gamma\vdash A:\mathbb{U} \quad
@@ -72,7 +72,7 @@
 (x:S)^= &amp;\mapsto x_0:S_0, x_1:S_1, x_{01}: \|x:S\|^=
 \end{align}\]</span> The former notation is a shorthand for term equalities, whereas the second notation can be seen as transating contexts <span class="math">\(\Gamma\)</span> by a kind of model construction into context <span class="math">\(\Gamma^=\)</span> (in this model in particular, <span class="math">\(\mathsf{resp}\)</span> and <span class="math">\(\mathsf{refl}\)</span> hold). When the type of <span class="math">\(x\)</span> is known, the <span class="math">\(:S\)</span> part may be omitted. And so we can give a cleaner version of the last rule: <span class="math">\[ \frac{ B\ \mathsf{quantifier} }{ \|B_{(x:S)}T(x)\|^= \leadsto \|S\|^=
 \times \prod_{(x:S)^=}\|T(x)\|^= }\tag{Binder-equality} \]</span></p>
-<h3 id="dependent-unions-in-ott">Dependent Unions in OTT</h3>
+<h3 id="family-unions-in-ott">Family Unions in OTT</h3>
 <p>The type formation rule is already perfectly intensional, and may be retained as-is: <span class="math">\[
 \frac{
   \Gamma\vdash A:\mathbb{U} \quad
@@ -124,7 +124,9 @@
 \lambda u. \mathsf{ind}_\cup[A](x,y. x; x_0,x_1,y^=. \color{orange}{[|???|]}; u)
 \end{align}\]</span> Can we use the induction principle for heterogeneous equality to fill our hole? It turns out that even this does not suffice (in Agda). And so we are safe.</p>
 <h3 id="future-work">Future Work</h3>
-<p>I am currently implementing a very basic observational universe inside of Idris; shortly, I intend to carry over this construction to there so I can see how nice it is to compute with. Assuming that this characterization of union types in Intensional Type Theory is indeed sound (and I believe that it is), a similar treatment can likewise be given for dependent intersections. Lastly, it should be possible to extend the syntax of OTT with implicit coercions from values in <span class="math">\(B(a)\)</span> for some <span class="math">\(a\)</span> to <span class="math">\(\bigcup_{(x:A)}B(x)\)</span>; the intensional nature of our theory does not place restrictions on how we <em>introduce</em> terms in unions, but rather only on how we <em>eliminate</em> them.</p>
+<p>I am currently implementing a very basic observational universe inside of Idris; shortly, I intend to carry over this construction to there so I can see how nice it is to compute with. Assuming that this characterization of union types in Intensional Type Theory is indeed sound (and I believe that it is), a similar treatment can likewise be given for family intersections. Lastly, it should be possible to extend the syntax of OTT with implicit coercions from values in <span class="math">\(B(a)\)</span> for some <span class="math">\(a\)</span> to <span class="math">\(\bigcup_{(x:A)}B(x)\)</span>; the intensional nature of our theory does not place restrictions on how we <em>introduce</em> terms in unions, but rather only on how we <em>eliminate</em> them.</p>
+<h3 id="errata">Errata</h3>
+<p>A previous version of this referred to “dependent unions”, which are a subtly different kind of thing from what we have described here, which is a “family union”.</p>
 <div class="footnotes">
 <hr />
 <ol>
@@ -132,6 +134,19 @@
 <li id="fn2"><p>Thorsten Altenkirch, Conor McBride, Wouter Swierstra (2007). <a href="http://dl.acm.org/citation.cfm?id=1292597.1292608">Observational equality, now!</a><a href="#fnref2">↩</a></p></li>
 </ol>
 </div>]]></description>
+    <pubDate>Wed, 28 May 2014 00:00:00 UT</pubDate>
+    <guid>http://www.jonmsterling.com//posts/2014-05-28-family-unions-in-intensional-type-theory.html</guid>
+</item>
+<item>
+    <title>2014-05-28-dependent-unions-in-intensional-type-theory</title>
+    <link>http://www.jonmsterling.com//posts/2014-05-28-dependent-unions-in-intensional-type-theory.html</link>
+    <description><![CDATA[<html>
+  <head>
+    <meta http-equiv="refresh" content="0; url=/posts/2014-05-28-family-unions-in-intensional-type-theory.html" />
+  </head>
+</html>
+
+]]></description>
     <pubDate>Wed, 28 May 2014 00:00:00 UT</pubDate>
     <guid>http://www.jonmsterling.com//posts/2014-05-28-dependent-unions-in-intensional-type-theory.html</guid>
 </item>
