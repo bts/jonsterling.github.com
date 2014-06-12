@@ -6,8 +6,30 @@
         <description><![CDATA[Jonathan Sterling writes about Types, Linguistics and Philology]]></description>
         <atom:link href="http://www.jonmsterling.com//rss.xml" rel="self"
                    type="application/rss+xml" />
-        <lastBuildDate>Wed, 28 May 2014 00:00:00 UT</lastBuildDate>
+        <lastBuildDate>Wed, 11 Jun 2014 00:00:00 UT</lastBuildDate>
         <item>
+    <title>Non-discrete Records in Type Theory</title>
+    <link>http://www.jonmsterling.com//posts/2014-06-11-non-discrete-records-in-type-theory.html</link>
+    <description><![CDATA[<p>In my <a href="http://www.jonmsterling.com/posts/2014-05-11-records-are-sheaves-of-types.html">recent post</a> I demonstrated a type-theoretic formulation of non-dependent record types as presheaves on a particular topological space <span class="math">\(X\)</span> of keys given an assignment <span class="math">\(El_X : X\to\mathbf{Type}\)</span>. Today, I’ll construct more interesting records by endowing the key space with a non-discrete topology.</p>
+<!--more-->
+
+<p>Recall that for a key space <span class="math">\(X\)</span> with the discrete topology, the presheaf <span class="math">\(\mathcal{R}\)</span> has as its values the products of all subsets of <span class="math">\(X\)</span>. So if <span class="math">\(X:\equiv\mathbf{2}\)</span>, then the stalk space <span class="math">\(\Sigma\mathcal{R}\)</span> is <span class="math">\((\mathbf{1} + El_X(0) + El_X(1) + \Pi_\mathbf{2}El_X)\)</span>. That is, the record could be empty, it could contain either field, or it could contain both fields.</p>
+<p>But suppose that <span class="math">\(X:\equiv[0,1]\)</span> with the trivial (indiscrete) topology; then <span class="math">\(\Sigma\mathcal{R}\cong(\mathbf{1} + \Pi_\mathbf{2}El_X)\)</span>. That is, the record must contain either no fields, or all fields. An more interesting example arises when you consider the the topology on the natural numbers which is given by making each open set contain all the numbers up to its maximum: <span class="math">\[
+\mathcal{O}(\mathbb{N}_\leq) = \{\{\}, \{1\}, \{1,2\}, \{1,2,3\}...\}
+\]</span> In this case, for a record to be valid, it must contain all fields preceding its highest field: <span class="math">\[
+\textstyle\sum\mathcal{R}\cong \mathbf{1} + El_X(1) + \prod_\mathbf{2}El_X + \prod_\mathbf{3}El_X + ... +\prod_n El_X
+\]</span></p>
+<p>To give a more practical example, imagine a space <span class="math">\(A\)</span> of codes for biographical data: <span class="math">\[\begin{align}
+A &amp;:\equiv \{ \mathsf{name}, \mathsf{employer}, \mathsf{salary} \}\\
+El_A &amp;:\equiv \lambda.\{ \mathsf{name},\mathsf{employer}\mapsto \mathbf{String}; \mathsf{salary}\mapsto\mathbb{N}\}
+\end{align}\]</span> It doesn’t make sense that someone could have a salary if they were unemployed. So we want to make the presence of the <span class="math">\(\mathsf{salary}\)</span> field entail the presence of the <span class="math">\(\mathsf{employer}\)</span> field. Observe that the following topology satisfies this constraint: <span class="math">\[
+\mathcal{O}(A) = \{\{\}, \{\mathsf{name}\}, \{\mathsf{employer}\},\{\mathsf{name},\mathsf{employer}\}, \{\mathsf{employer},\mathsf{salary}\}, \{\mathsf{name},\mathsf{employer},\mathsf{salary}\}\}
+\]</span> The topological interpretation gives us a very nice way to deal with situations where one field doesn’t have meaning lacking another field, etc.</p>
+<p>In fact, I have made this idea formal in Coq by briefly <a href="https://gist.github.com/jonsterling/f00cfcc552c3587dfff2">extending</a> Andrej Bauer’s delightful tutorial implementation of topology with a definition of presheaves and <span class="math">\(\mathcal{R}\)</span>.</p>]]></description>
+    <pubDate>Wed, 11 Jun 2014 00:00:00 UT</pubDate>
+    <guid>http://www.jonmsterling.com//posts/2014-06-11-non-discrete-records-in-type-theory.html</guid>
+</item>
+<item>
     <title>Family Union Types in Intensional Type Theory</title>
     <link>http://www.jonmsterling.com//posts/2014-05-28-family-unions-in-intensional-type-theory.html</link>
     <description><![CDATA[<p>Family union types have existed for a few years in Extensional Type Theory à la Nuprl;<a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a> here, I demonstrate a lightweight approach to adding them to Intensional Type Theory as an extension of Altenkirch, McBride, Swierstra’s OTT.<a href="#fn2" class="footnoteRef" id="fnref2"><sup>2</sup></a></p>
