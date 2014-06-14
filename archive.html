@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <meta name="readability-verification" content="cG3MqZcEVveKZ6mnEFkePAL3Ug79Jxxp5Fn27CM7" />
-<title>JS ⊢ Archives</title>
+<title>JS ⊢ Jon Sterling / Archives</title>
 <link rel="stylesheet" type="text/css" href="./css/screen.css" />
 <link rel="stylesheet" type="text/css" href="./css/syntax.css" />
 <link rel="stylesheet" type="text/css" href="./css/coqdoc.css" />
@@ -42,201 +42,166 @@ MathJax.Hub.Config({
 <body>
 
 <header>
-<h1><a href="./index.html"><span class="title">Archives.</span></a></h1>
+<h1><a href="./index.html"><span class="title">Jon Sterling / Archives.</span></a></h1>
 </header>
 
 <section>
 
-    <article class="digest">
+  <article class="digest">
 
-    <h3>
-        <a href="./posts/2014-06-11-non-discrete-records-in-type-theory.html">Non-discrete Records in Type Theory</a>
-        <span class="date">June 11, 2014</span>
-    </h3>
-    
-        <p>In my <a href="http://www.jonmsterling.com/posts/2014-05-11-records-are-sheaves-of-types.html">recent post</a> I demonstrated a type-theoretic formulation of non-dependent record types as presheaves on a particular topological space <span class="math">\(X\)</span> of keys given an assignment <span class="math">\(El_X : X\to\mathbf{Type}\)</span>. Today, I’ll construct more interesting records by endowing the key space with a non-discrete topology.</p>
+  <h3>
+    <a href="./posts/2014-06-11-non-discrete-records-in-type-theory.html">Non-discrete Records in Type Theory</a>
+    <span class="date">June 11, 2014</span>
+  </h3>
 
-    
-
-    <div class="read_more">
-        <a href="./posts/2014-06-11-non-discrete-records-in-type-theory.html">
-           more …
-        </a>
-    </div>
-    </article>
-
-    <article class="digest">
-
-    <h3>
-        <a href="./posts/2014-05-28-family-unions-in-intensional-type-theory.html">Family Union Types in Intensional Type Theory</a>
-        <span class="date">May 28, 2014</span>
-    </h3>
-    
-        <p>Family union types have existed for a few years in Extensional Type Theory à la Nuprl;<a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a> here, I demonstrate a lightweight approach to adding them to Intensional Type Theory as an extension of Altenkirch, McBride, Swierstra’s OTT.<a href="#fn2" class="footnoteRef" id="fnref2"><sup>2</sup></a></p>
-
-    
+  
+    <p>In my <a href="http://www.jonmsterling.com/posts/2014-05-11-records-are-sheaves-of-types.html">recent post</a> I demonstrated a type-theoretic formulation of non-dependent record types as presheaves on a particular topological space <span class="math">\(X\)</span> of keys given an assignment <span class="math">\(El_X : X\to\mathbf{Type}\)</span>. Today, I’ll construct more interesting records by endowing the key space with a non-discrete topology.</p>
 
     <div class="read_more">
-        <a href="./posts/2014-05-28-family-unions-in-intensional-type-theory.html">
-           more …
-        </a>
+      <a href="./posts/2014-06-11-non-discrete-records-in-type-theory.html"> more …</a>
     </div>
-    </article>
+  
+  </article>
 
-    <article class="digest">
+  <article class="digest">
 
-    <h3>
-        <a href="./posts/2014-05-19-programming-in-vinyl-bayhac.html">Programming in Vinyl (BayHac 2014 Slides &amp; Video)</a>
-        <span class="date">May 19, 2014</span>
-    </h3>
-    
-        <p>I lectured on Vinyl and its denotation in Type Theory at <a href="http://www.haskell.org/haskellwiki/BayHac2014">BayHac</a>. Slides are available <a href="http://www.slideshare.net/jonsterling/programming-in-vinyl-bayhac-2014">here</a>, and there is a (screen) video of the presentation <a href="https://vimeo.com/95694918">here</a>. Among other things, I presented my new idea for records as sheaves, and my setting of Vinyl-style records in the context of the existing Containers research.</p>
+  <h3>
+    <a href="./posts/2014-05-28-family-unions-in-intensional-type-theory.html">Family Union Types in Intensional Type Theory</a>
+    <span class="date">May 28, 2014</span>
+  </h3>
 
-    
+  
+    <p>Family union types have existed for a few years in Extensional Type Theory à la Nuprl;<a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a> here, I demonstrate a lightweight approach to adding them to Intensional Type Theory as an extension of Altenkirch, McBride, Swierstra’s OTT.<a href="#fn2" class="footnoteRef" id="fnref2"><sup>2</sup></a></p>
 
     <div class="read_more">
-        <a href="./posts/2014-05-19-programming-in-vinyl-bayhac.html">
-           more …
-        </a>
+      <a href="./posts/2014-05-28-family-unions-in-intensional-type-theory.html"> more …</a>
     </div>
-    </article>
+  
+  </article>
 
-    <article class="digest">
+  <article class="digest">
 
-    <h3>
-        <a href="./posts/2014-05-11-records-are-sheaves-of-types.html">Records are Sheaves of Types</a>
-        <span class="date">May 11, 2014</span>
-    </h3>
-    
-        <p>Let us define a record type as being given by a type <span class="math">\(X\)</span> of <strong>keys</strong> and an interpretation function <span class="math">\(F\)</span> which maps every key <span class="math">\(x:X\)</span> to a type. We assume the existence of a powerset functor <span class="math">\(\mathcal{P}: \mathbf{Type}\to\mathbf{Type}\)</span>, which endows the discrete topology on <span class="math">\(X\)</span>. Then a record type is the product of the image of <span class="math">\(F\)</span> over a subset of <span class="math">\(X\)</span>: <span class="math">\[
+  <h3>
+    <a href="./posts/2014-05-11-records-are-sheaves-of-types.html">Records are Sheaves of Types</a>
+    <span class="date">May 11, 2014</span>
+  </h3>
+
+  
+    <p>Let us define a record type as being given by a type <span class="math">\(X\)</span> of <strong>keys</strong> and an interpretation function <span class="math">\(F\)</span> which maps every key <span class="math">\(x:X\)</span> to a type. We assume the existence of a powerset functor <span class="math">\(\mathcal{P}: \mathbf{Type}\to\mathbf{Type}\)</span>, which endows the discrete topology on <span class="math">\(X\)</span>. Then a record type is the product of the image of <span class="math">\(F\)</span> over a subset of <span class="math">\(X\)</span>: <span class="math">\[
 \mbox{for}\ U\subseteq X,\quad \mathsf{Rec}(U,F) :\equiv \prod_{s:U} F(s)
 \]</span></p>
 
-    
+    <div class="read_more">
+      <a href="./posts/2014-05-11-records-are-sheaves-of-types.html"> more …</a>
+    </div>
+  
+  </article>
+
+  <article class="digest">
+
+  <h3>
+    <a href="./posts/2014-02-01-the-circle-is-not-contractible.html">The Circle Is Not Contractible: A Short Proof</a>
+    <span class="date">February  1, 2014</span>
+  </h3>
+
+  
+    <p>To those of us without a background in topology, it may have initially been surprising that the unit circle <span class="math">\(S^1\)</span> is not contractible. In this post, I’ll outline a homotopy type-theoretic proof for why this is in fact the case.</p>
 
     <div class="read_more">
-        <a href="./posts/2014-05-11-records-are-sheaves-of-types.html">
-           more …
-        </a>
+      <a href="./posts/2014-02-01-the-circle-is-not-contractible.html"> more …</a>
     </div>
-    </article>
+  
+  </article>
 
-    <article class="digest">
+  <article class="digest">
 
-    <h3>
-        <a href="./posts/2014-02-01-the-circle-is-not-contractible.html">The Circle Is Not Contractible: A Short Proof</a>
-        <span class="date">February  1, 2014</span>
-    </h3>
-    
-        <p>To those of us without a background in topology, it may have initially been surprising that the unit circle <span class="math">\(S^1\)</span> is not contractible. In this post, I’ll outline a homotopy type-theoretic proof for why this is in fact the case.</p>
+  <h3>
+    <a href="./posts/2014-01-04-standard-ml-as-a-theorem-prover.html">Standard ML as a Proof System, without GADTs</a>
+    <span class="date">January  4, 2014</span>
+  </h3>
 
-    
+  
+    <p>It is well known that generalized algebraic data types (a sort of phase-locked inductive family) suffice in languages like Haskell<a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a> and OCaml to be used as a deductive system for intuitionistic logic. I’ll demonstrate how type-level axioms can be given and used in Standard ML, using only signatures and functors.</p>
 
     <div class="read_more">
-        <a href="./posts/2014-02-01-the-circle-is-not-contractible.html">
-           more …
-        </a>
+      <a href="./posts/2014-01-04-standard-ml-as-a-theorem-prover.html"> more …</a>
     </div>
-    </article>
+  
+  </article>
 
-    <article class="digest">
+  <article class="digest">
 
-    <h3>
-        <a href="./posts/2014-01-04-standard-ml-as-a-theorem-prover.html">Standard ML as a Proof System, without GADTs</a>
-        <span class="date">January  4, 2014</span>
-    </h3>
-    
-        <p>It is well known that generalized algebraic data types (a sort of phase-locked inductive family) suffice in languages like Haskell<a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a> and OCaml to be used as a deductive system for intuitionistic logic. I’ll demonstrate how type-level axioms can be given and used in Standard ML, using only signatures and functors.</p>
+  <h3>
+    <a href="./posts/2013-12-14-ditransitives-without-movement.html">Ditransitives &amp; Datives Without Movement: A Multi-Modal Approach</a>
+    <span class="date">December 14, 2013</span>
+  </h3>
 
-    
+  
+    <p>The issue of verbs which appear to take multiple arguments has long been a sticking point for Chomskyan grammarians, with various proposals having taken shape. Here, I’ll describe current approaches in transformational grammar, and demonstrate another approach in Multi-Modal Combinatorial Categorial Grammar. Finally, I’ll discuss the pros and cons of each approach.</p>
 
     <div class="read_more">
-        <a href="./posts/2014-01-04-standard-ml-as-a-theorem-prover.html">
-           more …
-        </a>
+      <a href="./posts/2013-12-14-ditransitives-without-movement.html"> more …</a>
     </div>
-    </article>
+  
+  </article>
 
-    <article class="digest">
+  <article class="digest">
 
-    <h3>
-        <a href="./posts/2013-12-14-ditransitives-without-movement.html">Ditransitives &amp; Datives Without Movement: A Multi-Modal Approach</a>
-        <span class="date">December 14, 2013</span>
-    </h3>
-    
-        <p>The issue of verbs which appear to take multiple arguments has long been a sticking point for Chomskyan grammarians, with various proposals having taken shape. Here, I’ll describe current approaches in transformational grammar, and demonstrate another approach in Multi-Modal Combinatorial Categorial Grammar. Finally, I’ll discuss the pros and cons of each approach.</p>
+  <h3>
+    <a href="./posts/2013-11-07-psia-chapter-1.html">A Primer of Smooth Infinitesimal Analysis: Some Exercises from Ch. 1</a>
+    <span class="date">November  7, 2013</span>
+  </h3>
 
-    
+  
+    <p>As I read Bell’s <em>A Primer of Smooth Infinitesimal Analysis</em>, I thought it would be useful for me to write down my workings of the exercises as I went. The proofs are in the language of Intuitionistic Type Theory; according to common practice, I will sometimes omit arguments from application which can easily be inferred from the others.</p>
 
     <div class="read_more">
-        <a href="./posts/2013-12-14-ditransitives-without-movement.html">
-           more …
-        </a>
+      <a href="./posts/2013-11-07-psia-chapter-1.html"> more …</a>
     </div>
-    </article>
+  
+  </article>
 
-    <article class="digest">
+  <article class="digest">
 
-    <h3>
-        <a href="./posts/2013-11-07-psia-chapter-1.html">A Primer of Smooth Infinitesimal Analysis: Some Exercises from Ch. 1</a>
-        <span class="date">November  7, 2013</span>
-    </h3>
-    
-        <p>As I read Bell’s <em>A Primer of Smooth Infinitesimal Analysis</em>, I thought it would be useful for me to write down my workings of the exercises as I went. The proofs are in the language of Intuitionistic Type Theory; according to common practice, I will sometimes omit arguments from application which can easily be inferred from the others.</p>
+  <h3>
+    <a href="./posts/2013-10-26-resource-sensitivity-in-ccg.html">Hyperbaton &amp; Resource Sensitivity in Combinatory Categorial Grammar</a>
+    <span class="date">October 26, 2013</span>
+  </h3>
 
-    
+  
+    <p>Baldridge’s Multi-Modal extension of Steedman’s CCG attempts to account for variation in rule applicability entirely within the lexicon, by annotating slash types (function arrows) with modalities, which license different combining rules: <span class="math">\(\bullet\)</span> licenses only simple application, <span class="math">\(\diamond\)</span> simple application and harmonic composition/substitution, <span class="math">\(\times\)</span> simple application and permuting composition/substitution, and <span class="math">\(\star\)</span> licenses all rules. I demonstrate that further refinement is needed in order to have a grammar which suffices for the most basic hyperbata of Ancient Greek (and Latin).</p>
 
     <div class="read_more">
-        <a href="./posts/2013-11-07-psia-chapter-1.html">
-           more …
-        </a>
+      <a href="./posts/2013-10-26-resource-sensitivity-in-ccg.html"> more …</a>
     </div>
-    </article>
+  
+  </article>
 
-    <article class="digest">
+  <article class="digest">
 
-    <h3>
-        <a href="./posts/2013-10-26-resource-sensitivity-in-ccg.html">Hyperbaton &amp; Resource Sensitivity in Combinatory Categorial Grammar</a>
-        <span class="date">October 26, 2013</span>
-    </h3>
-    
-        <p>Baldridge’s Multi-Modal extension of Steedman’s CCG attempts to account for variation in rule applicability entirely within the lexicon, by annotating slash types (function arrows) with modalities, which license different combining rules: <span class="math">\(\bullet\)</span> licenses only simple application, <span class="math">\(\diamond\)</span> simple application and harmonic composition/substitution, <span class="math">\(\times\)</span> simple application and permuting composition/substitution, and <span class="math">\(\star\)</span> licenses all rules. I demonstrate that further refinement is needed in order to have a grammar which suffices for the most basic hyperbata of Ancient Greek (and Latin).</p>
+  <h3>
+    <a href="./posts/2013-09-02-scrambling-in-ancient-greek.html">Proof-Relevant MCCG: an approach to scrambling in Ancient Greek</a>
+    <span class="date">September  2, 2013</span>
+  </h3>
 
-    
+  
+    <p>Within a type-theoretic grammar, we must eventually deal with the issue of argument-ordering in languages which have (relatively) free word order. One approach, considered unsatisfactory, is to provide multiple categorial types for a word, giving the different orders in which it may accept its arguments; this is embeddable within a minimal CCG calculus. Another is to make copious use of the type raising operator combined with composition to construct mountains of unsatisfied clauses: this is less than optimal, however, given that the type raising operator itself is problematic for reasons outside the scope of this short exposition. So today, I shall present two different modest extensions to CCG which address this issue, namely <em>something old</em> and <em>something new</em>.</p>
 
     <div class="read_more">
-        <a href="./posts/2013-10-26-resource-sensitivity-in-ccg.html">
-           more …
-        </a>
+      <a href="./posts/2013-09-02-scrambling-in-ancient-greek.html"> more …</a>
     </div>
-    </article>
+  
+  </article>
 
-    <article class="digest">
+  <article class="digest">
 
-    <h3>
-        <a href="./posts/2013-09-02-scrambling-in-ancient-greek.html">Proof-Relevant MCCG: an approach to scrambling in Ancient Greek</a>
-        <span class="date">September  2, 2013</span>
-    </h3>
-    
-        <p>Within a type-theoretic grammar, we must eventually deal with the issue of argument-ordering in languages which have (relatively) free word order. One approach, considered unsatisfactory, is to provide multiple categorial types for a word, giving the different orders in which it may accept its arguments; this is embeddable within a minimal CCG calculus. Another is to make copious use of the type raising operator combined with composition to construct mountains of unsatisfied clauses: this is less than optimal, however, given that the type raising operator itself is problematic for reasons outside the scope of this short exposition. So today, I shall present two different modest extensions to CCG which address this issue, namely <em>something old</em> and <em>something new</em>.</p>
+  <h3>
+    <a href="./posts/2013-05-20-combinatory-categorial-grammar-for-greek.html">Combinatory Categorial Grammar for Ancient Greek</a>
+    <span class="date">May 20, 2013</span>
+  </h3>
 
-    
-
-    <div class="read_more">
-        <a href="./posts/2013-09-02-scrambling-in-ancient-greek.html">
-           more …
-        </a>
-    </div>
-    </article>
-
-    <article class="digest">
-
-    <h3>
-        <a href="./posts/2013-05-20-combinatory-categorial-grammar-for-greek.html">Combinatory Categorial Grammar for Ancient Greek</a>
-        <span class="date">May 20, 2013</span>
-    </h3>
-    
-        <p>This is the first in a series I intend to write in regard to the syntax of Ancient Greek hyperbaton, and what can be done about it formally using a combinatory categorial grammar<a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a>. We will begin with a pathological example of <span class="math">\(Y_1\)</span> hyperbaton from Sophocles’ <em>Trachinian Women</em>:</p>
+  
+    <p>This is the first in a series I intend to write in regard to the syntax of Ancient Greek hyperbaton, and what can be done about it formally using a combinatory categorial grammar<a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a>. We will begin with a pathological example of <span class="math">\(Y_1\)</span> hyperbaton from Sophocles’ <em>Trachinian Women</em>:</p>
 <div class="gloss">
 <div class="aligned" language="gk">
 τὴν Εὐρυτείαν οἶσθα δῆτα παρθένον;<br /> the-*acc* of-Eurytus-*acc* know-*2.sing* of-course girl-*acc*
@@ -246,343 +211,306 @@ MathJax.Hub.Config({
 </div>
 </div>
 
-    
+    <div class="read_more">
+      <a href="./posts/2013-05-20-combinatory-categorial-grammar-for-greek.html"> more …</a>
+    </div>
+  
+  </article>
+
+  <article class="digest">
+
+  <h3>
+    <a href="./posts/2013-05-19-derivative-and-novel-speeches-in-platos-symposium.html">Derivative and Novel Speeches in Plato’s <em>Symposium</em></a>
+    <span class="date">May 19, 2013</span>
+  </h3>
+
+  
+    <p>The six speeches of the <em>Symposium</em> may be divided into two sets: on the one hand, there is Phaedrus’s speech and those which are derivative of his, and on the other hand, there are the novel speeches; and these are the ones which reject the previous approaches and propose unique theories of Eros.</p>
 
     <div class="read_more">
-        <a href="./posts/2013-05-20-combinatory-categorial-grammar-for-greek.html">
-           more …
-        </a>
+      <a href="./posts/2013-05-19-derivative-and-novel-speeches-in-platos-symposium.html"> more …</a>
     </div>
-    </article>
+  
+  </article>
 
-    <article class="digest">
+  <article class="digest">
 
-    <h3>
-        <a href="./posts/2013-05-19-derivative-and-novel-speeches-in-platos-symposium.html">Derivative and Novel Speeches in Plato’s <em>Symposium</em></a>
-        <span class="date">May 19, 2013</span>
-    </h3>
-    
-        <p>The six speeches of the <em>Symposium</em> may be divided into two sets: on the one hand, there is Phaedrus’s speech and those which are derivative of his, and on the other hand, there are the novel speeches; and these are the ones which reject the previous approaches and propose unique theories of Eros.</p>
+  <h3>
+    <a href="./posts/2013-04-28-phrase-projectivity-in-antigone.html">A Survey of Phrase Projectivity in the <em>Antigone</em></a>
+    <span class="date">April 28, 2013</span>
+  </h3>
 
-    
+  
+    <p>In this <a href="./pdfs/Antigone-Projectivity.pdf">paper</a>, I demonstrate how, and to what degree, phrase projectivity corresponds with register and meter in Sophocles’s <em>Antigone</em>, by developing a quantitative metric <span class="math">\(\wp\)</span> for projectivity and comparing it across lyrics, trimeters and anapaests using the data provided by the <a href="http://nlp.perseus.tufts.edu/syntax/treebank/greek.html">Perseus Ancient Greek Dependency Treebank</a>. In the appendices, the formal algorithm for the computations done herein is developed in Haskell.</p>
 
     <div class="read_more">
-        <a href="./posts/2013-05-19-derivative-and-novel-speeches-in-platos-symposium.html">
-           more …
-        </a>
+      <a href="./posts/2013-04-28-phrase-projectivity-in-antigone.html"> more …</a>
     </div>
-    </article>
+  
+  </article>
 
-    <article class="digest">
+  <article class="digest">
 
-    <h3>
-        <a href="./posts/2013-04-28-phrase-projectivity-in-antigone.html">A Survey of Phrase Projectivity in the <em>Antigone</em></a>
-        <span class="date">April 28, 2013</span>
-    </h3>
-    
-        <p>In this <a href="./pdfs/Antigone-Projectivity.pdf">paper</a>, I demonstrate how, and to what degree, phrase projectivity corresponds with register and meter in Sophocles’s <em>Antigone</em>, by developing a quantitative metric <span class="math">\(\wp\)</span> for projectivity and comparing it across lyrics, trimeters and anapaests using the data provided by the <a href="http://nlp.perseus.tufts.edu/syntax/treebank/greek.html">Perseus Ancient Greek Dependency Treebank</a>. In the appendices, the formal algorithm for the computations done herein is developed in Haskell.</p>
+  <h3>
+    <a href="./posts/2013-04-13-inferring-evidence-for-the-stlc-in-haskell.html">Inferring Typing Derivations for the STLC in Haskell</a>
+    <span class="date">April 13, 2013</span>
+  </h3>
 
-    
-
-    <div class="read_more">
-        <a href="./posts/2013-04-28-phrase-projectivity-in-antigone.html">
-           more …
-        </a>
-    </div>
-    </article>
-
-    <article class="digest">
-
-    <h3>
-        <a href="./posts/2013-04-13-inferring-evidence-for-the-stlc-in-haskell.html">Inferring Typing Derivations for the STLC in Haskell</a>
-        <span class="date">April 13, 2013</span>
-    </h3>
-    
-        <p>We can define the STLC at the type-level in Haskell, and then provide a type of derivations (proofs of well-typedness) which is indexed by terms. Further, we can use Haskell’s type classes to infer typing derivations for well-typed terms in the STLC.</p>
+  
+    <p>We can define the STLC at the type-level in Haskell, and then provide a type of derivations (proofs of well-typedness) which is indexed by terms. Further, we can use Haskell’s type classes to infer typing derivations for well-typed terms in the STLC.</p>
 <p>
-    
-
     <div class="read_more">
-        <a href="./posts/2013-04-13-inferring-evidence-for-the-stlc-in-haskell.html">
-           more …
-        </a>
+      <a href="./posts/2013-04-13-inferring-evidence-for-the-stlc-in-haskell.html"> more …</a>
     </div>
-    </article>
+  
+  </article>
 
-    <article class="digest">
+  <article class="digest">
 
-    <h3>
-        <a href="./posts/2013-04-06-vinyl-modern-records-for-haskell.html">Vinyl: Modern Records for Haskell</a>
-        <span class="date">April  6, 2013</span>
-    </h3>
-    
-        <p><a href="http://github.com/jonsterling/Vinyl/">Vinyl</a> is a general solution to the records problem in Haskell using type level strings and other modern GHC features, featuring static structural typing (with a subtyping relation), and automatic row-polymorphic lenses. All this is possible without Template Haskell.</p>
+  <h3>
+    <a href="./posts/2013-04-06-vinyl-modern-records-for-haskell.html">Vinyl: Modern Records for Haskell</a>
+    <span class="date">April  6, 2013</span>
+  </h3>
+
+  
+    <p><a href="http://github.com/jonsterling/Vinyl/">Vinyl</a> is a general solution to the records problem in Haskell using type level strings and other modern GHC features, featuring static structural typing (with a subtyping relation), and automatic row-polymorphic lenses. All this is possible without Template Haskell.</p>
 <p>
-    
+    <div class="read_more">
+      <a href="./posts/2013-04-06-vinyl-modern-records-for-haskell.html"> more …</a>
+    </div>
+  
+  </article>
+
+  <article class="digest">
+
+  <h3>
+    <a href="./posts/2013-02-10-proving-type-inequality-in-cpp.html">Proving Type Inequality in C++</a>
+    <span class="date">February 10, 2013</span>
+  </h3>
+
+  
+    <p>It is trivial to prove type equality in Haskell (to the extent that anything is every “proved” in Haskell). As for proving type <em>inequality</em>, Conor McBride <a href="http://stackoverflow.com/a/14277376/125361">demonstrates</a> that this is possible to do using type families. Today, I’d like to show some techniques for doing the same in C++ with templates.</p>
 
     <div class="read_more">
-        <a href="./posts/2013-04-06-vinyl-modern-records-for-haskell.html">
-           more …
-        </a>
+      <a href="./posts/2013-02-10-proving-type-inequality-in-cpp.html"> more …</a>
     </div>
-    </article>
+  
+  </article>
 
-    <article class="digest">
+  <article class="digest">
 
-    <h3>
-        <a href="./posts/2013-02-10-proving-type-inequality-in-cpp.html">Proving Type Inequality in C++</a>
-        <span class="date">February 10, 2013</span>
-    </h3>
-    
-        <p>It is trivial to prove type equality in Haskell (to the extent that anything is every “proved” in Haskell). As for proving type <em>inequality</em>, Conor McBride <a href="http://stackoverflow.com/a/14277376/125361">demonstrates</a> that this is possible to do using type families. Today, I’d like to show some techniques for doing the same in C++ with templates.</p>
+  <h3>
+    <a href="./posts/2012-12-27-a-pattern-for-immutability.html">A Pattern for Lightweight Immutability in Objective-C</a>
+    <span class="date">December 27, 2012</span>
+  </h3>
 
-    
-
-    <div class="read_more">
-        <a href="./posts/2013-02-10-proving-type-inequality-in-cpp.html">
-           more …
-        </a>
-    </div>
-    </article>
-
-    <article class="digest">
-
-    <h3>
-        <a href="./posts/2012-12-27-a-pattern-for-immutability.html">A Pattern for Lightweight Immutability in Objective-C</a>
-        <span class="date">December 27, 2012</span>
-    </h3>
-    
-        <p>Today, I hope to introduce a more lightweight approach to immutable objects in Objective-C that sidesteps some of the problems with class clusters (such as hostility to subclassing) by making some trade-offs. The class cluster approach provides the following fronts of protection against illegal mutation:</p>
+  
+    <p>Today, I hope to introduce a more lightweight approach to immutable objects in Objective-C that sidesteps some of the problems with class clusters (such as hostility to subclassing) by making some trade-offs. The class cluster approach provides the following fronts of protection against illegal mutation:</p>
 <ol style="list-style-type: decimal">
 <li>Mutation methods only occur in the interfaces for the mutable variants. This protects us when types are preserved.</li>
 <li>Sending a mutation message to an immutable object results in an exception.</li>
 </ol>
 <p>I’m going to argue that the first force of protection (that of types) is far more important than the second (that of runtime exceptions), and that if we are willing to give it up, we can have a vastly simpler notion of immutability and mutability. Finally, I’ll discuss ways we can recover runtime exceptions in the case of an unsafe cast, and finally how we can recover the functionality of <code>-mutableCopy</code> in a subclass-friendly fashion.</p>
 
-    
+    <div class="read_more">
+      <a href="./posts/2012-12-27-a-pattern-for-immutability.html"> more …</a>
+    </div>
+  
+  </article>
+
+  <article class="digest">
+
+  <h3>
+    <a href="./posts/2012-12-20-stringly-typed-code.html">Eliminating Stringly-Typed Code in Objective-C</a>
+    <span class="date">December 20, 2012</span>
+  </h3>
+
+  
+    <p>Perhaps the greatest sin in the common body of Cocoa design patterns is the pervasiveness of “stringly-typed” code:<a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a> it frequently comes up in KVO and bindings, among other things. Various macros have arisen to allow type checking of keypaths, largely thanks to <a href="https://github.com/jspahrsummers/libextobjc/blob/master/extobjc/EXTKeyPathCoding.h">efforts</a> by Justin Spahr-Summers and myself. Today, I’d like to talk a bit about some ideas for enforcing statically trusted boundaries for checked keypaths.</p>
 
     <div class="read_more">
-        <a href="./posts/2012-12-27-a-pattern-for-immutability.html">
-           more …
-        </a>
+      <a href="./posts/2012-12-20-stringly-typed-code.html"> more …</a>
     </div>
-    </article>
+  
+  </article>
 
-    <article class="digest">
+  <article class="digest">
 
-    <h3>
-        <a href="./posts/2012-12-20-stringly-typed-code.html">Eliminating Stringly-Typed Code in Objective-C</a>
-        <span class="date">December 20, 2012</span>
-    </h3>
-    
-        <p>Perhaps the greatest sin in the common body of Cocoa design patterns is the pervasiveness of “stringly-typed” code:<a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a> it frequently comes up in KVO and bindings, among other things. Various macros have arisen to allow type checking of keypaths, largely thanks to <a href="https://github.com/jspahrsummers/libextobjc/blob/master/extobjc/EXTKeyPathCoding.h">efforts</a> by Justin Spahr-Summers and myself. Today, I’d like to talk a bit about some ideas for enforcing statically trusted boundaries for checked keypaths.</p>
+  <h3>
+    <a href="./posts/2012-11-24-nl-syntax-in-coq-baby-steps.html">Natural Language Syntax in Coq: Baby Steps</a>
+    <span class="date">November 24, 2012</span>
+  </h3>
 
-    
-
-    <div class="read_more">
-        <a href="./posts/2012-12-20-stringly-typed-code.html">
-           more …
-        </a>
-    </div>
-    </article>
-
-    <article class="digest">
-
-    <h3>
-        <a href="./posts/2012-11-24-nl-syntax-in-coq-baby-steps.html">Natural Language Syntax in Coq: Baby Steps</a>
-        <span class="date">November 24, 2012</span>
-    </h3>
-    
-        In a slight diversion from my <a href="http://www.jonmsterling.com/posts/2012-09-14-natural-language-semantics-I.html">path</a>
+  
+    In a slight diversion from my <a href="http://www.jonmsterling.com/posts/2012-09-14-natural-language-semantics-I.html">path</a>
 toward NL <i>semantics</i> in Martin-Löf Type Theory, I'd like to delve
 a bit into formulating NL <i>syntax</i> in <a href="http://coq.inria.fr">Coq</a>, a dependently typed theorem
 prover based on the <a href="http://en.wikipedia.org/wiki/Calculus_of_inductive_constructions">Calculus of Inductive Constructions</a>.
 
 
-    
+    <div class="read_more">
+      <a href="./posts/2012-11-24-nl-syntax-in-coq-baby-steps.html"> more …</a>
+    </div>
+  
+  </article>
+
+  <article class="digest">
+
+  <h3>
+    <a href="./posts/2012-11-23-extensible-records-in-cpp.html">Extensible Records in C++</a>
+    <span class="date">November 23, 2012</span>
+  </h3>
+
+  
+    <p>In my view, <em>extensible records</em> are a rather good problem for gauging type system expressivity. I recently wrote an extensible records framework for Haskell called <a href="https://github.com/jonsterling/Vinyl">Vinyl</a>; today, I thought I would see what it would take to manifest something similar in C++.</p>
 
     <div class="read_more">
-        <a href="./posts/2012-11-24-nl-syntax-in-coq-baby-steps.html">
-           more …
-        </a>
+      <a href="./posts/2012-11-23-extensible-records-in-cpp.html"> more …</a>
     </div>
-    </article>
+  
+  </article>
 
-    <article class="digest">
+  <article class="digest">
 
-    <h3>
-        <a href="./posts/2012-11-23-extensible-records-in-cpp.html">Extensible Records in C++</a>
-        <span class="date">November 23, 2012</span>
-    </h3>
-    
-        <p>In my view, <em>extensible records</em> are a rather good problem for gauging type system expressivity. I recently wrote an extensible records framework for Haskell called <a href="https://github.com/jonsterling/Vinyl">Vinyl</a>; today, I thought I would see what it would take to manifest something similar in C++.</p>
+  <h3>
+    <a href="./posts/2012-11-10-faking-it-with-style.html">Dependent Types Today: Faking It With Style</a>
+    <span class="date">November 10, 2012</span>
+  </h3>
 
-    
-
-    <div class="read_more">
-        <a href="./posts/2012-11-23-extensible-records-in-cpp.html">
-           more …
-        </a>
-    </div>
-    </article>
-
-    <article class="digest">
-
-    <h3>
-        <a href="./posts/2012-11-10-faking-it-with-style.html">Dependent Types Today: Faking It With Style</a>
-        <span class="date">November 10, 2012</span>
-    </h3>
-    
-        <p>There have been various attempts at faking dependent types in Haskell, most notably Conor McBride’s <a href="https://personal.cis.strath.ac.uk/~conor/pub/she/">Strathclyde Haskell Enhancement</a>. Since its creation, several improvements to GHC have set the stage for some of SHE’s features to be implemented natively.</p>
+  
+    <p>There have been various attempts at faking dependent types in Haskell, most notably Conor McBride’s <a href="https://personal.cis.strath.ac.uk/~conor/pub/she/">Strathclyde Haskell Enhancement</a>. Since its creation, several improvements to GHC have set the stage for some of SHE’s features to be implemented natively.</p>
 <p>Let’s see what’s necessary to fake dependent types with singletons in today’s GHC.</p>
 <p>
-    
-
     <div class="read_more">
-        <a href="./posts/2012-11-10-faking-it-with-style.html">
-           more …
-        </a>
+      <a href="./posts/2012-11-10-faking-it-with-style.html"> more …</a>
     </div>
-    </article>
+  
+  </article>
 
-    <article class="digest">
+  <article class="digest">
 
-    <h3>
-        <a href="./posts/2012-08-05-static-and-dynamic-proof-inference-in-haskell.html">Static and Dynamic Proof Inference in Haskell</a>
-        <span class="date">August  5, 2012</span>
-    </h3>
-    
-        <p>Previously, I <a href="http://www.jonmsterling.com/posts/2012-07-22-flexibly-phased-constraints-in-haskell.html">discussed</a> using explicit proof parameters in combination with lifted proof generators in order to write code that can distribute its invariants across static and dynamic phases as appropriate. The major disadvantage to that approach is that it can sometimes be difficult and cumbersome to create proofs of certain properties manually. Today, I’ll discuss how to automate that using type classes.</p>
+  <h3>
+    <a href="./posts/2012-08-05-static-and-dynamic-proof-inference-in-haskell.html">Static and Dynamic Proof Inference in Haskell</a>
+    <span class="date">August  5, 2012</span>
+  </h3>
+
+  
+    <p>Previously, I <a href="http://www.jonmsterling.com/posts/2012-07-22-flexibly-phased-constraints-in-haskell.html">discussed</a> using explicit proof parameters in combination with lifted proof generators in order to write code that can distribute its invariants across static and dynamic phases as appropriate. The major disadvantage to that approach is that it can sometimes be difficult and cumbersome to create proofs of certain properties manually. Today, I’ll discuss how to automate that using type classes.</p>
 <p>
-    
-
     <div class="read_more">
-        <a href="./posts/2012-08-05-static-and-dynamic-proof-inference-in-haskell.html">
-           more …
-        </a>
+      <a href="./posts/2012-08-05-static-and-dynamic-proof-inference-in-haskell.html"> more …</a>
     </div>
-    </article>
+  
+  </article>
 
-    <article class="digest">
+  <article class="digest">
 
-    <h3>
-        <a href="./posts/2012-07-22-flexibly-phased-constraints-in-haskell.html">Flexibly-Phased Constraints in Haskell</a>
-        <span class="date">July 22, 2012</span>
-    </h3>
-    
-        <p>Unfortunately, Haskell’s Prelude abounds with partial functions, like <code>head</code>, <code>tail</code>, <code>read</code>, etc. There have been some attempts to resolve this by replacing them with safe variants that return <code>Maybe a</code> rather than <code>a</code>. But what about when we can make static guarantees about data?</p>
+  <h3>
+    <a href="./posts/2012-07-22-flexibly-phased-constraints-in-haskell.html">Flexibly-Phased Constraints in Haskell</a>
+    <span class="date">July 22, 2012</span>
+  </h3>
+
+  
+    <p>Unfortunately, Haskell’s Prelude abounds with partial functions, like <code>head</code>, <code>tail</code>, <code>read</code>, etc. There have been some attempts to resolve this by replacing them with safe variants that return <code>Maybe a</code> rather than <code>a</code>. But what about when we can make static guarantees about data?</p>
 <p>Because Haskell doesn’t have real <span class="math">\(\prod\)</span>-types, we can’t bring those invariants into our program specifications in the same way a dependently-typed language could. But with GHC 7.4’s new <code>-XDataKinds</code> extension, many data types are automatically promoted into the kind-level; this means that we can maintain a static-dynamic phase distinction at the same time as having data structures mirrored into the kind level. Combined with phantom-types, this is enough to start encoding interesting invariants into the type system. <strong>But, reusing statically verified code for dynamic values can be problematic.</strong></p>
 <p>
-    
-
     <div class="read_more">
-        <a href="./posts/2012-07-22-flexibly-phased-constraints-in-haskell.html">
-           more …
-        </a>
+      <a href="./posts/2012-07-22-flexibly-phased-constraints-in-haskell.html"> more …</a>
     </div>
-    </article>
+  
+  </article>
 
-    <article class="digest">
+  <article class="digest">
 
-    <h3>
-        <a href="./posts/2012-05-01-refinement-protocols-another-approach-to-typesafe-collections.html">Refinement Protocols: Another Approach to Typed Collections</a>
-        <span class="date">May  1, 2012</span>
-    </h3>
-    
-        <blockquote>
+  <h3>
+    <a href="./posts/2012-05-01-refinement-protocols-another-approach-to-typesafe-collections.html">Refinement Protocols: Another Approach to Typed Collections</a>
+    <span class="date">May  1, 2012</span>
+  </h3>
+
+  
+    <blockquote>
 <p>In February, I <a href="2012-02-05-typed-collections-with-self-types-in-objective-c.html">wrote</a> about using <code>instancetype</code> to get semi-typesafe collections in Objective-C. After an email conversation with Patrick Beard, I’d like to present another approach.</p>
 </blockquote>
 <p>One sad consequence of protocols only being commonly used to encode delegation is that beginners frequently conflate protocols with delegation. Hence the proliferation of tutorials on how to “do delegates” in Objective-C; in fact, I had written one such tutorial a long time ago, and it became so popular that I deleted it, for it was feeding directly into this very conflation (which I deem damaging to learners).</p>
 <p>In this article, I’ll be showing a more interesting use of protocols: typesafe collections.</p>
 
-    
-
     <div class="read_more">
-        <a href="./posts/2012-05-01-refinement-protocols-another-approach-to-typesafe-collections.html">
-           more …
-        </a>
+      <a href="./posts/2012-05-01-refinement-protocols-another-approach-to-typesafe-collections.html"> more …</a>
     </div>
-    </article>
+  
+  </article>
 
-    <article class="digest">
+  <article class="digest">
 
-    <h3>
-        <a href="./posts/2012-02-05-typed-collections-with-self-types-in-objective-c.html">Typed Collections with Self Types in Objective-C</a>
-        <span class="date">February  5, 2012</span>
-    </h3>
-    
-        <blockquote>
+  <h3>
+    <a href="./posts/2012-02-05-typed-collections-with-self-types-in-objective-c.html">Typed Collections with Self Types in Objective-C</a>
+    <span class="date">February  5, 2012</span>
+  </h3>
+
+  
+    <blockquote>
 <p>The latest versions of the Clang compiler extend the Objective-C language with related return types, which allow a limited form of covariance to be expressed. Methods with certain names (<code>alloc</code>, <code>init</code>, etc.) are inferred to return an object of the instance type for the receiver; other methods can participate in this covariance by using the <code>instancetype</code> keyword for the return type annotation.</p>
 </blockquote>
 <p>Typically, this feature is used for convenience constructors which would previously have returned <code>id</code>. However, we can also use it to encode statically-typed collections without full-blown generics.<a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a></p>
 
-    
-
     <div class="read_more">
-        <a href="./posts/2012-02-05-typed-collections-with-self-types-in-objective-c.html">
-           more …
-        </a>
+      <a href="./posts/2012-02-05-typed-collections-with-self-types-in-objective-c.html"> more …</a>
     </div>
-    </article>
+  
+  </article>
 
-    <article class="digest">
+  <article class="digest">
 
-    <h3>
-        <a href="./posts/2012-01-12-unifying-monoids-and-monads-with-polymorphic-kinds.html">Unifying Monoids and Monads with Polymorphic Kinds</a>
-        <span class="date">January 12, 2012</span>
-    </h3>
-    
-        <blockquote>
+  <h3>
+    <a href="./posts/2012-01-12-unifying-monoids-and-monads-with-polymorphic-kinds.html">Unifying Monoids and Monads with Polymorphic Kinds</a>
+    <span class="date">January 12, 2012</span>
+  </h3>
+
+  
+    <blockquote>
 A monad is just a monoid in the category of endofunctors, what’s the problem? — <a href="http://james-iry.blogspot.com/2009/05/brief-incomplete-and-mostly-wrong.html">James Iry</a>.
 </blockquote>
 
 <p>Building on the work of sigfpe’s <a href="http://blog.sigfpe.com/2008/11/from-monoids-to-monads.html">From Monoids to Monads</a> and monoidal’s <a href="http://monoidal.blogspot.com/2010/07/kind-polymorphism-in-action.html">Kind polymorphism in action</a> (which demonstrates kind polymorphism in the <a href="http://www.cs.uu.nl/wiki/UHC">Ultrecht Haskell Compiler</a>), we can unify Monoid and Monad under one type class in GHC 7.4.</p>
 <p>
-    
-
     <div class="read_more">
-        <a href="./posts/2012-01-12-unifying-monoids-and-monads-with-polymorphic-kinds.html">
-           more …
-        </a>
+      <a href="./posts/2012-01-12-unifying-monoids-and-monads-with-polymorphic-kinds.html"> more …</a>
     </div>
-    </article>
+  
+  </article>
 
-    <article class="digest">
+  <article class="digest">
 
-    <h3>
-        <a href="./posts/2011-12-28-expressing-church-pairs-with-types.html">Expressing Church Pairs with Types</a>
-        <span class="date">December 28, 2011</span>
-    </h3>
-    
-        <p>It’s easy to express pairs in the untyped lambda calculus; adding types makes it somewhat more complex to get a correct encoding. In this article, I explain how we can build a pair with typesafe accessors in a polymorphically typed lambda calculus with type operators (System <span class="math">\(F_\omega\)</span>), and demonstrate it in Haskell. This document is Literate Haskell: simply copy and paste it into an <code>.lhs</code> file, and you can feed it into GHCI.</p>
+  <h3>
+    <a href="./posts/2011-12-28-expressing-church-pairs-with-types.html">Expressing Church Pairs with Types</a>
+    <span class="date">December 28, 2011</span>
+  </h3>
+
+  
+    <p>It’s easy to express pairs in the untyped lambda calculus; adding types makes it somewhat more complex to get a correct encoding. In this article, I explain how we can build a pair with typesafe accessors in a polymorphically typed lambda calculus with type operators (System <span class="math">\(F_\omega\)</span>), and demonstrate it in Haskell. This document is Literate Haskell: simply copy and paste it into an <code>.lhs</code> file, and you can feed it into GHCI.</p>
 <p>
-    
-
     <div class="read_more">
-        <a href="./posts/2011-12-28-expressing-church-pairs-with-types.html">
-           more …
-        </a>
+      <a href="./posts/2011-12-28-expressing-church-pairs-with-types.html"> more …</a>
     </div>
-    </article>
+  
+  </article>
 
-    <article class="digest">
+  <article class="digest">
 
-    <h3>
-        <a href="./posts/2010-12-10-jsbag-a-modern-class-cluster.html">JSBag: A Modern Class Cluster</a>
-        <span class="date">December 10, 2010</span>
-    </h3>
-    
-        <p>I’ve long been frustrated by the complexity of the Class Cluster pattern, and feel that in most cases, it can be replaced with something cleaner and more flexible. <code>JSBag</code> is an example of a new collection class with mutable and immutable variants that is implemented with a pattern similar to the Class Cluster, but far less coupled. I do this using Traits.</p>
+  <h3>
+    <a href="./posts/2010-12-10-jsbag-a-modern-class-cluster.html">JSBag: A Modern Class Cluster</a>
+    <span class="date">December 10, 2010</span>
+  </h3>
+
+  
+    <p>I’ve long been frustrated by the complexity of the Class Cluster pattern, and feel that in most cases, it can be replaced with something cleaner and more flexible. <code>JSBag</code> is an example of a new collection class with mutable and immutable variants that is implemented with a pattern similar to the Class Cluster, but far less coupled. I do this using Traits.</p>
 <p><em>A ‘bag’ is a multiset, or a set which can contain duplicate objects. <code>CoreFoundation</code> includes <code>CFBag</code>, which is the same concept; for reasons of simplicity, <code>JSBag</code> was implemented on top of <code>NSArray</code> instead of <code>CFBag</code>, but it certainly would be possible if better performance were desired.</em></p>
 
-    
-
     <div class="read_more">
-        <a href="./posts/2010-12-10-jsbag-a-modern-class-cluster.html">
-           more …
-        </a>
+      <a href="./posts/2010-12-10-jsbag-a-modern-class-cluster.html"> more …</a>
     </div>
-    </article>
+  
+  </article>
 
 
 </section>
