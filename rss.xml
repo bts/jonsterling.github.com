@@ -6,8 +6,127 @@
         <description><![CDATA[Jon Sterling writes about type theory and philology]]></description>
         <atom:link href="http://www.jonmsterling.com//rss.xml" rel="self"
                    type="application/rss+xml" />
-        <lastBuildDate>Wed, 11 Jun 2014 00:00:00 UT</lastBuildDate>
+        <lastBuildDate>Mon, 30 Jun 2014 00:00:00 UT</lastBuildDate>
         <item>
+    <title>A Type Theory with Scoped Realizability</title>
+    <link>http://www.jonmsterling.com//posts/2014-06-30-a-type-theory-with-scoped-realizability.html</link>
+    <description><![CDATA[<p>Here I present an idea for a type theory which retains the benefits of wholesale adherence to the realizability interpretation<a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a> à la Nuprl<a href="#fn2" class="footnoteRef" id="fnref2"><sup>2</sup></a>, and yet seems to maintain a better division of labor between operator and machine.</p>
+<!--more-->
+
+<h3 id="overview-of-realizability-per-semantics">Overview of Realizability &amp; PER Semantics</h3>
+<p>Realizability is what happens when the BHK interpretation of intuitionistic logic is given a precise form. The realizability relation <span class="math">\(r \Vdash P\)</span> means that the term <span class="math">\(r\)</span> <em>realizes</em> the proof <span class="math">\(P\)</span>: note that this is not in general decidable. And this <span class="math">\(r\)</span> is drawn from a set of potential realizers: in some systems, this means the natural numbers, whereas in others, it might be terms of the typed or untyped lambda calculus.</p>
+<p>In the case of Nuprl, realizers are terms of the untyped lambda calculus, which we’ll be calling <span class="math">\(\mathcal{L}\)</span>.</p>
+<p>So the Nuprl realizability relation is given like this:</p>
+<ol style="list-style-type: decimal">
+<li>Cook up a <em>partial equivalence relation</em> <span class="math">\(\approx_T\; \subset \mathcal{L}\times\mathcal{L}\)</span>. A PER is a relation which satisfies symmetry and transitivity, but not reflexivity.</li>
+<li>Then <span class="math">\(r\Vdash T\)</span> just when <span class="math">\(r\in\{x\in\mathcal{L}\mid x\approx_T x\}\)</span>.</li>
+</ol>
+<p>And the realizability relation coincides with the typing judgment. It is easy to see that typing is undecidable: choose a PER which is not decidable (e.g. extensional equality for functions). This has the serious advantage that typing always respects “true” equality, so you never need to eliminate the identity type. The disadvantage is that where otherwise there is a very clear division of work (you propose typings, the computer checks them), it is now much more fluid and uncertain: you propose typings, and the computer replies with “Maybe, but I’m not fully convinced”.</p>
+<p>One can adjust this to be slightly more restrictive (but not in a way that restricts expressivity). For each type <span class="math">\(T\)</span>:</p>
+<ol style="list-style-type: decimal">
+<li>Choose a set of potential realizers <span class="math">\(|T|\subset\mathcal{L}\)</span>.</li>
+<li>Choose a PER <span class="math">\(\approx_T\; \subset|T|\times|T|\)</span>.</li>
+<li>Then <span class="math">\(r\Vdash T\)</span> just when <span class="math">\(r\in\{x\in|T|\mid x\approx_T x\}\)</span>.</li>
+</ol>
+<p>We can summarize this by saying putting it in terms of interpreting a type <span class="math">\(T\)</span> in the syntax to its semantics <span class="math">\([T]\)</span> in the realizability model: <span class="math">\([T] = (|T|, \approx_T)\)</span>: a type is given by its elements and its partial equivalence relation. There is a similarity here with Bishop’s notion of a set, except that he used a full equivalence relation.</p>
+<p>In this way, whether something is true is totally divorced from the “sort of thing” that would be required to prove it if it happened to be true. What I mean is that one can hardly conceive of a proof for a squashed proposition which is not trivial: and so whilst <span class="math">\([\mathsf{unit}] = (\{\bullet\}, \{(\bullet,\bullet)\})\)</span>, in the PER semantics we give the same underlying set to the empty type, but outfit it with an unsatisfiable partial equivalence relation, as follows: <span class="math">\([\mathsf{void}] = (\{\bullet\}, \{\})\)</span>.</p>
+<p>This means that in the PER semantics, we have <span class="math">\(\lambda [x] \bullet\Vdash \mathsf{Id}_\mathbb{U}(\mathsf{void};\mathsf{unit})\to\mathsf{void}\)</span>: we do not need to place an abort in the term, since it is now actually part of the typing derivation at the LF-level. Now, we can’t <em>check</em> that this is a realizer: we have to prove it; then when working in a system like Nuprl, you’re working at a level of abstraction above what you’re doing in Agda: you’re not justifying a theorem, you’re justifying a realizer of a theorem.</p>
+<p>There are many cases where this is precisely the right behavior: namely for any type which has a proper equality which is not intensional: this includes not only functions, but pairs, quotients, intersections, unions and subsets. But for many particular instances of such types, it is actually not necessary and results in quite a bit more work for the operator. It would be nice to only access that machinery when it is wanted.</p>
+<h3 id="extraction-of-realizers-from-proof-terms">Extraction of Realizers from Proof Terms</h3>
+<p>Now let us go the opposite direction. If I have a proof term <span class="math">\(p\)</span> in ITT such that <span class="math">\(\vdash p:T\)</span>, then we can arrange things such that <span class="math">\(p\Vdash T\)</span> would be true in ETT. But there may be other computationally simpler realizers for <span class="math">\(T\)</span> than <span class="math">\(p\)</span>: we could conceive of a type-directed algorithm that took terms and simplified them, such that the realizability relation was preserved: <span class="math">\[\begin{align}
+(-,-)_\downarrow &amp;: \mathcal{L}\times\mathcal{L} \to \mathcal{L}\\
+\mathsf{preserves}_\Vdash &amp;: \forall r,T. r\Vdash T \to (r,T)_\downarrow\Vdash T
+\end{align}\]</span></p>
+<p>Consider the following extractions: <span class="math">\[\begin{align}
+(\lambda x. M, \Pi[x:A]B)_\downarrow          &amp;\leadsto \lambda u. ([u/x]M, [u/x]B)_\downarrow\\
+(\langle p,q\rangle, \Sigma[x:A]B)_\downarrow &amp;\leadsto \langle (p,A)_\downarrow, (q, [p/x]B)_\downarrow\rangle\\
+(\mathsf{inl}(p), A+B)_\downarrow             &amp;\leadsto \mathsf{inl}((p,A)_\downarrow)\\
+(\mathsf{inr}(q), A+B)_\downarrow             &amp;\leadsto \mathsf{inr}((q,B)_\downarrow)\\
+([p], A/\!/R)                                 &amp;\leadsto (p, A)_\downarrow\\
+(\_,\mathsf{unit})_\downarrow                 &amp;\leadsto \bullet\\
+(\_,\mathsf{void})_\downarrow                 &amp;\leadsto \bullet\\
+(\_,Id_A(M;N))_\downarrow                     &amp;\leadsto \bullet\\
+(p, T)                                        &amp;\leadsto p
+\end{align}\]</span></p>
+<p>It should be straightforward to check that <span class="math">\(\mathsf{preserves}_\Vdash\)</span> holds for these definitions. The magic lies in the fact that all the mere propositions are extracted as <span class="math">\(\bullet\)</span>, without regard to checking that we have a canonical form in the first place. This is because we want this to work for <em>variables</em> too! It’s fine, since we only care that we <em>preserve</em> realizability: we aren’t demanding that the inputs necessarily be realizers, only that if they are, then that the outputs are too.</p>
+<h3 id="creeping-realizers-in-itt">Creeping Realizers in ITT</h3>
+<p>Consider a type theory, where in addition to a context <span class="math">\(\Gamma\)</span> we also keep track of a box of realizers <span class="math">\(\mathfrak{R}\)</span>. Like variables, these realizers can be projected out to affect typechecking:</p>
+<p><span class="math">\[
+\frac{
+  \vdash\mathfrak{R}\ni r\Vdash A
+}{
+  \Gamma;\mathfrak{R}\vdash r:A
+}\tag{$\mathfrak{R}$-proj}
+\]</span></p>
+<p>Then we can push an extraction into scope as follows:</p>
+<p><span class="math">\[
+\frac{
+  \Gamma;\mathfrak{R}\vdash M:A \quad
+  \Gamma;\mathfrak{R},(M,A)_\downarrow\Vdash B\vdash N:B
+}{
+  \Gamma;\mathfrak{R}\vdash\mathsf{realize}\ M\ \mathsf{in}\ N : B
+}\tag{$\mathfrak{R}$-intro}
+\]</span></p>
+<p>It may not look like it, but we have nearly everything we need to achieve a scoped version of equality reflection as a special case. We’ll use traditional ITT-style typing rules with a definitional/syntactic equality as their basis. Next, we can extend the judgmental equality to treat trivial equalities as trivial:</p>
+<p><span class="math">\[
+\frac{
+  \Gamma;\mathfrak{R}\vdash \bullet:\mathsf{Id}_A(M;N)
+}{
+  \Gamma;\mathfrak{R}\vdash M\equiv N\in A
+}\tag{$\bullet$-reflection}
+\]</span></p>
+<p>This is itself a very limited form of equality reflection: but it crucially does not cause arbitrary proof search, since it merely checks if the equality is trivial with respect to <span class="math">\(\mathfrak{R}\)</span> or not. It is in the operator’s control entirely when to expose proofs of identity to be used during typechecking.</p>
+<p>And we can define the propositional equality by recursion on the structure of types à la Observational Type Theory<a href="#fn3" class="footnoteRef" id="fnref3"><sup>3</sup></a>: note that we have not introduced a heterogeneous equality, but it actually turns out that the above machinery means we can actually do just fine with a homogeneous equality. I’ll leave that particular formulation as an exercise to the reader.</p>
+<p>Now we can use realizability to prove <span class="math">\(\mathsf{Id}_\mathbb{U}(\mathsf{void};\mathsf{unit})\to\mathsf{void}\)</span> without performing induction on the equality proof in our term. Let <span class="math">\(P:\equiv \mathsf{Id}_\mathbb{U}(\mathsf{void};\mathsf{unit})\)</span> in the following derivation:</p>
+<p><span class="math">\[
+\dfrac{
+  \dfrac{
+    \dfrac{
+      \dfrac{
+      }{
+        \Gamma,p:P;\mathfrak{R},\bullet\Vdash P \vdash \bullet:\mathsf{unit}
+      }\text{$\mathsf{unit}$-intro}
+      \quad
+      \dfrac{
+        \dfrac{
+        }{
+          \Gamma,p:P;\mathfrak{R},\bullet\Vdash P\vdash \bullet:P
+        }\text{$\mathfrak{R}$-proj}
+      }{
+        \Gamma,p:P;\mathfrak{R},\bullet\Vdash P \vdash \mathsf{void}\equiv\mathsf{unit}:\mathbb{U}
+      }\text{$\bullet$-reflection}
+    }{
+      \Gamma,p:P;\mathfrak{R},\bullet\Vdash P \vdash \bullet : \mathsf{void}
+    }\text{subst}
+  }{
+    \Gamma,p:P;\mathfrak{R}\vdash\mathsf{realize}\ p\ \mathsf{in}\ \bullet:\mathsf{void}
+  }\text{$\mathfrak{R}$-intro}
+}{
+  \Gamma;\mathfrak{R}\vdash \lambda[p]\; \mathsf{realize}\ p\ \mathsf{in}\ \bullet : P\to\mathsf{void}
+}\text{$\Pi$-intro}
+\]</span></p>
+<h3 id="conclusions-future-work">Conclusions &amp; Future Work</h3>
+<p>The main points of this work have been the following:</p>
+<ol style="list-style-type: decimal">
+<li>Realizability is crucial for efficient and computationally informative proofs.</li>
+<li>We can recover an on-demand version of equality reflection by adding one judgment, and leaving our extensional equalities in the propositional equality.</li>
+</ol>
+<p>I hope to implement this scheme in my <a href="https://github.com/jonsterling/TT-Reflection">proof assistant</a> soon; I am particularly interested to see if this formulation suffices for me to introduce Nuprl-style set types (unions, intersections, predicate subsets, etc.).</p>
+<p>And of course, I welcome any comments or suggestions!</p>
+<h3 id="related-work">Related Work</h3>
+<p>In response to Voevodsky’s ideas for a <a href="http://ncatlab.org/nlab/show/Homotopy+Type+System">Homotopy Type System</a>, there has been a small renaissance of work in strict/extensional identity types. Most notably, Andrej Bauer and Chris Stone’s <a href="https://github.com/andrejbauer/tt">Andromeda</a> née Brazil, which aims to make reflected equality and postulated computation rules more manageable in a way somewhat similar to this work, but which does not capture the relationship between an extensional equality and realizability.</p>
+<div class="footnotes">
+<hr />
+<ol>
+<li id="fn1"><p>For an overview of modified realizability in Type Theory, see Palmgren (2005), <a href="http://www.lmcs-online.org/ojs/viewarticle.php?id=38">Internalizing modified realisability in constructive type theory</a><a href="#fnref1">↩</a></p></li>
+<li id="fn2"><p>Allen, Bickford, Constable, Eaton, Kreitz, Lorigo, Moran (2006). <a href="http://www.sciencedirect.com/science/article/pii/S1570868305000704">Innovations in computational type theory using Nuprl</a><a href="#fnref2">↩</a></p></li>
+<li id="fn3"><p>Altenkirch, McBride, Swierstra (2007). <a href="http://dl.acm.org/citation.cfm?id=1292608">Observational equality, now!</a><a href="#fnref3">↩</a></p></li>
+</ol>
+</div>]]></description>
+    <pubDate>Mon, 30 Jun 2014 00:00:00 UT</pubDate>
+    <guid>http://www.jonmsterling.com//posts/2014-06-30-a-type-theory-with-scoped-realizability.html</guid>
+</item>
+<item>
     <title>Non-discrete Records in Type Theory</title>
     <link>http://www.jonmsterling.com//posts/2014-06-11-non-discrete-records-in-type-theory.html</link>
     <description><![CDATA[<p>In my <a href="http://www.jonmsterling.com/posts/2014-05-11-records-are-sheaves-of-types.html">recent post</a> I demonstrated a type-theoretic formulation of non-dependent record types as presheaves on a particular topological space <span class="math">\(X\)</span> of keys given an assignment <span class="math">\(El_X : X\to\mathbf{Type}\)</span>. Today, I’ll construct more interesting records by endowing the key space with a non-discrete topology.</p>
