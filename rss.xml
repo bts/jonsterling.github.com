@@ -62,7 +62,7 @@
 <p><span class="math">\[
 \frac{
   \Gamma;\mathfrak{R}\vdash M:A \quad
-  \Gamma;\mathfrak{R},(M,A)_\downarrow\Vdash B\vdash N:B
+  \Gamma;\mathfrak{R},(M,A)_\downarrow\Vdash A\vdash N:B
 }{
   \Gamma;\mathfrak{R}\vdash\mathsf{realize}\ M\ \mathsf{in}\ N : B
 }\tag{$\mathfrak{R}$-intro}
