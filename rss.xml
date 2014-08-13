@@ -6,8 +6,19 @@
         <description><![CDATA[Jon Sterling writes about type theory and philology]]></description>
         <atom:link href="http://www.jonmsterling.com//rss.xml" rel="self"
                    type="application/rss+xml" />
-        <lastBuildDate>Mon, 30 Jun 2014 00:00:00 UT</lastBuildDate>
+        <lastBuildDate>Wed, 13 Aug 2014 00:00:00 UT</lastBuildDate>
         <item>
+    <title>Interview with Peter Dybjer: types and testing</title>
+    <link>http://www.jonmsterling.com//posts/2014-08-13-type-theory-podcast-peter-dybjer.html</link>
+    <description><![CDATA[<p>I’m so pleased to be able to announce the first fruit of a joint project with David Christiansen and Darin Morrison, which is an interview of Peter Dybjer for <a href="http://typetheorypodcast.com/2014/08/episode-1-peter-dybjer-on-type-theory-and-testing/">The Type Theory Podcast</a>. We spoke to Peter about QuickCheck-style testing and its relation to proofs and verification in type theory. Subscribe to the <a href="http://typetheorypodcast.com/feed/podcast">RSS feed</a> or follow us on <a href="https://twitter.com/typetheorypcast">Twitter</a> if you are interested in listening to discussions with researchers, because we have more to come.</p>
+<!--more-->
+
+
+]]></description>
+    <pubDate>Wed, 13 Aug 2014 00:00:00 UT</pubDate>
+    <guid>http://www.jonmsterling.com//posts/2014-08-13-type-theory-podcast-peter-dybjer.html</guid>
+</item>
+<item>
     <title>A Type Theory with Scoped Realizability</title>
     <link>http://www.jonmsterling.com//posts/2014-06-30-a-type-theory-with-scoped-realizability.html</link>
     <description><![CDATA[<p>Here I present an idea for a type theory which retains the benefits of wholesale adherence to the realizability interpretation<a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a> à la Nuprl<a href="#fn2" class="footnoteRef" id="fnref2"><sup>2</sup></a>, and yet seems to maintain a better division of labor between operator and machine.</p>
