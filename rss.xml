@@ -6,8 +6,119 @@
         <description><![CDATA[Jon Sterling writes about type theory and philology]]></description>
         <atom:link href="http://www.jonmsterling.com//rss.xml" rel="self"
                    type="application/rss+xml" />
-        <lastBuildDate>Wed, 13 Aug 2014 00:00:00 UT</lastBuildDate>
+        <lastBuildDate>Thu, 14 Aug 2014 00:00:00 UT</lastBuildDate>
         <item>
+    <title>Synthetic Judgements in Interactive Proof: In Defense of Tactics</title>
+    <link>http://www.jonmsterling.com//posts/2014-08-14-in-defense-of-tactics.html</link>
+    <description><![CDATA[<p>Whilst the judgements of type theory are preferred to be analytic, the practice of operating a proof assistant is inherently and unavoidably synthetic, and is always accompanied by some manner of refinement and tactics: and so the question is never whether to use tactics, but rather how much pain one intends to experience in the process of using them: this is inextricable from the activity of proving.</p>
+<!--more-->
+
+<p>In any case, tactics are derived inference rules which, upon application, provide indirect proofs of judgements. So what is a proof of a judgement?</p>
+<h3 id="proof-of-judgement-proof-of-proposition">Proof of Judgement, Proof of Proposition</h3>
+<p>Let us first consider the different notions of proof construction which arive in type theory. First there is proof of a judgement, and then there is proof of a proposition. Now then, the four kinds of judgement under consideration are the following:</p>
+<p><span class="math">\[\begin{array}{ll}
+A\ \mathrm{type} &amp; \mbox{$A$ is a type}\\
+A=B              &amp; \mbox{$A$ and $B$ are equal types}\\
+M:A              &amp; \mbox{$M$ is a term of type $A$}\\
+M=N:A            &amp; \mbox{$M$ and $N$ are equal in type $A$}
+\end{array}\]</span></p>
+<p>A judgement may be made with respect to a set of <span class="math">\(n\)</span> free variables of particular types; and this is called a hypothetical judgement.</p>
+<p><span class="math">\[\begin{array}{ll}
+A\ \mathrm{type} &amp; [x_1:A_1,x_2:A_2,\cdots,x_n:A_n]\\
+A=B              &amp; [x_1:A_1,x_2:A_2,\cdots,x_n:A_n]\\
+M:A              &amp; [x_1:A_1,x_2:A_2,\cdots,x_n:A_n]\\
+M=N:A            &amp; [x_1:A_1,x_2:A_2,\cdots,x_n:A_n]
+\end{array}\]</span></p>
+<p>Now then, a proof of a judgement is a <em>derivation</em> which makes it evident. Given three types <span class="math">\(A,B,C\)</span> a proof of the judgement <span class="math">\(\lambda(x)\mathsf{fst}(\mathsf{snd}(x)) : (A\times B\times C)\to C\)</span> is just a natural deduction tree where each deduction is given by one of the rules of type theory: <span class="math">\[
+\dfrac{
+  \dfrac{
+    \dfrac{
+      \dfrac{
+      }{
+        x:A\times B\times C\ [x:A\times B\times C]
+      }\mbox{hyp}_1
+    }{
+      \mathsf{snd}(x):B\times C\ [x:A\times B\times C]
+    }\times\mbox{E}_2
+  }{
+    \mathsf{fst}(\mathsf{snd}(x)):B\ [x:A\times B\times C]
+  }\times\mbox{E}_1
+}{
+  \lambda(x)\mathsf{fst}(\mathsf{snd}(x)) : (A\times B\times C) \to B
+}\to\mbox{I}
+\]</span></p>
+<p>On the other hand, a proof of a proposition <span class="math">\(P\)</span> is a term <span class="math">\(M\)</span> such that we know <span class="math">\(M:P\)</span>; and so proof of a judgment is more fundamental, and needs to be understood in order to make sense of “proof of a proposition” as a concept. For the judgments we have so far considered, the two notions, however, seem to very nearly coincide. In fact, if we linearized the derivation given above, it looks almost exactly like its term. Compare: <span class="math">\[\begin{array}{llll}
+  \to\mbox{I}&amp;(\times\mbox{E}_1&amp;(\times\mbox{E}_2&amp;(\mbox{hyp}_1)))\\
+  \lambda(x)&amp;(\mathsf{fst}&amp;(\mathsf{snd}&amp;(x)))
+\end{array}\]</span></p>
+<p>So what is the point of dealing with derivations? Why not work directly with the terms, since they are shaped exactly like their derivations?</p>
+<p>This property, that the terms and the derivations look identical is precisely the thing you get when judgements are analytic (that is, when all that is needed to decide their evidence is contained inside the judgements themselves). This is in contrast with a system which contains judgements like <span class="math">\(A\ \mathrm{true}\)</span>, which is synthetic (it requires evidence which is not contained in itself).</p>
+<h3 id="the-operative-judgements-are-synthetic-not-analytic">The Operative Judgements are Synthetic, Not Analytic</h3>
+<p>And so if all our judgements are analytic, then a tactic is really quite the same thing for the metalanguage as a combinator is for the object language, and seems to add no real value. But in the presence of synthetic judgements, the symmetry between derivation and term is lost; as such, the task of proving ceases to be the construction of internal proof objects, and becomes the construction of derivations, and the use of tactics becomes essential. But why would anyone desire to use such a system? Indeed, it seems strange, since Martin-Löf long ago adopted the methodology that the judgements of type theory should all be analytic.</p>
+<p>However, the actual praxis of proving has always been at the level of derivations and not at the level of proof objects. Indeed, the <em>proofs</em> themselves are objects, and we can make the evidence of their validity an analytic property: but in fact the operator of a proof assistant, whether you like it or not, does not avoid dealing with a synthetic form of judgement, namely <span class="math">\(P\
+\mathrm{true}\)</span>, which she refines in the process of working toward a proof <span class="math">\(M:P\)</span>.</p>
+<p>The reader may balk at this characterization, for certainly one does not need to use tactics in a language like Agda where internal proof terms are manipulated by hand:<a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a> however, the <em>process</em> of constructing a proof is no different here from in a system where the operator manipulates natural deduction trees and not proof terms. Or perhaps the reader simply does not use holes? No, that seems implausible enough to be dismissed.</p>
+<p>Consider the following Agda session: <span class="math">\[\begin{array}{lcl}
+\mathsf{prf} &amp;: &amp;A\times B\times C\to B\\
+\mathsf{prf} &amp;= &amp;\color{orange}{[| ?goal |]}
+\end{array} \]</span></p>
+<p>If you contemplate the actual activity of the operator with respect to the proof assistant, it is clear that she is trying to make the judgement <span class="math">\((A\times B\times C\to B)\ \mathrm{true}\)</span> evident to the latter. Even though the actual judgements are analytic, the activity of the operator is by its very nature synthetic, since one does not cook up a proof term before checking it against its type; rather, one refines and synthesizes a proof term by thinking about its type.</p>
+<p>So what is the difference between a system like Agda and one like Coq or Nuprl? It is only a matter of where the tactics live: in Agda they live in Emacs, whereas Coq and Nuprl give the operator direct access to the tools of derivation themselves, allowing the composition of inference rules into larger tactics for indirect proof construction. The utter necessity of this kind of interaction is only reinforced by accounts of Agda implementers defining special-cased proving macros in their Emacs configurations.</p>
+<p>Now then, an Agda Emacs session can be characterized as a degenerate special case of a tactic tree in a system like Nuprl or Coq. The latter, though, is clearly superior, since not only is the proof term and its validity understood by the proof assistant (as in Agda), but also the process by which the operator arrived at it is considered an actual object in the (meta)theory.</p>
+<p>The Agda session which results in the evidence for the judgement <span class="math">\((A\times B\times C\to B)\ \mathrm{true}\)</span> looks like the following:</p>
+<p><span class="math">\[\begin{array}{ll}
+\color{orange}{[|\vdash?goal : A\times B\times C\to B|]} &amp; \texttt{C-C C-R}\\
+\lambda x\to \color{orange}{[|x:A\times B\times C\vdash goal?: B|]} &amp;\texttt{C-C C-sp &quot;fst ?&quot;}\\
+\lambda x\to \mathsf{fst}\ \color{orange}{[|x:A\times B\times C\vdash goal?: B\times C|]} &amp;\texttt{C-C C-sp &quot;snd ?&quot;}\\
+\lambda x\to \mathsf{fst}\ (\mathsf{snd}\ \color{orange}{[|x:A\times B\times C\vdash goal?: A\times B\times C|]}) &amp;\texttt{C-C C-sp &quot;x&quot;}\\
+\lambda x\to \mathsf{fst}\ (\mathsf{snd}\ x)
+\end{array}\]</span></p>
+<p>This session, which for Agda only exists in the operator’s Emacs command history, is reified in Coq as a formal object which can be analyzed and manipulated:</p>
+<p><span class="math">\[\begin{array}{ll}
+\vdash A\times B\times C\to B\ \mathrm{true}               &amp; \texttt{intro x.}\\
+x:A\times B\times C\vdash B\ \mathrm{true}                 &amp; \texttt{eapply fst.}\\
+x:A\times B\times C\vdash B \times C\ \mathrm{true}        &amp; \texttt{eapply snd.}\\
+x:A\times B\times C\vdash A\times B\times C\ \mathrm{true} &amp;\texttt{exact x.}\\
+x:A\times B\times C\vdash                                  &amp;\texttt{Qed.}\\
+\end{array}\]</span></p>
+<p>The mode of operation, then, of Agda and Coq is (contrary to popular belief) basically the same, except that proof construction in Agda is (in general) forced to occur backwards because of the lack of facilities to manipulate contexts with derived structural rules. In either case, the operator justifies a synthetic judgement and the proof assistant extracts from the justification a proof. In a system like Coq or Nuprl, where custom tactics may be constructed, justification of this synthetic judgement proceeds in the “right” direction with respect to the natural order in which ideas occur to the operator; consider the following superior derivation:</p>
+<p><span class="math">\[\begin{array}{ll}
+\vdash A\times B\times C\to B\ \mathrm{true} &amp;\texttt{intro x.}\\
+x:A\times B\times C \vdash B\ \mathrm{true}  &amp;\texttt{destruct x as [a [b c]].}\\
+a:A,b:B,c:C \vdash B\ \mathrm{true}          &amp;\texttt{assumption.}\\
+a:A,b:B,c:C \vdash                           &amp;\texttt{Qed.}
+\end{array}\]</span></p>
+<p>Now, of course in most cases this more natural order of operation may be recovered in Agda by means of pattern matching; but the syntax of pattern matching is only applicable in some cases, and occasionally even necessitates the definition of auxiliary functions.</p>
+<h3 id="intensional-observations-for-general-purpose-tactics">Intensional Observations for General-Purpose Tactics</h3>
+<p>Now then, it should be evident that there is no question of <em>whether</em> you are using tactics to justify synthetic judgements when proving—rather the question is the degree to which your system of tactics is degenerate (consisting only of the standard introduction and elimination rules of type theory, as opposed to interesting derived rules), and how amenable it is to extension by the operator.</p>
+<p>And so if we have a system like Coq or Nuprl, we can define more interesting tactics that do different things depending upon the goal: that is, tactics may make intensional observations which are not allowed within the theory, and are thus impossible to replicate using object-level combinators. For instance, consider the following Coq tactic:</p>
+<p><span class="math">\[\begin{array}{l}
+\texttt{repeat match goal with}\\
+\quad
+  \begin{array}{ll}
+  \mid [ H : \bot \vdash P ] &amp;\Rightarrow \texttt{destruct}\ H\\
+  \mid [ \vdash\top ] &amp;\Rightarrow \texttt{constructor}
+  \end{array}\\
+\texttt{end.}
+\end{array}\]</span></p>
+<p>In a type theory which has the extensionality property (that is, one in which all observations are extensional),<a href="#fn2" class="footnoteRef" id="fnref2"><sup>2</sup></a> you could not write a combinator function which performed this action without the use of a universe. But this kind of thing is very useful indeed! This marks yet another reason for the necessity of interacting with the metalanguage during proof construction, since it is often important to be able to make intensional observations like this, but not risk having them be visible as object-level properties.</p>
+<p>And lest the reader think that this is the only kind of tactic they’ll be missing out on when they eschew access to the derivations in favor of only dealing with proof objects, let me tell you that the ability to discuss derivations is necessary even to construct simple tactics which adjust the context in the manner of the sequent calculus! You are simply relying on the language of your choice to provide you with enough baked in features, like pattern matching, when instead you could access for yourself all the tools necessary to design your own sequent transitions.</p>
+<h3 id="beheading-gentzens-hydra">Beheading Gentzen’s Hydra</h3>
+<p>Coq’s mode of operation, whilst evidently superior to Agda’s, leaves a lot to be desired, since tactic proof scripts do not in general improve readability for the operator: they only economize the size of an indirect justification. And so I would like to present an oft-overlooked mode of operation associated with tactics, and this is precisely the natural deduction tree.</p>
+<p>Indeed, natural deduction is named that way for a reason: it is more natural than both manual proof term construction and Cylon-oriented proof script writing. It is a method of refinement, where premises (subgoals) are organized in precisely the order by which those things naturally occur to us.</p>
+<p>And so what are tactics in natural deduction? In refinement proofs, subgoals arise like necks of an ever-growing hydra, growing out from each other at the application of some inference rules; and it is by means of other inference rules that these gaping maws are eventually sewn shut: but in many cases there is readily a means to simply cut off one of these vicious heads clean at the neck, and this is by means of tactics.</p>
+<p>In this way, the natural and hierarchical structure of proof and mental construction is recovered, but where the things which are trivial (but not evidently so) may be dispatched forthwith. This is the mode of operation in Nuprl and MetaPRL, where the natural deduction tree is traversed like a great zipper, and heads are chopped off with commands like <tt>refine by autoT</tt>. It is truly a joy to be the operator of such a system, where the economy of proof that tactics provide is harmonized with the conceptual clarity of hierarchical construction.</p>
+<div class="footnotes">
+<hr />
+<ol>
+<li id="fn1"><p>Note that in this post, I am discussing Agda <em>modulo</em> its reflection facilities.<a href="#fnref1">↩</a></p></li>
+<li id="fn2"><p>This is not to be confused with the property of extensional properties being provable (function extensionality, eta rules, etc.). It simply means that you cannot make observations which refute extensionality, and this is a property which Martin-Löf’s Type Theory satisfies in all its incarnations.<a href="#fnref2">↩</a></p></li>
+</ol>
+</div>]]></description>
+    <pubDate>Thu, 14 Aug 2014 00:00:00 UT</pubDate>
+    <guid>http://www.jonmsterling.com//posts/2014-08-14-in-defense-of-tactics.html</guid>
+</item>
+<item>
     <title>Interview with Peter Dybjer: types and testing</title>
     <link>http://www.jonmsterling.com//posts/2014-08-13-type-theory-podcast-peter-dybjer.html</link>
     <description><![CDATA[<p>I’m so pleased to be able to announce the first fruit of a joint project with David Christiansen and Darin Morrison, which is an interview of Peter Dybjer for <a href="http://typetheorypodcast.com/2014/08/episode-1-peter-dybjer-on-type-theory-and-testing/">The Type Theory Podcast</a>. We spoke to Peter about QuickCheck-style testing and its relation to proofs and verification in type theory. Subscribe to the <a href="http://typetheorypodcast.com/feed/podcast">RSS feed</a> or follow us on <a href="https://twitter.com/typetheorypcast">Twitter</a> if you are interested in listening to discussions with researchers, because we have more to come.</p>
