@@ -29,7 +29,7 @@ A=B              &amp; [x_1:A_1,x_2:A_2,\cdots,x_n:A_n]\\
 M:A              &amp; [x_1:A_1,x_2:A_2,\cdots,x_n:A_n]\\
 M=N:A            &amp; [x_1:A_1,x_2:A_2,\cdots,x_n:A_n]
 \end{array}\]</span></p>
-<p>Now then, a proof of a judgement is a <em>derivation</em> which makes it evident. Given three types <span class="math">\(A,B,C\)</span> a proof of the judgement <span class="math">\(\lambda(x)\mathsf{fst}(\mathsf{snd}(x)) : (A\times B\times C)\to C\)</span> is just a natural deduction tree where each deduction is given by one of the rules of type theory: <span class="math">\[
+<p>Now then, a proof of a judgement is a <em>derivation</em> which makes it evident. Given three types <span class="math">\(A,B,C\)</span> a proof of the judgement <span class="math">\(\lambda(x)\mathsf{fst}(\mathsf{snd}(x)) : (A\times B\times C)\to B\)</span> is just a natural deduction tree where each deduction is given by one of the rules of type theory: <span class="math">\[
 \dfrac{
   \dfrac{
     \dfrac{
