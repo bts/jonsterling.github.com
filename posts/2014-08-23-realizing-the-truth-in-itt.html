@@ -209,7 +209,12 @@ M\in\{x:A\mid B[x]\}=N\in\{x:A'\mid B'[x]\}
 \]</span></p>
 <p>One could also conceive of an extension to the judgemental membership such that the example above would not require a <span class="math">\(\mathbf{by}\)</span>-term; but this may be considered separately, and exhibits various trade-offs.</p>
 <h3 id="sufficiently-marked-up-realizers">“Sufficiently marked up realizers”</h3>
-<p>Recently Conor McBride suggested to me that it might be nice to find a way to characterize the terms of ITT as “sufficiently marked up realizers”; in many ways, I find that the approach given here achieves that quite nicely. In fact, for any two extensionally equal functions, OTT has <span class="math">\(\vdash h:f=g\in\prod_{(x:A)}B[x]\)</span>; in our system, we would additionally have <span class="math">\(\vdash\bullet\ \mathbf{by}\ \mathsf{uip}(h)_0 : f=g\in\prod_{(x:A)}B[x]\)</span>.</p>
+<p>Recently Conor McBride suggested to me that it might be nice to find a way to characterize the terms of ITT as “sufficiently marked up realizers”; in many ways, I find that the approach given here achieves that quite nicely. <!--
+In fact,
+for any two extensionally equal functions, OTT has $\vdash
+h:f=g\in\prod_{(x:A)}B[x]$; in our system, we would additionally have
+$\vdash\bullet\ \mathbf{by}\ \mathsf{uip}(h)_0 : f=g\in\prod_{(x:A)}B[x]$.
+--></p>
 <p>And what of false hypotheses? In OTT you have to use a coercion to eliminate a falsely hypothesized equality as follows: <span class="math">\[\vdash\lambda[p]\mathsf{coe}(p;\bullet):\bot=\top\in\mathbb{U}_0\to\bot\]</span></p>
 <p>But here, we could have: <span class="math">\[\vdash\lambda[p]\bullet\ \mathbf{by}\ \mathsf{abort}\circ\mathsf{coe}(-;\bullet):\bot=\top\in\mathbb{U}_0\to\bot\]</span></p>
 <p>And so the terms of a realizability interpretation can be given an <em>image</em> in an intensional type theory with decidable typechecking, and what’s more, this image accurately reflects the computational behavior of the terms; and this is more than can be said of the common approach of deeply annotated terms who have their operational semantics given by extraction. Clearly there are trade-offs at play here: compositionality is sometimes better and sometimes worse in either case, and I suspect the right approach to be a combination of both.</p>
