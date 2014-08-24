@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="readability-verification" content="cG3MqZcEVveKZ6mnEFkePAL3Ug79Jxxp5Fn27CM7" />
+<title>JS ⊢ Realizing the Truth in Intensional Type Theory</title>
+<link rel="stylesheet" type="text/css" href="../css/screen.css" />
+<link rel="stylesheet" type="text/css" href="../css/syntax.css" />
+<link rel="stylesheet" type="text/css" href="../css/coqdoc.css" />
+<style type="text/css">
+    @import url(http://nmashton.ca/css/gloss-0.0.1.css);
+</style>
+<script type="text/javascript" src="http://code.jquery.com/jquery-1.8.3.min.js"></script>
+<script type="text/javascript" src="http://nmashton.ca/js/gloss-0.0.1.js"></script>
+<link rel="alternate" type="application/rss+xml" title="Jonathan Sterling" href="../rss.xml" />
+
+
+<!--[if IE]>
+  <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+<!--[if lte IE 7]>
+  <script src="js/IE8.js" type="text/javascript"></script><![endif]-->
+<!--[if lt IE 7]>
+<link rel="stylesheet" type="text/css" media="all" href="css/ie6.css"/><![endif]-->
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+MathJax.Hub.Config({
+  showMathMenu: false,
+  showProcessingMessages: false,
+  messageStyle: "none",
+  'HTML-CSS': {
+    availableFonts: [],
+    webFont: 'TeX',
+  },
+  TeX: {
+    Macros: {
+      gk: ["\\style{font-family:Junicode!important; font-size:1.3em;}{\\text{#1}}", 1]
+    }
+  }
+});
+</script>
+</head>
+<body>
+
+<header>
+<h1><a href="../index.html"><span class="title">Realizing the Truth in Intensional Type Theory.</span></a></h1>
+</header>
+
+<section class="post">
+<article><p>The key idea of Observational Type Theory<a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a> is to make the <em>propositional</em> equality coextensive with the equality which is validated under the standard semantics for Type Theory, which is the meaning explanations and their metamathematical counterpart, the realizability interpretation. Now, Extensional Type Theory is usually characterized in terms of typechecking (membership) being undecidable because the “true” equality is made to hold judgementally; but this is a deceptive characterization when applied to Computational Type Theory (Nuprl), since there are many types besides equality which may be given meaning explanations but which have an undecidable membership judgement.</p>
+<!--more-->
+
+<p>Now, Oury’s result<a href="#fn2" class="footnoteRef" id="fnref2"><sup>2</sup></a> tells us that by peppering terms with identity proofs and coercions, one can prove all the theorems of ETT in ITT extended with an equality type which represents the observational equivalence of programs; but Oury only considers one source of synthetic judgement, which is the equality reflection rule. Observational Type Theory can be thought of as a version of ETT which has all analytic judgements, by turning the semantical equality judgement into a proposition and retaining a syntactic equality judgement.</p>
+<p>In a type theory which takes the meaning explanations and their realizability analogues seriously like CTT, you do not have the syntactic typing judgement <span class="math">\(\Gamma\vdash M:A\)</span>; instead you have a semantical membership judgement <span class="math">\(\Gamma\vdash M\in A\)</span> which is the reflexive special case of the semantical equality judgement <span class="math">\(\Gamma\vdash M=M\in A\)</span>. So what would happen if we extended OTT with a semantical membership proposition?</p>
+<h3 id="an-example-ctt-type">An Example CTT Type</h3>
+<p>First, we should consider why this is even an interesting idea. Consider a type given in CTT by the following rules:</p>
+<p><span class="math">\[\begin{gather}
+\frac{
+  \Gamma\vdash A=A'\in\mathbb{U}_i
+  \quad
+  \Gamma,x:A\vdash B[x]=B'[x]\in\mathbb{U}_i
+}{
+  \Gamma\vdash \{x:A\mid B[x]\} = \{x:A'\mid B'[x]\}\in \mathbb{U}_i
+}\tag{subset-F}\\[6pt]
+%
+\frac{
+  \Gamma\vdash M=M'\in A
+  \quad
+  \Gamma\vdash B[M]\ \mathrm{true}
+  \quad
+  \Gamma,x:A\vdash B[x]\in\mathbb{U}_i
+}{
+  \Gamma\vdash M=M'\in\{x:A\mid B[x]\}
+}\tag{subset-I}\\[6pt]
+%
+\frac{
+  \Gamma\vdash M=M'\in\{x:A\mid B[x]\}
+}{
+  \Gamma\vdash M=M'\in A
+}\tag{subset-E$_1$}\\[6pt]
+%
+\frac{
+  \Gamma\vdash M=M'\in\{x:A\mid B[x]\}
+}{
+  \Gamma\vdash B[M]\ \mathrm{true}
+}\tag{subset-E$_2$}
+\end{gather}\]</span></p>
+<p>Now then, with careful modification to the formation, introduction and elimination rules, this type could be given in a type theory without equality reflection: but its membership would still be undecidable. And the source of the undecidability is the second premise of the introduction rule, the proof of which does not appear in the term. But this is clearly a useful type, as decades of work in Nuprl have demonstrated!</p>
+<p>But sadly because it attacks only the problem of making equality judgements analytic, OTT does not suffice to make such types expressible, except in terms of a product with a squashed second projection: <span class="math">\[\textstyle
+  \{x:A\mid B[x]\} \Longrightarrow_{ITT} \sum_{(x:A)}\|B[x]\|
+\]</span></p>
+<p>This interpretation actually works fine, in that it validates all the rules above. And similar characterizations could be given to the other types of CTT, such as intersections and unions; but as can be seen from my <a href="http://www.jonmsterling.com/posts/2014-05-28-family-unions-in-intensional-type-theory.html">previous attempt</a>, the construction is very complicated and worringly non-general.</p>
+<h3 id="intensional-approximations-are-ad-hoc">Intensional approximations are ad hoc</h3>
+<p>The crux of the matter is that whilst intensional approximations of most computational types may be given, the beauty and unity of their characterization in CTT is lost, and they must all be interpreted separately in terms of a closed universe. This is contrary to the idea of the meaning explanations, which necessitates an open universe where a type is introduced by providing a meaning explanation which says what it means to be a member of that type, and when two members are equal, and which justifies local consistency and completeness.</p>
+<p>In terms of an OTT-like system, that means that to introduce a new type, it should suffice to explain the behavior of the heterogeneous equality on it and its terms: then propositional membership is just reflexivity in that relation.</p>
+<h3 id="the-propositional-equality-and-membership-types">The propositional equality and membership types</h3>
+<p>Let us consider the propositional equality type of OTT, which is heterogeneous:</p>
+<p><span class="math">\[
+\frac{
+  \Gamma\vdash A:\mathbb{U}_i
+  \quad
+  \Gamma\vdash B:\mathbb{U}_i
+  \quad
+  \Gamma\vdash M:A
+  \quad
+  \Gamma\vdash N:B
+}{
+  \Gamma\vdash M\in A = N\in B : \mathbb{U}_i
+}\tag{Eq-F}
+\]</span></p>
+<p>We’ll define the following shorthands: <span class="math">\[\begin{align}
+M=N\in A&amp;\triangleq M\in A = N\in A\\
+\widehat{x:A} &amp;\triangleq x_0:A_0, x_1:A_1, \tilde{x}:(x_0\in A_0 = x_1\in A_1)
+\end{align}\]</span></p>
+<p>There are various elimination forms which represent coercion across type equalities, and which bear witness to the extensionality of all constructions in type theory. But the equality type is defined by recursion on the types, and so instead of introduction rules, it has computation rules. And so the meaning of a type is given by the computation of the equality of its terms. For instance, the rules for functions are given as follows:</p>
+<p><span class="math">\[\begin{align}
+\textstyle
+(\prod_{(x:A_0)}B_0[x] = \prod_{(x:A_1)}B_1[x]\in\mathbb{U}_i)
+  &amp; \leadsto
+    (A_0=A_1\in\mathbb{U}_i) \times \textstyle\prod_{(\widehat{x:A})}B_0[x_0]=B_1[x_1]\in\mathbb{U}_i\\
+\textstyle
+(f\in\prod_{(x:A_0)}B_0[x] = g\in\prod_{(x:A_1)}B_1[x])
+  &amp; \leadsto
+    \textstyle
+    \prod_{(\widehat{x:A})} f(x_0)\in B_0[x_0] = g(x_1)\in B_1[x_1]
+\end{align}\]</span></p>
+<p>Now then, one adds propositional membership as follows: <span class="math">\(M\in A\triangleq M=M\in A\)</span>. But this seems like it will be degenerate, since we already know from the formation rule for equality that <span class="math">\(M:A\)</span>, so there is nothing added by having <span class="math">\(p:M\in A\)</span>. But this is not in fact the case! Consider the interpretation of equality of equality types:</p>
+<p><span class="math">\[\begin{array}{lcl}
+(M_0\in A_0=N_0\in B_0) = (M_1\in A_1=N_1\in B_1) \in \mathbb{U}_i
+  &amp;\leadsto &amp;(A_0=A_1\in\mathbb{U}_i)\\
+  &amp;\times &amp;(B_0=B_1\in\mathbb{U}_i)\\
+  &amp;\times &amp;(M_0\in A_0=M_1\in A_1)\\
+  &amp;\times &amp;(N_0\in B_0=N_1\in B_1)
+\end{array}\]</span></p>
+<p>Considering the presence of this kind of rule, certainly it is conceivable that are some semantic types “T” such that <span class="math">\(T\in\mathbb{U}_i\)</span> is provable for some <span class="math">\(i\)</span>, but for which <span class="math">\(T:\mathbb{U}_i\)</span> is not evident. So how do we make this useful? Clearly for some proof <span class="math">\(p:M\in A\)</span> we should like to be able to recover some term <span class="math">\(\underline{p}:A\)</span>; but we cannot in general have <span class="math">\(\underline{p}=M:A\)</span> without tossing decidability of <em>syntactic</em> typechecking, for the same reason that we cannot have an equality reflection rule without sacrificing the same property.</p>
+<h3 id="truth-vs-canonicity">Truth vs Canonicity</h3>
+<p>What is our alternative then? Sacrificing syntactic canonicity suggests itself readily enough: but one wonders if this is a problem. Canonicity is the property that every <span class="math">\(n:\mathbb{N}\)</span> is (judgementally) equal to a natural number. But Brouwerian Truth is not a syntactic property, rather it is inherently semantical, and can therefore never be decidable in general. As a result, it seems less important that canonicity hold up to a decidable, syntactic judgement; what is much more important is that it hold up to the notions of membership and equality which reflect the full semantical Truth.</p>
+<p>So a cheap syntactic check allows certain trivial things to compute easily without incurring unnecessary proof obligations for well-formedness, etc.; but if we want to capture all the important truths, we cannot possibly hope that the syntactic check will suffice for semantic membership (likewise equality). So the presence of a term <span class="math">\(\underline{n}:\mathbb{N}\)</span> which is not judgementally equal to a natural number is not any more of a problem than having a term <span class="math">\(p:M=N\in A\)</span> which is not judgementally equal to <span class="math">\(\mathsf{refl}\)</span>. So all that we really care about is that for any <span class="math">\(\underline{n}:\mathbb{N}\)</span> there is a canonical natural number <span class="math">\(m:\mathbb{N}\)</span> such that <span class="math">\(\underline{n}=m\in\mathbb{N}\)</span> is a true proposition; note that this <em>cannot</em> be provable internally without breaking decidability of typechecking, but it should be a metatheorem.</p>
+<p>Now, in OTT, equality is computationally irrelevant and so it do have the property <span class="math">\(p=\mathsf{refl}:(M=N\in A)\)</span> for <span class="math">\(p:(M=N\in A)\)</span>, but only when <span class="math">\(\mathsf{refl}:(M=N\in A)\)</span>. Note that all such proofs <span class="math">\(p\)</span> are <em>propositionally</em> equal to <span class="math">\(\mathsf{refl}\)</span> by means of Streicher’s Axiom <span class="math">\(\mathbf{K}\)</span>, but they are only judgementally so when they are trivial. Thinking in those terms, it does not seem so far-fetched that membership could behave the same way: every term is propositionally equal to a canonical element, and it is judgementally so when its membership is trivial.</p>
+<p>The division of things into syntactic checks and semantical truths is one of convenience: it allows us to have the things which are truly trivial be actually trivial. But it is a shame when our theory is so obsessed with syntax that we sacrifice the ability to talk about things which are true, but non-trivial.</p>
+<p>We’ll make the idea precise by adding non-canonical forms <span class="math">\(p_i\ [i\in\{0,1\}]\)</span> and <span class="math">\(M\ \mathbf{by}\ p\)</span> to the type theory with the following rules:</p>
+<p><span class="math">\[\begin{gather}
+  \frac{
+    \Gamma\vdash p : M\in A=N\in B
+  }{
+    \Gamma\vdash p_0 : M\in A
+  }
+  \quad
+  \frac{
+    \Gamma\vdash p : M\in A=N\in B
+  }{
+    \Gamma\vdash p_1 : N\in B
+  }\\[6pt]
+  \frac{
+    \Gamma\vdash p : M\in A
+  }{
+    \Gamma\vdash M\ \mathbf{by}\ p : A
+  }
+  \quad
+  \frac{
+    \Gamma\vdash M\ \mathbf{by}\ p : A
+  }{
+    \Gamma\vdash p : M\in A
+  }\\[6pt]
+  \frac{
+  }{
+    M\ \mathbf{by}\ \bullet \leadsto M
+  }
+\end{gather}\]</span></p>
+<p>The first two rules capture the idea that the left and right sides of an identity are equal to themselves. The third rule is a kind of coercion of reflexive equalities, at the level of the equated term, and the fourth rule is its inversion; and the last rule gives the computational behavior of <span class="math">\(\mathbf{by}\)</span>-terms when the membership proof is trivial.</p>
+<h3 id="a-type-with-non-trivial-membership-evidence">A type with non-trivial membership evidence</h3>
+<p>Surely, one would think, semantic membership for the existing types in OTT is trivial, since type checking is decidable; and this is true. For instance, let <span class="math">\(P:= \lambda[x]x+1=\lambda[x]1+x\in\mathbb{N}\to\mathbb{N}\)</span>; we do not have a proof of <span class="math">\(\bullet=\bullet\in P\)</span>, since in OTT that would not even be a well-formed type.</p>
+<p>But if the equality type were defined over untyped terms, as it is in CTT, this proposition would be well-formed, and it would be provable using UIP. It also does not appear that making such a change would cause any detrimental effects to the metatheory: nonsense propositions like <span class="math">\(\mathsf{true}\in\mathsf{false}=\mathbb{U}_1\in\mathbb{U}_0\)</span> would simply be false.</p>
+<p>In such a system, we would surely have a proof <span class="math">\(p\)</span> such that <span class="math">\(\vdash p:\bullet\in P\)</span>, but not <span class="math">\(\vdash\bullet:P\)</span>. We’ll do another example which will perhaps make this more evident, namely the subset type which we gave for CTT at the top.</p>
+<p>To the term syntax of type theory, we add the scheme <span class="math">\(\{x:A\mid B[x]\}\)</span>. Its meaning is then explained in terms of the equality type’s reduction:</p>
+<p><span class="math">\[\begin{array}{lcl}
+\textstyle
+\{x:A_0\mid B_0[x]\} = \{x:A_1\mid B_1[x]\} \in\mathbb{U}_i
+  &amp;\leadsto &amp;A_0=A_1\in\mathbb{U}_i\\
+  &amp;\times &amp;\textstyle\prod_{(\widehat{x:A})}B_0[x_0]=B_1[x_1]\in\mathbb{U}_i\\
+%
+M\in\{x:A\mid B[x]\}=N\in\{x:A'\mid B'[x]\}
+  &amp;\leadsto &amp;M\in A=N\in A'\\
+  &amp;\times &amp; \bullet\in\|B[M]\|=\bullet\in\|B'[N]\|
+\end{array}\]</span></p>
+<p>And from the elimination rules for equality, we can derive the elimination rules for subsets. For simplicity of presentation, we’ll do the special case of membership rather than equality, though. Consider the following example derivation, whose steps are all analytic:</p>
+<p><span class="math">\[
+\dfrac{
+  \dfrac{
+    \dfrac{
+      \dfrac{\dfrac{}{\Gamma\vdash\bullet\in\top}}{\Gamma\vdash\bullet:\mathsf{true}\in\mathbb{B}}
+      \quad
+      \dfrac{
+        \dfrac{\dfrac{}{\Gamma\vdash\bullet\in\top}}{
+          \Gamma\vdash \bullet\in\|\top\|
+        }
+      }{
+        \Gamma\vdash \bullet\in\|\mathsf{So}(\mathsf{true})\|
+      }
+    }{
+      \Gamma\vdash \langle\bullet,\bullet\rangle:
+        (\mathsf{true}\in\mathbb{B})\times(\bullet\in\|\mathsf{So}(\mathsf{true})\|)
+    }
+  }{
+    \Gamma\vdash \langle\bullet,\bullet\rangle : \mathsf{true}\in\{x:\mathbb{B}\mid \mathsf{So}(x)\}
+  }
+}{
+  \Gamma\vdash\mathsf{true}\ \mathbf{by}\ \langle\bullet,\bullet\rangle : \{x:\mathbb{B}\mid\mathsf{So}(x)\}
+}
+\]</span></p>
+<p>One could also conceive of an extension to the judgemental membership such that the example above would not require a <span class="math">\(\mathbf{by}\)</span>-term; but this may be considered separately, and exhibits various trade-offs.</p>
+<h3 id="sufficiently-marked-up-realizers">“Sufficiently marked up realizers”</h3>
+<p>Recently Conor McBride suggested to me that it might be nice to find a way to characterize the terms of ITT as “sufficiently marked up realizers”; in many ways, I find that the approach given here achieves that quite nicely. In fact, for any two extensionally equal functions, OTT has <span class="math">\(\vdash h:f=g\in\prod_{(x:A)}B[x]\)</span>; in our system, we would additionally have <span class="math">\(\vdash\bullet\ \mathbf{by}\ \mathsf{uip}(h)_0 : f=g\in\prod_{(x:A)}B[x]\)</span>.</p>
+<p>And what of false hypotheses? In OTT you have to use a coercion to eliminate a falsely hypothesized equality as follows: <span class="math">\[\vdash\lambda[p]\mathsf{coe}(p;\bullet):\bot=\top\in\mathbb{U}_0\to\bot\]</span></p>
+<p>But here, we could have: <span class="math">\[\vdash\lambda[p]\bullet\ \mathbf{by}\ \mathsf{abort}\circ\mathsf{coe}(-;\bullet):\bot=\top\in\mathbb{U}_0\to\bot\]</span></p>
+<p>And so the terms of a realizability interpretation can be given an <em>image</em> in an intensional type theory with decidable typechecking, and what’s more, this image accurately reflects the computational behavior of the terms; and this is more than can be said of the common approach of deeply annotated terms who have their operational semantics given by extraction. Clearly there are trade-offs at play here: compositionality is sometimes better and sometimes worse in either case, and I suspect the right approach to be a combination of both.</p>
+<p>To conclude, what I have described in this post seems to me the correct way of exposing the Truth under intensional type theory: rather than pretend it doesn’t exist, we can choose to undertake whatever non-trivial reasoning is necessary in order to get at it, whilst maintaining the division of labor which makes decidable type-checking desirable. Of course, <a href="http://www.jonmsterling.com/posts/2014-08-14-in-defense-of-tactics.html">I am inclined</a> to operate solely at the level of typing derivations, under which circumstances ITT seems to overcharge me for higher-dimensional structure which is not in use: but for those who both wish to use ITT <em>and</em> care about the Truth, this seems to be a serviceable technique.</p>
+<div class="footnotes">
+<hr />
+<ol>
+<li id="fn1"><p>Thorsten Altenkirch, Conor McBride, Wouter Swierstra (2007). <a href="http://dl.acm.org/citation.cfm?id=1292597.1292608">Observational equality, now!</a><a href="#fnref1">↩</a></p></li>
+<li id="fn2"><p>Nicolas Oury (2005). <a href="http://link.springer.com/chapter/10.1007%2F11541868_18">Extensionality in the Calculus of Constructions</a><a href="#fnref2">↩</a></p></li>
+</ol>
+</div></article>
+<h1>Want to comment?</h1>
+<p> I’m @jonsterling on <a href="http://www.twitter.com/jonsterling">Twitter</a>.
+
+
+<script src="//static.getclicky.com/js" type="text/javascript"></script>
+<script type="text/javascript">try{ clicky.init(66625087);
+    }catch(e){}</script>
+<noscript><p><img alt="Clicky" width="1" height="1" src="//in.getclicky.com/66625087ns.gif" /></p></noscript>
+
+<a rel="me" href="http://twitter.com/jonsterling"></a>
+<a rel="me" href="https://alpha.app.net/jonsterling"></a>
+</body>
+</html>
+
