@@ -6,8 +6,97 @@
         <description><![CDATA[Jon Sterling writes about type theory and philology]]></description>
         <atom:link href="http://www.jonmsterling.com//rss.xml" rel="self"
                    type="application/rss+xml" />
-        <lastBuildDate>Sat, 23 Aug 2014 00:00:00 UT</lastBuildDate>
+        <lastBuildDate>Sat, 18 Oct 2014 00:00:00 UT</lastBuildDate>
         <item>
+    <title>Dependent Types for Pragmatics</title>
+    <link>http://www.jonmsterling.com//posts/2014-10-18-dependent-types-for-pragmatics.html</link>
+    <description><![CDATA[<p>I am pleased to make available the result of joint research with <a href="http://www.purelytheoretical.com">Darryl McAdams</a>, our new paper <a href="http://www.languagengine.co/learn-more/dtfp.pdf">Dependent Types for Pragmatics</a> which is currently under review for publication in the <em>Journal of Logic, Language and Information</em>. I’d like to discuss a few aspects of the work which I consider important, lending additional emphasis to foundational aspects of type theory which I fear were lost in the presentation, which was meant for a general Linguistics audience.</p>
+<!--more-->
+
+<p>When you have a pair of utterances “A man walked in. He sat down.”, in order to assign them meaning, there must be a few things decided based upon context, not least of which is who is denoted by “he”. The first statement is interpreted as an existential,</p>
+<p><span class="math">\[\exists x:\mathsf{E}. Man(x)\land WalkedIn(x)\]</span></p>
+<p>And in standard practice, the next sentence is given the meaning <span class="math">\(SatDown(x)\)</span>, yielding a composite formula</p>
+<p><span class="math">\[(\exists x:\mathsf{E}. Man(x)\land WalkedIn(x))\land SatDown(x)\]</span></p>
+<h3 id="the-problem-with-dynamic-semantics">The problem with dynamic semantics</h3>
+<p>But there is already a serious problem, which is that this denotation is not even a well-formed <em>sentence</em> in the logic, since nowhere is the variable <span class="math">\(x\)</span> bound in the second conjunct. Traditionally, for the purpose of dealing with natural language semantics, the scope of the existential quantifier is extended rightwards, but this is evidently a kludge. To resolve this inelegance, Darryl proposes to give denotations in Martin-Löf’s Intensional Type Theory:</p>
+<p><span class="math">\[(p:(x:\mathsf{E})\times Man(x)\times WalkedIn(x))\times SatDown(\mathsf{fst}(p))\]</span></p>
+<p>This is indeed the meaning of the original sentence, but it is useful from a practical point of view to characterize the <em>space</em> of possible meanings prior than fixing upon a particular one immediately; for instance, if there were two men in context, either one might have sat down, though we can use axioms of pragmatics to decide which one is most likely intended by the speaker.</p>
+<h3 id="an-intermediate-calculus-with-synthetic-judgements">An intermediate calculus with synthetic judgements</h3>
+<p>In order to do this, we give an intermediary language which serves as a syntactic layer between the syntax (grammar) and the semantics (meaning), and this is characterized by the introduction of a new binding form, <em>require</em>:</p>
+<p><span class="math">\[
+\frac{
+  \Gamma\vdash M\in A
+  \qquad
+  \Gamma\vdash [M/x]N\in B
+  \qquad x\notin FV(B)
+}{
+  \Gamma\vdash\mathsf{require}(A;\ x.N)\in B
+}\text{require}
+\]</span></p>
+<p>Then we can give an intermediate form to the original sentence which respects its potential ambiguity:</p>
+<p><span class="math">\[(p\in(x\in\mathsf{E})\times Man(x)\times WalkedIn(x))\times \mathsf{require}(\mathsf{E};\ x. SatDown(x))\]</span></p>
+<p>Then, well-formedness of the require-term may be characterized of finding such an <span class="math">\(M\in \mathsf{E}\)</span> such that we have <span class="math">\(\mathsf{require}(\mathsf{E};\
+x.SatDown(x))\in\mathsf{Set}\)</span>.</p>
+<h4 id="type-membership-not-checking">Type <em>Membership</em>, not <em>Checking</em></h4>
+<p>Crucially, note that I have used the <em>membership</em> judgement <span class="math">\(\Gamma\vdash M\in A\)</span> rather than the <em>type-checking</em> judgement <span class="math">\(\Gamma\vdash M:A\)</span>; this is a subtle aspect of type theory which is often lost in characterizations of theories like Computational Type Theory as having undecidable type checking, which is only vacuously true, given that such a theory does not use type checking at all: it instead has a semantical, synthetic membership judgement, which is not decidable in general.</p>
+<p>In intensional type theory the two forms of judgement coincide, since the syntax of the intensional theory prevents the definition of any types which do not have decidable membership. However, it is evident that the rule for <span class="math">\(\mathsf{require}\)</span> does not admit type checking, since the evidence for well-formedness is not present in the statement of the judgement which is to be examined, or verified. As a result, we are forced to consider our syntactic layer as having a semantical membership judgement and not a type-checking judgement. A defect in the present version of paper is that we failed to distinguish these two judgements, which would have made the presentation significantly more clear.</p>
+<p>It may seem strange to so readily toss type-checking to the wind, but I would say that the system you end up with is in fact a remarkably faithful model of the actual nature of the pragmatics, which is unavoidably ambiguous. And when confronted with the judgement, “<span class="math">\(S\)</span> is a meaningful English sentence” we do <em>not</em> verify it by examining its syntax, rather we attempt to come up with <strong>at least one</strong> denotation for the sentence which is permitted by its syntax. And so it seems at least plausible to me that the correct judgement for this phenomenon must be a synthetic one.</p>
+<h3 id="the-analytic-semantics">The Analytic Semantics</h3>
+<p>Now then, in the course of becoming convinced that a sentence is meaningful, we have built up in our derivation enough information to give it a proper unambiguous meaning. We define an extraction operation <span class="math">\([-]\)</span> by induction upon the <em>derivations</em> which gives us terms in an intensional type theory with only analytic judgement. Let us consider in particular the derivation by which we convinced ourselves that the example term made sense:</p>
+<p><span class="math">\[
+\dfrac{
+  \dfrac{
+    \cdots
+  }{
+    p\in(x\in\mathsf{E})\times Man(x)\times WalkedIn(x) \vdash \mathsf{fst}(p) \in \mathsf{E}
+  }
+  \qquad
+  \dfrac{
+    \cdots
+  }{
+    p\in(x\in\mathsf{E})\times Man(x)\times WalkedIn(x) \vdash SatDown(\mathsf{fst}(p))\in\mathsf{Set}
+  }
+}{
+  p\in(x\in\mathsf{E})\times Man(x)\times WalkedIn(x)\vdash \mathsf{require}(\mathsf{E};\ x.SatDown(x)) \in \mathsf{Set}
+}\text{require}
+\]</span></p>
+<p>It should be possible then to extract the meaning that we decided upon by using the term in the first premise of the <em>require</em>-rule. In the general case:</p>
+<p><span class="math">\[
+\left [
+\dfrac{
+  \array{
+    \mathcal{D}\\
+    \Gamma\vdash M\in A
+  }\qquad
+  \array{
+    \mathcal{E}\\
+    \Gamma\vdash [M/x]N\in B
+  }
+}{
+  \Gamma\vdash\mathsf{require}(A;\ x.N)\in B
+}\text{require} \right] \leadsto \left[\mathcal{D}\right]
+\]</span></p>
+<p>Then in the rest of the cases, we recursively extract derivations into terms which, by induction, do not contain <span class="math">\(\mathsf{require}\)</span>. For example, the introduction rule for the dependent product is extracted as a lambda abstraction:</p>
+<p><span class="math">\[
+\left [
+\dfrac{
+  \array{
+    \mathcal{D}\\
+    \Gamma,x\in A\vdash M\in B
+  }
+}{
+  \Gamma\vdash \lambda(x. B) \in (x\in A)\to B
+}
+\right] \leadsto \lambda(x. \left[\mathcal{D}\right])
+\]</span></p>
+<p>It should be evident that the extraction preserves membership; that is, if <span class="math">\(\mathcal{D}::(\Gamma\vdash M\in A)\)</span> we should also be able to come up with a derivation of <span class="math">\(\Gamma\vdash[\mathcal{D}]\in A\)</span>.</p>
+<p>And because the extracted terms do not contain <span class="math">\(\mathsf{require}\)</span> terms, they come equipped with a type-checking judgement <span class="math">\(\Gamma\vdash M:A\)</span> which coincides with a fragment of the semantic membership <span class="math">\(\Gamma\vdash M\in A\)</span>. More precisely, we can say that for any derivation <span class="math">\(\mathcal{D}::(\vdash M\in A)\)</span> we also have <span class="math">\(\vdash[\mathcal{D}]:A\)</span>. It may be possible to give a similar characterization to open terms considering the extractions of contexts themselves from context-wellformedness derivations, but we have not done this.</p>
+<h3 id="future-work">Future Work</h3>
+<p>We have characterized what it means for a sentence containing presuppositions to “be meaningful” in terms of a calculus with <span class="math">\(\mathsf{require}\)</span>-terms and a synthetic membership judgement, and then given the extraction of membership derivations into terms which may be checked against their type. What we have not done at all is propose a mechanism for constructing the membership derivations; this is a proof search problem, and I would like to explore the idea of focussing as a means of approximating the pragmatic axioms which select the most salient denotations.</p>]]></description>
+    <pubDate>Sat, 18 Oct 2014 00:00:00 UT</pubDate>
+    <guid>http://www.jonmsterling.com//posts/2014-10-18-dependent-types-for-pragmatics.html</guid>
+</item>
+<item>
     <title>Realizing the Truth in Intensional Type Theory</title>
     <link>http://www.jonmsterling.com//posts/2014-08-23-realizing-the-truth-in-itt.html</link>
     <description><![CDATA[<p>The key idea of Observational Type Theory<a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a> is to make the <em>propositional</em> equality coextensive with the equality which is validated under the standard semantics for Type Theory, which is the meaning explanations and their metamathematical counterpart, the realizability interpretation. Now, Extensional Type Theory is usually characterized in terms of typechecking (membership) being undecidable because the “true” equality is made to hold judgementally; but this is a deceptive characterization when applied to Computational Type Theory (Nuprl), since there are many types besides equality which may be given meaning explanations but which have an undecidable membership judgement.</p>
