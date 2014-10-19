@@ -86,7 +86,7 @@ x.SatDown(x))\in\mathsf{Set}\)</span>.</p>
   }
 }{
   \Gamma\vdash \lambda(x. B) \in (x\in A)\to B
-}
+}\to I
 \right] \leadsto \lambda(x. \left[\mathcal{D}\right])
 \]</span></p>
 <p>It should be evident that the extraction preserves membership; that is, if <span class="math">\(\mathcal{D}::(\Gamma\vdash M\in A)\)</span> we should also be able to come up with a derivation of <span class="math">\(\Gamma\vdash[\mathcal{D}]\in A\)</span>.</p>
