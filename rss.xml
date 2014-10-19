@@ -22,7 +22,7 @@
 <p><span class="math">\[(p:(x:\mathsf{E})\times Man(x)\times WalkedIn(x))\times SatDown(\mathsf{fst}(p))\]</span></p>
 <p>This is indeed the meaning of the original sentence, but it is useful from a practical point of view to characterize the <em>space</em> of possible meanings prior than fixing upon a particular one immediately; for instance, if there were two men in context, either one might have sat down, though we can use axioms of pragmatics to decide which one is most likely intended by the speaker.</p>
 <h3 id="an-intermediate-calculus-with-synthetic-judgements">An intermediate calculus with synthetic judgements</h3>
-<p>In order to do this, we give an intermediary language which serves as a syntactic layer between the syntax (grammar) and the semantics (meaning), and this is characterized by the introduction of a new binding form, <em>require</em>:</p>
+<p>In order to do this, we give an intermediary language which serves as a syntactic layer between the syntax (grammar) and the semantics (meaning), and this is given by the introduction of a new binding form, <em>require</em>:</p>
 <p><span class="math">\[
 \frac{
   \Gamma\vdash M\in A
@@ -35,7 +35,7 @@
 \]</span></p>
 <p>Then we can give an intermediate form to the original sentence which respects its potential ambiguity:</p>
 <p><span class="math">\[(p\in(x\in\mathsf{E})\times Man(x)\times WalkedIn(x))\times \mathsf{require}(\mathsf{E};\ x. SatDown(x))\]</span></p>
-<p>Then, well-formedness of the require-term may be characterized of finding such an <span class="math">\(M\in \mathsf{E}\)</span> such that we have <span class="math">\(\mathsf{require}(\mathsf{E};\
+<p>Then, well-formedness of the require-term may be described in terms of finding such an <span class="math">\(M\in \mathsf{E}\)</span> such that we have <span class="math">\(\mathsf{require}(\mathsf{E};\
 x.SatDown(x))\in\mathsf{Set}\)</span>.</p>
 <h4 id="type-membership-not-checking">Type <em>Membership</em>, not <em>Checking</em></h4>
 <p>Crucially, note that I have used the <em>membership</em> judgement <span class="math">\(\Gamma\vdash M\in A\)</span> rather than the <em>type-checking</em> judgement <span class="math">\(\Gamma\vdash M:A\)</span>; this is a subtle aspect of type theory which is often lost in characterizations of theories like Computational Type Theory as having undecidable type checking, which is only vacuously true, given that such a theory does not use type checking at all: it instead has a semantical, synthetic membership judgement, which is not decidable in general.</p>
@@ -90,9 +90,9 @@ x.SatDown(x))\in\mathsf{Set}\)</span>.</p>
 \right] \leadsto \lambda(x. \left[\mathcal{D}\right])
 \]</span></p>
 <p>It should be evident that the extraction preserves membership; that is, if <span class="math">\(\mathcal{D}::(\Gamma\vdash M\in A)\)</span> we should also be able to come up with a derivation of <span class="math">\(\Gamma\vdash[\mathcal{D}]\in A\)</span>.</p>
-<p>And because the extracted terms do not contain <span class="math">\(\mathsf{require}\)</span> terms, they come equipped with a type-checking judgement <span class="math">\(\Gamma\vdash M:A\)</span> which coincides with a fragment of the semantic membership <span class="math">\(\Gamma\vdash M\in A\)</span>. More precisely, we can say that for any derivation <span class="math">\(\mathcal{D}::(\vdash M\in A)\)</span> we also have <span class="math">\(\vdash[\mathcal{D}]:A\)</span>. It may be possible to give a similar characterization to open terms considering the extractions of contexts themselves from context-wellformedness derivations, but we have not done this.</p>
+<p>And because the extracted terms do not contain <span class="math">\(\mathsf{require}\)</span> terms, they come equipped with a type-checking judgement <span class="math">\(\Gamma\vdash M:A\)</span> which coincides with a fragment of the semantic membership <span class="math">\(\Gamma\vdash M\in A\)</span>. More precisely, we can say that for any derivation <span class="math">\(\mathcal{D}::(\vdash M\in A)\)</span> we also have <span class="math">\(\vdash[\mathcal{D}]:A\)</span>. It may be possible to give a similar treatment to open terms considering the extractions of contexts themselves from context-wellformedness derivations, but we have not done this.</p>
 <h3 id="future-work">Future Work</h3>
-<p>We have characterized what it means for a sentence containing presuppositions to “be meaningful” in terms of a calculus with <span class="math">\(\mathsf{require}\)</span>-terms and a synthetic membership judgement, and then given the extraction of membership derivations into terms which may be checked against their type. What we have not done at all is propose a mechanism for constructing the membership derivations; this is a proof search problem, and I would like to explore the idea of focussing as a means of approximating the pragmatic axioms which select the most salient denotations.</p>]]></description>
+<p>We have defined what it means for a sentence containing presuppositions to “be meaningful” in terms of a calculus with <span class="math">\(\mathsf{require}\)</span>-terms and a synthetic membership judgement, and then given the extraction of membership derivations into terms which may be checked against their type. What we have not done at all is propose a mechanism for constructing the membership derivations; this is a proof search problem, and I would like to explore the idea of focussing as a means of approximating the pragmatic axioms which select the most salient denotations.</p>]]></description>
     <pubDate>Sat, 18 Oct 2014 00:00:00 UT</pubDate>
     <guid>http://www.jonmsterling.com//posts/2014-10-18-dependent-types-for-pragmatics.html</guid>
 </item>
