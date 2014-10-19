@@ -60,7 +60,7 @@ x.SatDown(x))\in\mathsf{Set}\)</span>.</p>
   p\in(x\in\mathsf{E})\times Man(x)\times WalkedIn(x)\vdash \mathsf{require}(\mathsf{E};\ x.SatDown(x)) \in \mathsf{Set}
 }\text{require}
 \]</span></p>
-<p>It should be possible then to extract the meaning that we decided upon by using the term in the first premise of the <em>require</em>-rule. In the general case:</p>
+<p>It should be possible then to extract the meaning that we decided upon by substituting the term in the first premise of the <em>require</em>-rule. In the general case:</p>
 <p><span class="math">\[
 \left [
 \dfrac{
@@ -74,7 +74,7 @@ x.SatDown(x))\in\mathsf{Set}\)</span>.</p>
   }
 }{
   \Gamma\vdash\mathsf{require}(A;\ x.N)\in B
-}\text{require} \right] \leadsto \left[\mathcal{D}\right]
+}\text{require} \right] \leadsto \left[\mathcal{E}\right]
 \]</span></p>
 <p>Then in the rest of the cases, we recursively extract derivations into terms which, by induction, do not contain <span class="math">\(\mathsf{require}\)</span>. For example, the introduction rule for the dependent product is extracted as a lambda abstraction:</p>
 <p><span class="math">\[
