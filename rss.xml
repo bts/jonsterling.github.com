@@ -10,7 +10,7 @@
         <item>
     <title>Dependent Types for Pragmatics</title>
     <link>http://www.jonmsterling.com//posts/2014-10-18-dependent-types-for-pragmatics.html</link>
-    <description><![CDATA[<p>I am pleased to make available the result of joint research with <a href="http://www.purelytheoretical.com">Darryl McAdams</a>, our new paper <a href="http://www.languagengine.co/learn-more/dtfp.pdf">Dependent Types for Pragmatics</a> which is currently under review for publication in the <em>Journal of Logic, Language and Information</em>. I’d like to discuss a few aspects of the work which I consider important, lending additional emphasis to foundational aspects of type theory which I fear were lost in the presentation, which was meant for a general Linguistics audience.</p>
+    <description><![CDATA[<p>I am pleased to make available the result of joint research with <a href="http://www.purelytheoretical.com">Darryl McAdams</a>, our new paper <a href="http://arxiv.org/abs/1410.4639">Dependent Types for Pragmatics</a> which is currently under review for publication in the <em>Journal of Logic, Language and Information</em>. I’d like to discuss a few aspects of the work which I consider important, lending additional emphasis to foundational aspects of type theory which I fear were lost in the presentation, which was meant for a general Linguistics audience.</p>
 <!--more-->
 
 <p>When you have a pair of utterances “A man walked in. He sat down.”, in order to assign them meaning, there must be a few things decided based upon context, not least of which is who is denoted by “he”. The first statement is interpreted as an existential,</p>
