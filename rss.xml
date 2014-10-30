@@ -86,7 +86,7 @@
 </blockquote>
 <p>Note that the term assignment under the judgement <span class="math">\(M\in A\)</span> is polymorphic and unannotated, unlike the formal proofs which contain all the type information necessary with them in order for the judgement <span class="math">\(M:A\)</span> to be analytic. It turns out that <span class="math">\(M\in A\)</span> is a synthetic judgement (it does not suffice to examine <span class="math">\(M\)</span> and <span class="math">\(A\)</span> to determine whether <span class="math">\(M\in A\)</span> is known).</p>
 <p>Now then, under the meaning explanations, we have a much simpler proof term that gets at the root of the computational content of this proposition:</p>
-<p><span class="math">\[\lambda(x. \bullet) \in \mathsf{Id}(\mathbb{U};\mathbf{1};\mathbf{0})\]</span></p>
+<p><span class="math">\[\lambda(x. \bullet) \in \mathsf{Id}(\mathbb{U};\mathbf{1};\mathbf{0})\supset\mathbf{0}\]</span></p>
 <p>How shall we verify that this judgement is evident? Well, let us put it into English:</p>
 <blockquote>
 <p><span class="math">\(\lambda(x. \bullet)\)</span> is in the form <span class="math">\(\lambda(x.b(x))\)</span> where we know <span class="math">\(b(x)\in \mathbf{0}\)</span> under the assumption <span class="math">\((x\in\mathsf{Id}(\mathbb{U};\mathbf{1};\mathbf{0}))\)</span>.</p>
