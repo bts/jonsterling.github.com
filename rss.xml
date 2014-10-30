@@ -114,6 +114,9 @@
 <h3 id="next-time">Next time</h3>
 <p>I’d like to note that there are a number of ways to make theories of formal proof, like Agda and Coq, less arduous to work with. Bidirectional type checking and elaboration can help a lot, and go a long way in making the proof term assignment resemble at a surface-level the unannotated computational realizers of Martin-Löf’s polymorphic, extensional type theory.</p>
 <p>Since this has already grown too lengthy, I shall continue next time with motivation for why someone would want to bother working at the meta-level in a theory with synthetic judgement, as you do in Nuprl, as opposed to working at the object-level of an analytic theory whose terms resemble derivations in the former, as you do in Agda.</p>
+<blockquote>
+<p>Thanks to Darryl McAdams, Darin Morrison and Bob Harper for conversations leading up to this post.</p>
+</blockquote>
 <h3 id="suggested-readings">Suggested Readings</h3>
 <ul>
 <li><p>Harper, Bob. <a href="https://existentialtype.wordpress.com/2013/07/10/constructive-mathematics-is-not-meta-mathematics/">Constructive Mathematics Is Not Metamathematics</a></p></li>
@@ -121,8 +124,7 @@
 <li><p>Martin-Löf, Per. <a href="https://github.com/michaelt/martin-lof/blob/master/pdfs/Martin-Lof-Analytic-and-Synthetic-Judgements-in-Type-Theory.pdf">Analytic and Synthetic Judgement in Type Theory</a>,</p></li>
 <li><p>Martin-Löf, Per. <a href="http://www.pps.univ-paris-diderot.fr/~saurin/Enseignement/LMFI/articles/Martin-Lof83.pdf">On the meanings of the logical constants and the justifications of the logical laws</a></p></li>
 <li><p>Nordström, Bengt; Petersson, Kent; Smith, Jan. <a href="http://www.cse.chalmers.se/research/group/logic/book/">Programming in Martin-Löf’s Type Theory</a></p></li>
-</ul>
-<p>Thanks to Darryl McAdams, Darin Morrison and Bob Harper for conversations leading up to this post.</p>]]></description>
+</ul>]]></description>
     <pubDate>Wed, 29 Oct 2014 00:00:00 UT</pubDate>
     <guid>http://www.jonmsterling.com//posts/2014-10-29-proof-term-assignments-and-intuitionistic-truth.html</guid>
 </item>
