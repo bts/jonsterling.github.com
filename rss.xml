@@ -63,7 +63,7 @@
 \dfrac{M:B\quad (x:A)}{\lambda(A;B;x.M):A\subset B}\subset\text{I}\\
 \dfrac{M:A\quad N:B}{\mathsf{pair}(A;B;M;N):A\mathop{\&amp;}B}\&amp;\text{I}
 \end{gather*}\]</span></p>
-<p>But now, this is starting to look sort of like a lambda calculus. It turns out that the proof theory of the logic is indeed monomorphic theory of types: these annotated lambda terms are simply another notation for the proof trees, nothing more.</p>
+<p>But now, this is starting to look sort of like a lambda calculus. It turns out that the proof theory of the logic is indeed a monomorphic theory of types: these annotated lambda terms are simply another notation for the proof trees, nothing more.</p>
 <h3 id="two-notions-of-propositions-as-types">two notions of propositions-as-types</h3>
 <p>This seems pretty straight-forward for many users of programming languages: but lost in the enthusiasm for the “Curry-Howard Correspondence” is the distinction between two very different notions of propositions-as-types: there is the <strong>syntactic</strong> correspondence, which we have observed above, and then the <strong>semantic</strong> correspondence, which is quite different.</p>
 <h4 id="syntactic-propositions-as-types">syntactic propositions-as-types</h4>
