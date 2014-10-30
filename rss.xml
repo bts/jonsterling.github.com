@@ -74,7 +74,7 @@
 \]</span></p>
 <p>This is a formal proof, but not the kind of proof that interests an intuitionist.</p>
 <h4 id="semantic-propositions-as-types">semantic propositions-as-types</h4>
-<p>Now, the latter notion of proof is captured by Martin-Löf’s meaning explanations and their metamathematical counterpart, the realizability interpretation. And whilst we asserted the validity of formal proofs with the judgement <span class="math">\(M:A\)</span> we will use the judgement <span class="math">\(M\in A\)</span> to assert that <span class="math">\(M\)</span> is an element of <span class="math">\(A\)</span>, or <span class="math">\(M\)</span> <em>realizes</em>; another notation is <span class="math">\(M\Vdash A\)</span>.</p>
+<p>Now, the latter notion of proof is captured by Martin-Löf’s meaning explanations and their metamathematical counterpart, the realizability interpretation. And whilst we asserted the validity of formal proofs with the judgement <span class="math">\(M:A\)</span> we will use the judgement <span class="math">\(M\in A\)</span> to assert that <span class="math">\(M\)</span> is an element of <span class="math">\(A\)</span>, or <span class="math">\(M\)</span> <em>realizes</em> <span class="math">\(A\)</span>; another notation is <span class="math">\(M\Vdash A\)</span>.</p>
 <p>The meaning of the judgement <span class="math">\(P\supset Q\
 \text{true}\)</span> is</p>
 <blockquote>
