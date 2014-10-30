@@ -21,8 +21,8 @@
 \dfrac{
   Q\ \text{true}\quad (P\ \text{true})
 }{
-  P\superset Q\ \text{true}
-}\superset\text{I}\\
+  P\supset Q\ \text{true}
+}\supset\text{I}\\
 %
 \dfrac{
   P\ \text{true}\quad Q\ \text{true}
@@ -30,7 +30,7 @@
   P\mathop{\&amp;}Q\ \text{true}
 }\&amp;\text{I}
 \end{gather*}\]</span></p>
-<p>Now then, for any <span class="math">\(A,B\)</span> we can prove the proposition <span class="math">\(A\superset(B\superset A\mathop{\&amp;}B)\)</span> in terms of these inference rules as follows:</p>
+<p>Now then, for any <span class="math">\(A,B\)</span> we can prove the proposition <span class="math">\(A\supset(B\supset A\mathop{\&amp;}B)\)</span> in terms of these inference rules as follows:</p>
 <p><span class="math">\[
 \dfrac{
   \dfrac{
@@ -42,25 +42,25 @@
       A\mathop{\&amp;}B\ \text{true}\quad(A\ \text{true}, B\ \text{true})
     }\mathop{\&amp;}\text{I}
   }{
-    B\superset A\mathop{\&amp;}B\ \text{true}\quad(A\ \text{true})
-  }\superset\text{I}
+    B\supset A\mathop{\&amp;}B\ \text{true}\quad(A\ \text{true})
+  }\supset\text{I}
 }{
-  A\superset(B\superset A\mathop{\&amp;}B)\ \text{true}
-}\superset\text{I}
+  A\supset(B\supset A\mathop{\&amp;}B)\ \text{true}
+}\supset\text{I}
 \]</span></p>
 <p>But it’s important to note that the premises and conclusions which occur between the horizontal lines are not essential to the structure of the proof: these are book-keeping. The data of the proof is the minimum whence we could derive this tree. So we could just as well write the proof like this:</p>
 <p><span class="math">\[
-\superset\text{I}(A;B\superset A\mathop{\&amp;}B; x. \superset\text{I}(B;A\mathop{\&amp;}B;y. \&amp;\text{I}(A;B;x;y)))
+\supset\text{I}(A;B\supset A\mathop{\&amp;}B; x. \supset\text{I}(B;A\mathop{\&amp;}B;y. \&amp;\text{I}(A;B;x;y)))
 \]</span></p>
 <p>And in fact, we could even construct a proof theory around our logic with one form of judgement:</p>
 <p><span class="math">\[M : P \quad(x_1:A_1,x_2:A_2,\dots,x_{n-1}:A_{n-1},x_n:A_n)\]</span></p>
 <p>And the meaning of this judgement is “<span class="math">\(M\)</span> is a proof of <span class="math">\(P\)</span> under the assumption that <span class="math">\(x_1\)</span> through <span class="math">\(x_n\)</span> are proofs of <span class="math">\(A_1\)</span> through <span class="math">\(A_n\)</span> respectively”. Here we will have rules like the following:</p>
 <p><span class="math">\[\begin{gather*}
-\dfrac{M:B\quad (x:A)}{\superset\text{I}(A;B;x.M):A\superset B}\superset\text{I}
+\dfrac{M:B\quad (x:A)}{\supset\text{I}(A;B;x.M):A\supset B}\supset\text{I}
 \end{gather*}\]</span></p>
-<p>Now, note that we are calling this rule <span class="math">\(\superset\text{I}\)</span>, but that symbol is overloaded to denote a few things: it is the name of the implication introduction rule in the original logic, and it is part of the syntax of this proof term of assignment. In order to avoid confusing ourselves, we could rename the proof term <span class="math">\(\superset\text{I}(A;B;x.M)\)</span> to <span class="math">\(\lambda(A;B;x.M)\)</span>, and <span class="math">\(\&amp;\text{I}(A;B;M;N)\)</span> to <span class="math">\(\mathsf{pair}(A;B;M;N)\)</span>. Then we’d have</p>
+<p>Now, note that we are calling this rule <span class="math">\(\supset\text{I}\)</span>, but that symbol is overloaded to denote a few things: it is the name of the implication introduction rule in the original logic, and it is part of the syntax of this proof term of assignment. In order to avoid confusing ourselves, we could rename the proof term <span class="math">\(\supset\text{I}(A;B;x.M)\)</span> to <span class="math">\(\lambda(A;B;x.M)\)</span>, and <span class="math">\(\&amp;\text{I}(A;B;M;N)\)</span> to <span class="math">\(\mathsf{pair}(A;B;M;N)\)</span>. Then we’d have</p>
 <p><span class="math">\[\begin{gather*}
-\dfrac{M:B\quad (x:A)}{\lambda(A;B;x.M):A\superset B}\superset\text{I}\\
+\dfrac{M:B\quad (x:A)}{\lambda(A;B;x.M):A\supset B}\supset\text{I}\\
 \dfrac{M:A\quad N:B}{\mathsf{pair}(A;B;M;N):A\mathop{\&amp;}B}\&amp;\text{I}
 \end{gather*}\]</span></p>
 <p>But now, this is starting to look sort of like a lambda calculus. It turns out that the proof theory of the logic is indeed a monomorphic theory of types: these annotated lambda terms are simply another notation for the proof trees, nothing more.</p>
@@ -70,17 +70,17 @@
 <p>The syntactic correspondence really holds quite on the nose: the formal proofs/derivations for the logic really are precisely the terms of this monomorphic lambda calculus, and the <span class="math">\(M:A\)</span> judgement captures the idea that in a formal system, you should be able to <em>decide</em> when <span class="math">\(M\)</span> is a proof of <span class="math">\(A\)</span> simply by examining <span class="math">\(M\)</span>; this is to say, the judgement <span class="math">\(M:A\)</span> is analytic.</p>
 <p>Now, on the other hand, in the conception of the Brouwer, “proof” was not about a sequence of well-formed formulas in a formal system. The kind of proof the intuitionist is interested in is not an algebraic game, but rather the characterization of the computations which may realize the truth of a proposition. For instance, let us consider the proof term assignment to intuitionistic predicate logic with equality and a universe, which is essentially Martin-Löf’s Intensional Type Theory; then the following judgement is evidently true:</p>
 <p><span class="math">\[
-\lambda(\mathsf{Id}(\mathbb{U};\mathbf{1};\mathbf{0}); \mathbf{0}; p.\mathsf{coerce}(\mathbb{1};\mathbb{0};p;\bullet)) : \mathsf{Id}(\mathbb{U};\mathbf{1};\mathbf{0})\superset\mathbf{0}
+\lambda(\mathsf{Id}(\mathbb{U};\mathbf{1};\mathbf{0}); \mathbf{0}; p.\mathsf{coerce}(\mathbb{1};\mathbb{0};p;\bullet)) : \mathsf{Id}(\mathbb{U};\mathbf{1};\mathbf{0})\supset\mathbf{0}
 \]</span></p>
 <p>This is a formal proof, but not the kind of proof that excites an intuitionist.</p>
 <h4 id="semantic-propositions-as-types">semantic propositions as types</h4>
 <p>Now, the latter notion of proof is captured by Martin-Löf’s meaning explanations and their metamathematical counterpart, the realizability interpretation. And whilst we asserted the validity of formal proofs with the judgement <span class="math">\(M:A\)</span> we will use the judgement <span class="math">\(M\in A\)</span> to assert that <span class="math">\(M\)</span> is an element of <span class="math">\(A\)</span>, or <span class="math">\(M\)</span> <em>realizes</em>; another notation is <span class="math">\(M\Vdash A\)</span>.</p>
-<p>The meaning of the judgement <span class="math">\(P\superset Q\
+<p>The meaning of the judgement <span class="math">\(P\supset Q\
 \text{true}\)</span> is</p>
 <blockquote>
 <p>“If you know the know that <span class="math">\(P\ \text{true}\)</span>, then you know that <span class="math">\(Q\ \text{true}\)</span>.”</p>
 </blockquote>
-<p>However, the meaning explanation for the judgement <span class="math">\(M\in A\superset B\)</span> is</p>
+<p>However, the meaning explanation for the judgement <span class="math">\(M\in A\supset B\)</span> is</p>
 <blockquote>
 <p>“<span class="math">\(M\)</span> is (evaluates to a term) in the form <span class="math">\(\lambda(x. b(x))\)</span> where we know <span class="math">\(b(x) \in B\)</span> under the assumption <span class="math">\((x\in A).\)</span></p>
 </blockquote>
@@ -102,10 +102,10 @@
 \dfrac{
   E(x)::b(x)\in B\quad (x\in x::A)
 }{
-  \superset\text{I}(A;B;x.E(x)) :: \lambda(x.b(x)) \in A\superset B
-}\superset\text{I}
+  \supset\text{I}(A;B;x.E(x)) :: \lambda(x.b(x)) \in A\supset B
+}\supset\text{I}
 \]</span></p>
-<p>But if you squint at the above rule, it has essentially the same structure as the proof term assignment <span class="math">\(\lambda(A;B;x.b(x)) : A\superset B\)</span>, and so it seems like we are back where we started. It is clear, then, that the term <span class="math">\(\lambda(\mathsf{Id}(\mathbb{U};\mathbf{1};\mathbf{0}); \mathbf{0}; p.\mathsf{coerce}(\mathbb{1};\mathbb{0};p;\bullet))\)</span> may be construed both as a formal proof that <span class="math">\(\mathsf{Id}(\mathbb{U};\mathbf{1};\mathbf{0})\superset\mathbf{0}\ \text{true}\)</span>, and also as a <em>derivation</em> or evidence that <span class="math">\(\lambda(x.\bullet) \in \mathsf{Id}(\mathbb{U};\mathbf{1};\mathbf{0})\superset\mathbf{0}\)</span>.</p>
+<p>But if you squint at the above rule, it has essentially the same structure as the proof term assignment <span class="math">\(\lambda(A;B;x.b(x)) : A\supset B\)</span>, and so it seems like we are back where we started. It is clear, then, that the term <span class="math">\(\lambda(\mathsf{Id}(\mathbb{U};\mathbf{1};\mathbf{0}); \mathbf{0}; p.\mathsf{coerce}(\mathbb{1};\mathbb{0};p;\bullet))\)</span> may be construed both as a formal proof that <span class="math">\(\mathsf{Id}(\mathbb{U};\mathbf{1};\mathbf{0})\supset\mathbf{0}\ \text{true}\)</span>, and also as a <em>derivation</em> or evidence that <span class="math">\(\lambda(x.\bullet) \in \mathsf{Id}(\mathbb{U};\mathbf{1};\mathbf{0})\supset\mathbf{0}\)</span>.</p>
 <h4 id="interlude-formal-proof-vs-proof-object">Interlude: formal proof vs proof object</h4>
 <p>Crucially, in case it is not yet apparant, we are dealing with two different kinds of proof. The one is “formal proof” or “derivation”, which corresponds to evidence of a judgement; and the other is “proof object”, which corresponds to proof of a proposition.</p>
 <p>Now, in theories that have a judgement like <span class="math">\(M\mathop\heartsuit A\)</span>, you can often construe the terms in the first position as “proof terms” and those in the second position as “propositions”. And indeed, in intensional theories like those of Coq or Agda, the judgement is <span class="math">\(M:A\)</span> and not <span class="math">\(M\in A\)</span>, and <span class="math">\(M\)</span> is construed as a proof of <span class="math">\(A\)</span>; and this is a reasonable characterization from the perspective of such theories.</p>
