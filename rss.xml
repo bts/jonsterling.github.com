@@ -78,7 +78,8 @@
 <p>The meaning of the judgement <span class="math">\(P\supset Q\
 \text{true}\)</span> is</p>
 <blockquote>
-<p>“If you know the know that <span class="math">\(P\ \text{true}\)</span>, then you know that <span class="math">\(Q\ \text{true}\)</span>.”</p>
+<p>“If you know that <span class="math">\(Q\ \text{true}\)</span> under the assumption that <span class="math">\(P\
+\text{true}\)</span>, then you know that <span class="math">\(P\supset Q\ \text{true}\)</span>.”</p>
 </blockquote>
 <p>However, the meaning explanation for the judgement <span class="math">\(M\in A\supset B\)</span> is</p>
 <blockquote>
