@@ -97,7 +97,7 @@
 </blockquote>
 <p>Then the evidence of this judgement is established as follows: <span class="math">\(\lambda(x.\bullet)\)</span> is indeed of the form <span class="math">\(\lambda(x.b(x))\)</span> by substituting <span class="math">\(\bullet\)</span> for <span class="math">\(b(x)\)</span>; moreover, if we know that <span class="math">\(x\in\mathsf{Id}(\mathbb{U};\mathbf{1};\mathbf{0})\)</span>, then we know that <span class="math">\(\mathbf{1}=\mathbf{0}\in\mathbb{U}\)</span>, and thence for any <span class="math">\(M\)</span> such that <span class="math">\(M\in\mathbf{1}\)</span>, then we also know <span class="math">\(M\in\mathbf{0}\)</span>; we know that <span class="math">\(\bullet\in\mathbf{1}\)</span>, and therefore we know <span class="math">\(\bullet\in\mathbf{0}\)</span>.</p>
 <h3 id="one-propositions-proof-is-another-proofs-derivation">One proposition’s proof is another proof’s derivation</h3>
-<p>Now, the evidence I gave above for the judgement <span class="math">\(\lambda(x.\bullet)\in\mathsf{Id}(\mathbb{U};\mathbf{1}\mathbf{0})\)</span> may look like informal reasoning, but it can also be characterized as a derivation in the theory. And if it can be characterized as a derivation, then we can have a proof term assignment for it:</p>
+<p>Now, the evidence I gave above for the judgement <span class="math">\(\lambda(x.\bullet)\in\mathsf{Id}(\mathbb{U};\mathbf{1};\mathbf{0})\)</span> may look like informal reasoning, but it can also be characterized as a derivation in the theory. And if it can be characterized as a derivation, then we can have a proof term assignment for it:</p>
 <p><span class="math">\[
 \dfrac{
   E(x)::b(x)\in B\quad (x\in x::A)
