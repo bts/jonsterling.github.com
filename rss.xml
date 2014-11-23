@@ -85,7 +85,7 @@
   \ulcorner S \urcorner &amp;: &amp;\mathbb{T} &amp;[S : \mathbf{1}\to\mathsf{T}]\\
   \ulcorner S\urcorner^\circ &amp;\equiv &amp;\mathsf{T}
 \end{array}\]</span></p>
-<p>Note there is no longer a syntactic criterion that something is a type. However, in a sufficiently advanced theory, syntactic criteria for <em>term</em> well-formedness is infeasible anyway, and is necessarily replaced with the notion of inhabitance in a universe. We will give, then, the rules for typehood as morphisms in the category <span class="math">\(\mathbb{D}\)</span>: <span class="math">\[\begin{array}{ccll}
+<p>Note there is no longer a syntactic criterion that something is a type. However, in a sufficiently advanced theory, syntactic criteria for well-formedness is infeasible anyway, and is necessarily replaced with the notion of inhabitance in a universe. We will give, then, the rules for typehood as morphisms in the category <span class="math">\(\mathbb{D}\)</span>: <span class="math">\[\begin{array}{ccll}
   \widehat{\mathsf{set}}_n &amp;: &amp;\mathbf{1}\to \ulcorner\mathsf{set}_{n+1}\urcorner &amp;[n\in\mathbb{n}]\\
   \widehat{\mathsf{set}}_n^\circ &amp;\equiv &amp;\mathsf{set}_n\\[6pt]
   \widehat{\mathsf{cum}}_n &amp;: &amp;\ulcorner\mathsf{set}_n\urcorner\to\ulcorner\mathsf{set}_{n+1}\urcorner &amp;[n\in\mathbb{n}]\\
