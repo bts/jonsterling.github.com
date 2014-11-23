@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="readability-verification" content="cG3MqZcEVveKZ6mnEFkePAL3Ug79Jxxp5Fn27CM7" />
+<title>JS ⊢ Category Theory in Informal Computational Type Theory</title>
+<link rel="stylesheet" type="text/css" href="../css/screen.css" />
+<link rel="stylesheet" type="text/css" href="../css/syntax.css" />
+<link rel="stylesheet" type="text/css" href="../css/coqdoc.css" />
+<style type="text/css">
+    @import url(http://nmashton.ca/css/gloss-0.0.1.css);
+</style>
+<script type="text/javascript" src="http://code.jquery.com/jquery-1.8.3.min.js"></script>
+<script type="text/javascript" src="http://nmashton.ca/js/gloss-0.0.1.js"></script>
+<link rel="alternate" type="application/rss+xml" title="Jonathan Sterling" href="../rss.xml" />
+
+
+<!--[if IE]>
+  <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+<!--[if lte IE 7]>
+  <script src="js/IE8.js" type="text/javascript"></script><![endif]-->
+<!--[if lt IE 7]>
+<link rel="stylesheet" type="text/css" media="all" href="css/ie6.css"/><![endif]-->
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+MathJax.Hub.Config({
+  showMathMenu: false,
+  showProcessingMessages: false,
+  messageStyle: "none",
+  'HTML-CSS': {
+    availableFonts: [],
+    webFont: 'TeX',
+  },
+  TeX: {
+    Macros: {
+      gk: ["\\style{font-family:Junicode!important; font-size:1.3em;}{\\text{#1}}", 1]
+    }
+  }
+});
+</script>
+</head>
+<body>
+
+<header>
+<h1><a href="../index.html"><span class="title">Category Theory in Informal Computational Type Theory.</span></a></h1>
+</header>
+
+<section class="post">
+<article><p>I would like to demonstrate the extent to which a polymorphic, extensional type theory provides an ideal metalanguage for rigorously, but informally, developing the basics of category theory.</p>
+<!--more-->
+
+<h3 id="categories">Categories</h3>
+<p>Let us start with a few definitions, first the data of a category.</p>
+<p><span class="math">\[\begin{align*}
+\mathsf{CategorySig}
+  &amp;\triangleq
+  \{ \mathsf{car} : \mathbb{U};\\
+  &amp;\quad\;\;\ \mathsf{hom} : \mathsf{car}\times\mathsf{car}\to\mathbb{U};\\
+  &amp;\quad\;\;\ \mathsf{id} : \color{gray}{\Pi(X:\mathsf{car})}\;\mathsf{hom}(A,A);\\
+  &amp;\quad\;\;\ \mathsf{comp}: \color{gray}{\Pi(X,Y,Z:\mathsf{car})}\;\mathsf{hom}(\langle Y,Z\rangle)\times\mathsf{hom}(\langle X,Y\rangle)\to \mathsf{hom}(\langle X,Z\rangle)
+  \}\\
+\end{align*}\]</span></p>
+<p>We informally give some notation for categories: <span class="math">\[\begin{align*}
+|\mathbb{C}| &amp;\triangleq \mathbb{C}.\mathsf{car}\\
+\mathbb{C}[X,Y] &amp;\triangleq \mathbb{C}.\mathsf{hom}(\langle X,Y\rangle)\\
+\mathbb{1}_X &amp;\triangleq \mathbb{C}.\mathsf{id}(X)\quad \color{gray}{[X \in |\mathbb{C}|]}\\
+f\circ g &amp;\triangleq \mathbb{C}.\mathsf{comp}(X,Y,Z,\langle f,g\rangle)\quad\color{gray}{[X,Y,Z \in |\mathbb{C}|; f\in \mathbb{C}[Y,Z]; g\in \mathbb{C}[X,Y]]}
+\end{align*}\]</span></p>
+<p>The laws of a category are as follows:</p>
+<p><span class="math">\[\begin{align*}
+\mathsf{IsCategory}(\mathbb{C})
+  &amp;\triangleq \{
+    \mathsf{idl}: \color{gray}{\Pi(X,Y:|\mathbb{C}|)\;\Pi(f:\mathbb{C}[X,Y])}\;f\circ\mathbf{1}_X =_{\mathbb{C}[X,Y]} f;\\
+  &amp;\quad\;\;\ \mathsf{idr} : \color{gray}{\Pi(X,Y:|\mathbb{C}|)\; \Pi(f:\mathbb{C}[X,Y])}\; \mathbf{1}_Y\circ f =_{\mathbb{C}[X,Y]} f;\\
+  &amp;\quad\;\;\ \mathsf{assoc} : \color{gray}{\Pi(U,V,W,X:|\mathbb{C}|)\;\Pi(f:\mathbb{C}[W,X],g:\mathbb{C}[V,W],h:\mathbb{C}[U,V])}\;f\circ g\circ h =_{\mathbb{C}[U,X]} f\circ(g\circ h)
+\}
+\end{align*}\]</span></p>
+<p>Finally, we give categories as a <em>subset type</em>. <span class="math">\[\begin{align*}
+\mathsf{Category}
+  &amp;\triangleq \{\mathbb{C}:\mathsf{CategorySig} \mid \mathsf{IsCategory}(\mathbb{C})\}
+\end{align*}\]</span></p>
+<p>This is different from a <em>dependent sum</em> in that the canonical form of a term in type <span class="math">\(\mathsf{Category}\)</span> is a record <span class="math">\(\{\mathsf{car}:=C;\mathsf{hom}:=H;\mathsf{id}:=I;\mathsf{comp}:=O\}\)</span>; the proof that this record does indeed give a category is left as part of the argument that the term inhabits the type <span class="math">\(\mathsf{Category}\)</span>. This kind of abstraction is essential to doing mathematics, and is notably missing in intensional, monomorphic type theory.</p>
+<p>Because we are doing “informal type theory”, then we must be explicit about our terms, but not necessarily about our derivations. These can be left to informal argument; then the presence of subset types greatly economizes the presentation, since truths which are evident to a mathematician through a simple argument need not appear in the terms which we must inevitably give.</p>
+<h4 id="the-category-of-sets">The Category of Sets</h4>
+<p>For instance, consider the category formed by the universe <span class="math">\(\mathbb{U}\)</span>, which we witness by the following term: <span class="math">\[\mathbf{U} \triangleq \{ \mathsf{car}:=\mathbb{U};\mathsf{hom}:=\lambda\langle X,Y\rangle. X\to Y;\mathsf{id}:=\lambda X,x.x; \mathsf{comp}:=\lambda X,Y,Z,f,g,x. f(g(x)) \}\]</span></p>
+<p>Then, we must prove the following metatheorem: <span class="math">\(\vdash\mathbf{U}\in\mathsf{Category}\)</span>; by unfolding the definition of <span class="math">\(\mathsf{Category}\)</span>, it remains only to show <span class="math">\(\vdash\mathsf{IsCategory}(\mathbf{U})\;\mathrm{true}\)</span>, which amounts to showing the truth of the three laws, which all follow immediately by reflexivity.</p>
+<h4 id="the-opposite-category">The Opposite Category</h4>
+<p>Consider the opposite category which is got by flipping the arrows of an existing category: <span class="math">\[\begin{align*}
+\mathbb{C}^\mathrm{op}
+  &amp;\triangleq \{\mathsf{car} := |\mathbb{C}|; \mathsf{hom} := \lambda\langle X,Y\rangle. \mathbb{C}[Y,X]; \mathsf{id} := \mathbb{C}.\mathsf{id}; \mathsf{comp} := \lambda X,Y,Z,f,g. \mathbb{C}.\mathsf{comp}(Z,Y,X,g,f)\}
+\end{align*}\]</span></p>
+<p>We must prove that <span class="math">\(\mathbb{C}\in\mathsf{Category}\vdash \mathbb{C}^\mathrm{op}\in\mathsf{Category}\)</span>, but this is immediate by induction on <span class="math">\(\mathbb{C}\)</span>.</p>
+<h3 id="functors">Functors</h3>
+<p>We give the definition of a functor in the same way, first its data and then its laws. <span class="math">\[\begin{align*}
+\mathsf{FunctorSig}
+  &amp;\triangleq
+  \{ \mathsf{dom} : \mathsf{Category};\\
+  &amp;\quad\,\ \ \ \mathsf{cod} : \mathsf{Category};\\
+  &amp;\quad\,\ \ \ \mathsf{apply} : |\mathsf{dom}|\to|\mathsf{cod}|;\\
+  &amp;\quad\,\ \ \ \mathsf{map} : \color{gray}{\Pi(X,Y:|\mathsf{dom}|)\; \Pi(f:\mathsf{dom}[X,Y])}\; \mathsf{cod}[\mathsf{apply}(X),\mathsf{apply}(Y)] \}\\
+\end{align*}\]</span></p>
+<p>For convenience, the following notation is defined: <span class="math">\[\begin{align*}
+\mathcal{F}(X) &amp;\triangleq \mathcal{F}.\mathsf{apply}(X)\quad [X\in \mathcal{F}.\mathsf{dom}]\\
+\mathcal{F}(f) &amp;\triangleq \mathcal{F}.\mathsf{map}(X,Y,f)\quad [f\in \mathcal{F}.\mathsf{dom}(X,Y)]
+\end{align*}\]</span></p>
+<p>The laws of a functor are as follows: <span class="math">\[\begin{align*}
+\mathsf{IsFunctor}(\mathcal{F})
+  &amp;\triangleq \{\mathsf{id}: \color{gray}{\Pi(X:|\mathcal{F}.\mathsf{dom}|)}\;\mathcal{F}(\mathbf{1}_X) =_{|\mathcal{F}.\mathsf{cod}|} \mathbf{1}_{\mathcal{F}(X)};\\
+  &amp;\quad\,\ \ \ \mathsf{comp}: \color{gray}{\Pi(X,Y,Z:|\mathcal{F}.\mathsf{dom}|)\;\Pi(f:\mathcal{F}.\mathsf{dom}[Y,Z],g:\mathcal{F}.\mathsf{dom}[X,Y])}\; \mathcal{F}(f\circ g) =_{\mathcal{F}.\mathsf{cod}[\mathcal{F}(X),\mathcal{F}(Z)]} \mathcal{F}(f)\circ \mathcal{F}(g) \}\\[6pt]
+\mathsf{Functor} &amp;\triangleq \{ \mathcal{F} : \mathsf{FunctorSig} \mid \mathsf{IsFunctor}(\mathcal{F}) \}
+\end{align*}\]</span></p>
+<p>Note that we have defined the concept of  not as a family of records over a pair of categories <span class="math">\(\mathsf{Category}\times\mathsf{Category}\to\mathbb{U}\)</span>, but rather by fibration. We can recover the notion of a functor between two particular categories as a defined notion: <span class="math">\[\begin{align*}
+\mathbb{C}\to\mathbb{D}
+  &amp;\triangleq
+  \{ \mathcal{F} : \mathsf{Functor} \mid (\mathcal{F}.\mathsf{dom} =_\mathsf{Category} \mathbb{C}) \times (\mathcal{F}.\mathsf{cod} =_\mathsf{Category} \mathbb{D}) \} \quad [ \mathbb{C},\mathbb{D}\in\mathsf{Category} ]
+\end{align*}\]</span></p>
+<p>Note that it is only because we use an extensional type theory as our metalanguage that we can do this without losing abstraction. In intensional type theory, this definition is possible as a dependent sum, but the result becomes very difficult to use, and one is typically forced eventually to define <span class="math">\(\mathsf{Functor}\)</span> as a family of sets. In our framework, we can choose whichever approach is the most sensible; for module-level abstractions like <span class="math">\(\mathsf{Functor}\)</span> I prefer the fibrational definition with sharing constraints, but for certain small things like <span class="math">\(\mathsf{hom}\)</span>, it can make sense to define them as families.</p>
+<h4 id="natural-transformations">Natural Transformations</h4>
+<p>A natural transformation between two functors is as follows: <span class="math">\[
+\mathcal{F}\to \mathcal{G}
+  \triangleq
+  \{\eta : \color{gray}{\Pi(X:\mathbb{C})}\;\mathbb{D}[\mathcal{F}(X), \mathcal{G}(X)]
+  \mid \color{gray}{\Pi(X,Y:|\mathbb{C}|)\;\Pi(f:\mathbb{C}[X,Y])}\;\eta_Y\circ \mathcal{F}(f) = \mathcal{G}(f)\circ\eta_X
+  \}\\
+[\mathbb{C},\mathbb{D}\in\mathsf{Category}; \mathcal{F},\mathcal{G}\in\mathbb{C}\to\mathbb{D}]
+\]</span> with the notation <span class="math">\[
+\eta_X \triangleq \eta(X)
+\]</span></p>
+<h4 id="functor-categories">Functor Categories</h4>
+<p>Between any two categories, the set of functors is also a category: <span class="math">\[\begin{align*}
+\mathbb{D}^\mathbb{C}
+  &amp;\triangleq
+  \{ \mathsf{car} := \mathbb{C}\to\mathbb{D}; \mathsf{hom} := \lambda\langle\mathcal{F},\mathcal{G}\rangle.\mathcal{F}\to\mathcal{G}; \mathsf{id} := \lambda\mathcal{F},X.
+  \}
+\end{align*}\]</span></p>
+<p>We can define type-valued presheaves as functors from an opposite category to <span class="math">\(\mathbf{U}\)</span>: <span class="math">\[\begin{align*}
+\mathsf{Presheaf}(\mathbb{C})
+  &amp;\triangleq \mathbb{C}^\mathrm{op}\to\mathbf{U}\\
+\mathbf{Psh}(\mathbb{C}) &amp;\triangleq \widehat{\mathbb{C}} \triangleq \mathbf{U}^{\mathbb{C}^\mathrm{op}}
+\end{align*}\]</span></p>
+<h3 id="natural-transformations-1">Natural Transformations</h3>
+<p>%TODO define natural transformations %TODO prove the yoneda lemma</p></article>
+
+
+<script src="//static.getclicky.com/js" type="text/javascript"></script>
+<script type="text/javascript">try{ clicky.init(66625087);
+    }catch(e){}</script>
+<noscript><p><img alt="Clicky" width="1" height="1" src="//in.getclicky.com/66625087ns.gif" /></p></noscript>
+
+<a rel="me" href="http://twitter.com/jonsterling"></a>
+<a rel="me" href="https://alpha.app.net/jonsterling"></a>
+</body>
+</html>
+

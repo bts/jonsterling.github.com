@@ -6,8 +6,119 @@
         <description><![CDATA[Jon Sterling writes about type theory and philology]]></description>
         <atom:link href="http://www.jonmsterling.com//rss.xml" rel="self"
                    type="application/rss+xml" />
-        <lastBuildDate>Wed, 29 Oct 2014 00:00:00 UT</lastBuildDate>
+        <lastBuildDate>Sat, 22 Nov 2014 00:00:00 UT</lastBuildDate>
         <item>
+    <title>Computational Type Theories as Refinement Systems</title>
+    <link>http://www.jonmsterling.com//posts/2014-11-22-computational-type-theories-as-refinement-systems.html</link>
+    <description><![CDATA[<p>The intrinsic and extrinsic views on types are unified by considering two categories: one of <em>syntactic</em> types and terms, and another of <em>semantic</em> types and derivations, and then a forgetful functor from the latter to the former. Following Melliès and Zeilberger’s <a href="http://noamz.org/papers/funts.pdf">Functors are Type Refinement Systems</a>, we might attempt to provide a similar characterization for computational type theories with universes, but there are some wrinkles; I attempt to provide a partial resolution to these here.</p>
+<!--more-->
+
+<h3 id="a-simple-refinement-system-without-universes">A simple refinement system without universes</h3>
+<p>First, let’s construct a refinement system for a simple language without universes. Concretely, we start with a syntactic category <span class="math">\(\mathbb{T}\)</span> which is cartesian closed, and additionally has a single base object <span class="math">\(\mathsf{T}:|\mathbb{T}|\)</span>. The objects of this category are essentially Martin-Löf’s arities, though it would certainly be possible to have a richer type structure at the syntactic level.</p>
+<p>Then the term syntax for a lambda calculus with sums and a unit type is given as morphisms in <span class="math">\(\mathbb{T}\)</span>: <span class="math">\[\begin{array}{ccl}
+  \lambda &amp;: &amp;\mathsf{T}^\mathsf{T} \to \mathsf{T}\\
+  \mathsf{app} &amp;: &amp;\mathsf{T} \to \mathsf{T}^\mathsf{T}\\
+  \mathsf{inl} &amp;: &amp;\mathsf{T} \to \mathsf{T}\\
+  \mathsf{inr} &amp;: &amp;\mathsf{T} \to \mathsf{T}\\
+  \mathsf{decide} &amp;: &amp;\mathsf{T}\times\mathsf{T}^\mathsf{T}\times\mathsf{T}^\mathsf{T}\to \mathsf{T}\\
+  \bullet &amp;: &amp;\mathbf{1} \to \mathsf{T}
+\end{array}\]</span></p>
+<p>Next, by simultaneous induction, we define the objects of a cartesian closed category <span class="math">\(\mathbb{D}\)</span>, and a functor <span class="math">\(-^\circ : \mathbb{D}\to\mathbb{T}\)</span>, using the notation <span class="math">\(S\sqsubset A \triangleq \{S:|\mathbb{D}|, A:|\mathbb{T}| \mid S^\circ \equiv A\}\)</span> (read “<span class="math">\(S\)</span> refines <span class="math">\(A\)</span>”): <span class="math">\[\begin{gather}
+  \frac{}{\mathsf{unit}\sqsubset \mathsf{T}}
+  \qquad
+  \frac{
+    S\sqsubset \mathsf{T} \quad T\sqsubset \mathsf{T}
+  }{
+    \mathsf{fn}(S;T) \sqsubset \mathsf{T}
+  }
+  \qquad
+  \frac{
+    S\sqsubset\mathsf{T} \quad T\sqsubset\mathsf{T}
+  }{
+    S+T\sqsubset\mathsf{T}
+  }
+\end{gather}\]</span></p>
+<p>The objects of <span class="math">\(\mathbb{D}\)</span> as defined above are then the semantic types, or refinement types, of our system. The morphisms, defined below, are the formal proofs, or derivations: <span class="math">\[\begin{array}{ccl}
+  \widehat\lambda &amp;: &amp;T^S\to \mathsf{fn}(S;T) &amp;[T,S\sqsubset\mathsf{T}]\\
+  \widehat{\mathsf{app}} &amp;: &amp;\mathsf{fn}(S;T)\to T^S &amp;[T,S\sqsubset\mathsf{T}]\\
+  \widehat{\mathsf{inl}} &amp;: &amp;S\to S+T &amp;[T,S\sqsubset\mathsf{T}]\\
+  \widehat{\mathsf{inr}} &amp;: &amp;T\to S+T &amp;[T,S\sqsubset\mathsf{T}]\\
+  \widehat{\mathsf{decide}} &amp;: &amp;(S+T)\times U^S\times U^T\to U &amp;[S,T,U\sqsubset\mathsf{T}]\\
+  \widehat{\bullet} &amp;: &amp;\mathbb{1}\to\mathsf{unit}
+\end{array}\]</span> such that <span class="math">\[\begin{align}
+  (S\times T)^\circ &amp;\equiv S^\circ \times T^\circ\\
+  (S^T)^\circ &amp;\equiv (S^\circ)^{T^\circ}\\
+  \widehat\lambda^\circ &amp;\equiv \lambda\\
+  \widehat{\mathsf{app}}^\circ &amp;\equiv \mathsf{app}\\
+  \widehat{\mathsf{inl}}^\circ &amp;\equiv \mathsf{inl}\\
+  \widehat{\mathsf{inr}}^\circ &amp;\equiv \mathsf{inr}\\
+  \widehat{\mathsf{decide}}^\circ &amp;\equiv \mathsf{decide}\\
+  \widehat{\bullet}^\circ &amp;\equiv \bullet
+\end{align}\]</span></p>
+<p>The presentation we have given corresponds to having a grammar for well-scoped terms (the category <span class="math">\(\mathbb{T}\)</span>) and then refining it with a grammar for well-typedness (the category <span class="math">\(\mathbb{D}\)</span>); the functor <span class="math">\(-^\circ\)</span> is a fibration, which projects well-scoped terms from the well-typed terms (derivations, in Reynold’s concept) which lie over them.</p>
+<h4 id="non-trivial-refinements">Non-trivial refinements</h4>
+<p>So far, all the “refinement types” we have given are not very interesting, since every non-identity morphism in <span class="math">\(\mathbb{D}\)</span> lies over a non-identity morphism in <span class="math">\(\mathbb{T}\)</span>; that is, there is no real structure in the category of derivations which is not already known in the category of terms. We can rectify this by adding objects and morphisms for union types to the theory: <span class="math">\[\frac{
+  S\sqsubset\mathsf{T} \quad T\sqsubset\mathsf{T}
+}{
+  S\cup T\sqsubset\mathsf{T}
+}\]</span></p>
+<p>Then we want to express the idea that types <span class="math">\(S,T\sqsubset\mathsf{T}\)</span> are subtypes of <span class="math">\(S\cup T\)</span>; we can do this by asserting <span class="math">\[\begin{array}{cl}
+  S\leq S\cup T &amp;[S,T\sqsubset\mathsf{T}]\\
+  T\leq S\cup T &amp;[S,T\sqsubset\mathsf{T}]
+\end{array}\]</span> These assertions, along with the rules for subtyping in a refinement system, guarantee the presence of the following injections: <span class="math">\[\begin{array}{ccl}
+  \widehat{\mathsf{uinl}} &amp;: &amp;S\to S\cup T &amp; [S,T\sqsubset \mathsf{T}]\\
+  \widehat{\mathsf{uinr}} &amp;: &amp;T\to S\cup T &amp; [S,T\sqsubset \mathsf{T}]
+\end{array}\]</span> such that <span class="math">\[
+  \widehat{\mathsf{uinl}}^\circ \equiv \widehat{\mathsf{uinr}}^\circ \equiv \mathbf{id}_\mathsf{T}
+\]</span> This succinctly expresses the fact that the terms of a union are just the terms of either the left or the right side; there is no constructor for union witnesses in the term language.</p>
+<p>Finally, we add a scheme for elimination morphisms: <span class="math">\[\begin{array}{ccl}
+\widehat{\mathsf{utest}}(l;r) &amp;: &amp;S\cup T\to U &amp;[l : U^S, r:U^T, l^\circ = r^\circ]
+\end{array}\]</span></p>
+<h3 id="adding-universes">Adding universes</h3>
+<p>In the previous section, we defined a refinement type system without universes. Why is adding universes difficult? Remember that in our system so far, types have been considered only as objects in the theory <span class="math">\(\mathbb{D}\)</span>, and not as terms which may be computed with; but what if we wished to define the type of finite sets by recursion on the natural numbers? In this case, we will have to have terms for every type as morphisms in <span class="math">\(\mathbb{T}\)</span>: <span class="math">\[\begin{array}{ccll}
+  \mathsf{set}_n &amp;: &amp;\mathbf{1}\to\mathsf{T}&amp;[n\in \mathbb{N}]\\
+  \mathsf{unit} &amp;: &amp;\mathbf{1}\to\mathsf{T}\\
+  \mathsf{fn} &amp;: &amp;\mathsf{T}\times\mathsf{T}\to\mathsf{T}\\
+  \mathsf{plus} &amp;: &amp;\mathsf{T}\times\mathsf{T}\to\mathsf{T}\\
+\end{array}\]</span></p>
+<p>What will the objects of <span class="math">\(\mathbb{D}\)</span> be then, now that we have already defined the types as morphisms in <span class="math">\(\mathbb{T}\)</span>? We can replace all of our previous type objects with a single injection, <span class="math">\[\begin{array}{ccll}
+  \ulcorner S \urcorner &amp;: &amp;\mathbb{T} &amp;[S : \mathbf{1}\to\mathsf{T}]\\
+  \ulcorner S\urcorner^\circ &amp;\equiv &amp;\mathsf{T}
+\end{array}\]</span></p>
+<p>Note there is no longer a syntactic criterion that something is a type. However, in a sufficiently advanced theory, syntactic criteria for <em>term</em> well-formedness is infeasible anyway, and is necessarily replaced with the notion of inhabitance in a universe. We will give, then, the rules for typehood as morphisms in the category <span class="math">\(\mathbb{D}\)</span>: <span class="math">\[\begin{array}{ccll}
+  \widehat{\mathsf{set}}_n &amp;: &amp;\mathbf{1}\to \ulcorner\mathsf{set}_{n+1}\urcorner &amp;[n\in\mathbb{n}]\\
+  \widehat{\mathsf{set}}_n^\circ &amp;\equiv &amp;\mathsf{set}_n\\[6pt]
+  \widehat{\mathsf{cum}}_n &amp;: &amp;\ulcorner\mathsf{set}_n\urcorner\to\ulcorner\mathsf{set}_{n+1}\urcorner &amp;[n\in\mathbb{n}]\\
+  \widehat{\mathsf{cum}}_n^\circ &amp;\equiv &amp;\mathbf{id}_\mathsf{t}\\[6pt]
+  \widehat{\mathsf{unit}} &amp;: &amp;\mathbf{1}\to\ulcorner\mathsf{set}_0\urcorner\\
+  \widehat{\mathsf{unit}}^\circ &amp;\equiv &amp;\mathsf{unit}\\[6pt]
+  \widehat{\mathsf{fn}}_n &amp;: &amp;\ulcorner\mathsf{set}_n\urcorner\times\ulcorner\mathsf{set}_n\urcorner\to\ulcorner\mathsf{set}_n\urcorner &amp;[n\in\mathbb{n}]\\
+  \widehat{\mathsf{fn}}_n^\circ &amp;\equiv &amp;\mathsf{fn}\\[6pt]
+  \widehat{\mathsf{plus}}_n &amp;: &amp;\ulcorner\mathsf{set}_n\urcorner\times\ulcorner\mathsf{set}_n\urcorner\to\ulcorner\mathsf{set}_n\urcorner &amp;[n\in\mathbb{n}]\\
+  \widehat{\mathsf{plus}}_n^\circ &amp;\equiv &amp;\mathsf{plus}\\[6pt]
+\end{array}\]</span></p>
+<p>Then the rules for term-hood are given in terms of the universe: <span class="math">\[\begin{array}{ccll}
+  \widehat{\lambda} &amp;: &amp;T^S\to \ulcorner\mathsf{fn}(S^\circ;T^\circ)\urcorner &amp;[S,T\sqsubset\mathsf{T}]\\
+  \widehat{\lambda}^\circ &amp;\equiv &amp;\lambda\\[6pt]
+  \widehat{\mathsf{app}} &amp;: &amp;\ulcorner\mathsf{fn}(S^\circ;T^\circ)\urcorner\to T^S &amp;[S,T\sqsubset\mathsf{T}]\\
+  \widehat{\mathsf{app}}^\circ &amp;\equiv &amp;\mathsf{app}\\[6pt]
+  \widehat{\mathsf{inl}} &amp;: &amp;S\to \ulcorner\mathsf{plus}(S^\circ;T^\circ)\urcorner &amp;[S,T\sqsubset\mathsf{T}]\\
+  \widehat{\mathsf{inl}}^\circ &amp;\equiv &amp;\mathsf{inl}\\[6pt]
+  \widehat{\mathsf{inr}} &amp;: &amp;T\to \ulcorner\mathsf{plus}(S^\circ;T^\circ)\urcorner &amp;[S,T\sqsubset\mathsf{T}]\\
+  \widehat{\mathsf{inr}}^\circ &amp;\equiv &amp;\mathsf{inr}\\[6pt]
+  \widehat{\mathsf{decide}} &amp;: &amp;\ulcorner\mathsf{plus}(S^\circ;T^\circ)\urcorner\times U^S\times U^T\to U &amp;[S,T,U\sqsubset\mathsf{T}]\\
+  \widehat{\mathsf{decide}}^\circ &amp;\equiv &amp;\mathsf{decide}\\[6pt]
+  \widehat{\bullet} &amp;: &amp;\mathbf{1}\to\ulcorner\mathsf{unit}\urcorner\\
+  \widehat{\bullet}^\circ &amp;\equiv &amp;\bullet
+\end{array}\]</span></p>
+<h3 id="further-developments">Further Developments</h3>
+<p>In order to account for the equivalence of proofs, we will need to base our theories in E-categories, that is, categories which have a setoid of morphisms instead of a set; then we can identify those terms which are definitionally equivalent. The <em>typical</em>/extensional equality of a type theory must be itself given inside as a type.</p>
+<p>To accomodate more advanced theories, we will also likely need to use categories-with-families instead of plain cartesian closed categories; this would have permitted us, for instance, to give the union elimination rule <span class="math">\(\widehat{\mathsf{utest}}\)</span> as a single term, rather than as a rule scheme; it is also essential to the modelling of dependent types.</p>
+<p>In a future development with dependent types, it will become necessary to place more information in the derivations/proofs, which may be forgotten by the functor <span class="math">\(-^\circ\)</span>; for instance, we will have to include evidence that <span class="math">\(T\)</span> is a type which is functional over <span class="math">\(x:S\)</span> when proving propositions <span class="math">\(Q_{(x:S)}T\)</span> for <span class="math">\(Q\in\{\Pi,\Sigma,\mathrm{W},\cap,\cup\}\)</span>.</p>]]></description>
+    <pubDate>Sat, 22 Nov 2014 00:00:00 UT</pubDate>
+    <guid>http://www.jonmsterling.com//posts/2014-11-22-computational-type-theories-as-refinement-systems.html</guid>
+</item>
+<item>
     <title>Proof Term Assignments and Intuitionistic Truth</title>
     <link>http://www.jonmsterling.com//posts/2014-10-29-proof-term-assignments-and-intuitionistic-truth.html</link>
     <description><![CDATA[<p>In 1994, Per Martin-Löf wrote <a href="https://github.com/michaelt/martin-lof/blob/master/pdfs/Martin-Lof-Analytic-and-Synthetic-Judgements-in-Type-Theory.pdf">Analytic and Synthetic Judgement in Type Theory</a>, in which he convincingly showed that undecidability phenomena should be understood in terms of synthetic judgement, and demonstrated how the judgements of one theory may be made the propositions of another.</p>
