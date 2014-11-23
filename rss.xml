@@ -55,7 +55,7 @@
   \widehat{\mathsf{decide}}^\circ &amp;\equiv \mathsf{decide}\\
   \widehat{\bullet}^\circ &amp;\equiv \bullet
 \end{align}\]</span></p>
-<p>The presentation we have given corresponds to having a grammar for well-scoped terms (the category <span class="math">\(\mathbb{T}\)</span>) and then refining it with a grammar for well-typedness (the category <span class="math">\(\mathbb{D}\)</span>); the functor <span class="math">\(-^\circ\)</span> is a fibration, which projects well-scoped terms from the well-typed terms (derivations, in Reynold’s concept) which lie over them.</p>
+<p>The presentation we have given corresponds to having a grammar for well-scoped terms (the category <span class="math">\(\mathbb{T}\)</span>) and then refining it with a grammar for well-typedness (the category <span class="math">\(\mathbb{D}\)</span>); the functor <span class="math">\(-^\circ\)</span> is a fibration, which projects well-scoped terms from the well-typed terms (derivations, in Reynold’s conception) which lie over them.</p>
 <h4 id="non-trivial-refinements">Non-trivial refinements</h4>
 <p>So far, all the “refinement types” we have given are not very interesting, since every non-identity morphism in <span class="math">\(\mathbb{D}\)</span> lies over a non-identity morphism in <span class="math">\(\mathbb{T}\)</span>; that is, there is no real structure in the category of derivations which is not already known in the category of terms. We can rectify this by adding objects and morphisms for union types to the theory: <span class="math">\[\frac{
   S\sqsubset\mathsf{T} \quad T\sqsubset\mathsf{T}
