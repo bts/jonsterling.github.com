@@ -228,22 +228,6 @@ MathJax.Hub.Config({
   <article class="digest">
 
   <h3>
-    <a href="./posts/2014-01-04-standard-ml-as-a-theorem-prover.html">Standard ML as a Proof System, without GADTs</a>
-    <span class="date">January  4, 2014</span>
-  </h3>
-
-  
-    <p>It is well known that generalized algebraic data types (a sort of phase-locked inductive family) suffice in languages like Haskell<a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a> and OCaml to be used as a deductive system for intuitionistic logic. I’ll demonstrate how type-level axioms can be given and used in Standard ML, using only signatures and functors.</p>
-
-    <div class="read_more">
-      <a href="./posts/2014-01-04-standard-ml-as-a-theorem-prover.html"> more …</a>
-    </div>
-  
-  </article>
-
-  <article class="digest">
-
-  <h3>
     <a href="./posts/2013-12-14-ditransitives-without-movement.html">Ditransitives &amp; Datives Without Movement: A Multi-Modal Approach</a>
     <span class="date">December 14, 2013</span>
   </h3>
@@ -433,42 +417,6 @@ MathJax.Hub.Config({
   <article class="digest">
 
   <h3>
-    <a href="./posts/2012-12-20-stringly-typed-code.html">Eliminating Stringly-Typed Code in Objective-C</a>
-    <span class="date">December 20, 2012</span>
-  </h3>
-
-  
-    <p>Perhaps the greatest sin in the common body of Cocoa design patterns is the pervasiveness of “stringly-typed” code:<a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a> it frequently comes up in KVO and bindings, among other things. Various macros have arisen to allow type checking of keypaths, largely thanks to <a href="https://github.com/jspahrsummers/libextobjc/blob/master/extobjc/EXTKeyPathCoding.h">efforts</a> by Justin Spahr-Summers and myself. Today, I’d like to talk a bit about some ideas for enforcing statically trusted boundaries for checked keypaths.</p>
-
-    <div class="read_more">
-      <a href="./posts/2012-12-20-stringly-typed-code.html"> more …</a>
-    </div>
-  
-  </article>
-
-  <article class="digest">
-
-  <h3>
-    <a href="./posts/2012-11-24-nl-syntax-in-coq-baby-steps.html">Natural Language Syntax in Coq: Baby Steps</a>
-    <span class="date">November 24, 2012</span>
-  </h3>
-
-  
-    In a slight diversion from my <a href="http://www.jonmsterling.com/posts/2012-09-14-natural-language-semantics-I.html">path</a>
-toward NL <i>semantics</i> in Martin-Löf Type Theory, I'd like to delve
-a bit into formulating NL <i>syntax</i> in <a href="http://coq.inria.fr">Coq</a>, a dependently typed theorem
-prover based on the <a href="http://en.wikipedia.org/wiki/Calculus_of_inductive_constructions">Calculus of Inductive Constructions</a>.
-
-
-    <div class="read_more">
-      <a href="./posts/2012-11-24-nl-syntax-in-coq-baby-steps.html"> more …</a>
-    </div>
-  
-  </article>
-
-  <article class="digest">
-
-  <h3>
     <a href="./posts/2012-11-23-extensible-records-in-cpp.html">Extensible Records in C++</a>
     <span class="date">November 23, 2012</span>
   </h3>
@@ -535,45 +483,6 @@ prover based on the <a href="http://en.wikipedia.org/wiki/Calculus_of_inductive_
   <article class="digest">
 
   <h3>
-    <a href="./posts/2012-05-01-refinement-protocols-another-approach-to-typesafe-collections.html">Refinement Protocols: Another Approach to Typed Collections</a>
-    <span class="date">May  1, 2012</span>
-  </h3>
-
-  
-    <blockquote>
-<p>In February, I <a href="2012-02-05-typed-collections-with-self-types-in-objective-c.html">wrote</a> about using <code>instancetype</code> to get semi-typesafe collections in Objective-C. After an email conversation with Patrick Beard, I’d like to present another approach.</p>
-</blockquote>
-<p>One sad consequence of protocols only being commonly used to encode delegation is that beginners frequently conflate protocols with delegation. Hence the proliferation of tutorials on how to “do delegates” in Objective-C; in fact, I had written one such tutorial a long time ago, and it became so popular that I deleted it, for it was feeding directly into this very conflation (which I deem damaging to learners).</p>
-<p>In this article, I’ll be showing a more interesting use of protocols: typesafe collections.</p>
-
-    <div class="read_more">
-      <a href="./posts/2012-05-01-refinement-protocols-another-approach-to-typesafe-collections.html"> more …</a>
-    </div>
-  
-  </article>
-
-  <article class="digest">
-
-  <h3>
-    <a href="./posts/2012-02-05-typed-collections-with-self-types-in-objective-c.html">Typed Collections with Self Types in Objective-C</a>
-    <span class="date">February  5, 2012</span>
-  </h3>
-
-  
-    <blockquote>
-<p>The latest versions of the Clang compiler extend the Objective-C language with related return types, which allow a limited form of covariance to be expressed. Methods with certain names (<code>alloc</code>, <code>init</code>, etc.) are inferred to return an object of the instance type for the receiver; other methods can participate in this covariance by using the <code>instancetype</code> keyword for the return type annotation.</p>
-</blockquote>
-<p>Typically, this feature is used for convenience constructors which would previously have returned <code>id</code>. However, we can also use it to encode statically-typed collections without full-blown generics.<a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a></p>
-
-    <div class="read_more">
-      <a href="./posts/2012-02-05-typed-collections-with-self-types-in-objective-c.html"> more …</a>
-    </div>
-  
-  </article>
-
-  <article class="digest">
-
-  <h3>
     <a href="./posts/2012-01-12-unifying-monoids-and-monads-with-polymorphic-kinds.html">Unifying Monoids and Monads with Polymorphic Kinds</a>
     <span class="date">January 12, 2012</span>
   </h3>
@@ -587,39 +496,6 @@ A monad is just a monoid in the category of endofunctors, what’s the problem? 
 <p>
     <div class="read_more">
       <a href="./posts/2012-01-12-unifying-monoids-and-monads-with-polymorphic-kinds.html"> more …</a>
-    </div>
-  
-  </article>
-
-  <article class="digest">
-
-  <h3>
-    <a href="./posts/2011-12-28-expressing-church-pairs-with-types.html">Expressing Church Pairs with Types</a>
-    <span class="date">December 28, 2011</span>
-  </h3>
-
-  
-    <p>It’s easy to express pairs in the untyped lambda calculus; adding types makes it somewhat more complex to get a correct encoding. In this article, I explain how we can build a pair with typesafe accessors in a polymorphically typed lambda calculus with type operators (System <span class="math">\(F_\omega\)</span>), and demonstrate it in Haskell. This document is Literate Haskell: simply copy and paste it into an <code>.lhs</code> file, and you can feed it into GHCI.</p>
-<p>
-    <div class="read_more">
-      <a href="./posts/2011-12-28-expressing-church-pairs-with-types.html"> more …</a>
-    </div>
-  
-  </article>
-
-  <article class="digest">
-
-  <h3>
-    <a href="./posts/2010-12-10-jsbag-a-modern-class-cluster.html">JSBag: A Modern Class Cluster</a>
-    <span class="date">December 10, 2010</span>
-  </h3>
-
-  
-    <p>I’ve long been frustrated by the complexity of the Class Cluster pattern, and feel that in most cases, it can be replaced with something cleaner and more flexible. <code>JSBag</code> is an example of a new collection class with mutable and immutable variants that is implemented with a pattern similar to the Class Cluster, but far less coupled. I do this using Traits.</p>
-<p><em>A ‘bag’ is a multiset, or a set which can contain duplicate objects. <code>CoreFoundation</code> includes <code>CFBag</code>, which is the same concept; for reasons of simplicity, <code>JSBag</code> was implemented on top of <code>NSArray</code> instead of <code>CFBag</code>, but it certainly would be possible if better performance were desired.</em></p>
-
-    <div class="read_more">
-      <a href="./posts/2010-12-10-jsbag-a-modern-class-cluster.html"> more …</a>
     </div>
   
   </article>
