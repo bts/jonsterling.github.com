@@ -60,6 +60,23 @@ MathJax.Hub.Config({
   <article class="digest">
 
   <h3>
+    <a href="./posts/2015-04-18-a-higher-order-approach-to-explicit-contexts-in-lf.html">A Higher-Order Approach to Explicit Contexts in LF</a>
+    <span class="date">April 18, 2015</span>
+  </h3>
+
+  
+    <p>There are two standard techniques for representing dependently typed calculi in the LF. The first is to re-use the LF contexts for the object contexts, which can lead to difficulties when the meaning of hypothetico-general judgement in the object language is stronger than in the LF; this is, for instance, the case in MLTT 1979, where non-trivial functionality obligations are incurred in the sequent judgement.</p>
+<p>Another technique advanced by Crary is to represent contexts explicitly, and then define a sequent judgement over them; this can be used to resolve the problem described above (and several others), but it comes at the cost of verbosity, and introduces difficulties when used to encode <em>telescopes</em>. in the LF, which are contexts where each successive term has the previous bound variables free in it. In this paper, I demonstrate a higher-order encoding of telescopes which can be used to faithfully encode the functional sequent judgement for MLTT 1979. You may also view a parallel <a href="https://github.com/jonsterling/twelf-cmcp">Twelf development</a>.</p>
+
+    <div class="read_more">
+      <a href="./posts/2015-04-18-a-higher-order-approach-to-explicit-contexts-in-lf.html"> more …</a>
+    </div>
+  
+  </article>
+
+  <article class="digest">
+
+  <h3>
     <a href="./posts/2014-11-22-computational-type-theories-as-refinement-systems.html">Computational Type Theories as Refinement Systems</a>
     <span class="date">November 22, 2014</span>
   </h3>
@@ -165,22 +182,6 @@ MathJax.Hub.Config({
 
     <div class="read_more">
       <a href="./posts/2014-06-30-a-type-theory-with-scoped-realizability.html"> more …</a>
-    </div>
-  
-  </article>
-
-  <article class="digest">
-
-  <h3>
-    <a href="./posts/2014-06-11-non-discrete-records-in-type-theory.html">Non-discrete Records in Type Theory</a>
-    <span class="date">June 11, 2014</span>
-  </h3>
-
-  
-    <p>In my <a href="http://www.jonmsterling.com/posts/2014-05-11-records-are-sheaves-of-types.html">recent post</a> I demonstrated a type-theoretic formulation of non-dependent record types as presheaves on a particular topological space <span class="math">\(X\)</span> of keys given an assignment <span class="math">\(El_X : X\to\mathbf{Type}\)</span>. Today, I’ll construct more interesting records by endowing the key space with a non-discrete topology.</p>
-
-    <div class="read_more">
-      <a href="./posts/2014-06-11-non-discrete-records-in-type-theory.html"> more …</a>
     </div>
   
   </article>

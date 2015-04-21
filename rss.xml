@@ -6,8 +6,702 @@
         <description><![CDATA[Jon Sterling writes about type theory and philology]]></description>
         <atom:link href="http://www.jonmsterling.com//rss.xml" rel="self"
                    type="application/rss+xml" />
-        <lastBuildDate>Sat, 22 Nov 2014 00:00:00 UT</lastBuildDate>
+        <lastBuildDate>Sat, 18 Apr 2015 00:00:00 UT</lastBuildDate>
         <item>
+    <title>A Higher-Order Approach to Explicit Contexts in LF</title>
+    <link>http://www.jonmsterling.com//posts/2015-04-18-a-higher-order-approach-to-explicit-contexts-in-lf.html</link>
+    <description><![CDATA[<p>There are two standard techniques for representing dependently typed calculi in the LF. The first is to re-use the LF contexts for the object contexts, which can lead to difficulties when the meaning of hypothetico-general judgement in the object language is stronger than in the LF; this is, for instance, the case in MLTT 1979, where non-trivial functionality obligations are incurred in the sequent judgement.</p>
+<p>Another technique advanced by Crary is to represent contexts explicitly, and then define a sequent judgement over them; this can be used to resolve the problem described above (and several others), but it comes at the cost of verbosity, and introduces difficulties when used to encode <em>telescopes</em>. in the LF, which are contexts where each successive term has the previous bound variables free in it. In this paper, I demonstrate a higher-order encoding of telescopes which can be used to faithfully encode the functional sequent judgement for MLTT 1979. You may also view a parallel <a href="https://github.com/jonsterling/twelf-cmcp">Twelf development</a>.</p>
+<!--more-->
+
+<p>To motivate this work, let us consider an encoding of a fragment of Martin-Löf’s extensional, polymorphic type theory<a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a> in the logical framework. The syntax contains two sorts, <span class="math">\({\mathsf{val}}\)</span> (for canonical forms) and <span class="math">\({\mathsf{exp}}\)</span> (for non-canonical forms), and is defined in the following LF signature: <a href="#fn2" class="footnoteRef" id="fnref2"><sup>2</sup></a></p>
+<p><span class="math">\[\begin{gather}
+  {\dfrac{\matrix{}}{{\mathsf{val}}:{\mathbf{type}}}}
+  \quad
+  {\dfrac{\matrix{}}{{\mathsf{exp}}:{\mathbf{type}}}}\\[6pt]
+    {\dfrac{\matrix{}}{{\mathsf{void}}:{\mathsf{val}}}}
+  \quad
+  {\dfrac{\matrix{}}{{\mathsf{unit}}:{\mathsf{val}}}}
+  \quad
+  {\dfrac{\matrix{
+    A:{\mathsf{exp}}&amp;
+    B:{\mathsf{exp}}\to{\mathsf{exp}}}}{
+    \operatorname{\mathsf{pi}}(A;[x]B(x)):{\mathsf{val}}}}
+  \quad
+  {\dfrac{\matrix{
+    A:{\mathsf{exp}}&amp;
+    B:{\mathsf{exp}}\to{\mathsf{exp}}}}{
+    \operatorname{\mathsf{sg}}(A;[x]B(x)):{\mathsf{val}}}}\\[6pt]
+    {\dfrac{\matrix{}}{{\mathsf{ax}}:{\mathsf{val}}}}
+  \quad
+  {\dfrac{\matrix{
+    E:{\mathsf{exp}}\to{\mathsf{exp}}}}{
+    \operatorname{\mathsf{\lambda}}[x]E(x):{\mathsf{val}}}}
+  \quad
+  {\dfrac{\matrix{
+    M:{\mathsf{exp}}&amp;
+    N:{\mathsf{exp}}}}{
+    \operatorname{\mathsf{pair}}(M;N):{\mathsf{val}}}} \\[6pt]
+    {\dfrac{\matrix{
+    M:{\mathsf{val}}}}{
+    {{\color{Gray}\uparrow}M}:{\mathsf{exp}}}}
+  \quad
+  {\dfrac{\matrix{
+    M:{\mathsf{exp}}&amp;
+    N:{\mathsf{exp}}}}{
+    {\mathsf{ap}}(M;N):{\mathsf{exp}}}}
+  \quad
+  {\dfrac{\matrix{
+    M:{\mathsf{exp}}}}{
+    \operatorname{\mathsf{fst}}(M):{\mathsf{exp}}}}
+  \quad
+  {\dfrac{\matrix{
+    M:{\mathsf{exp}}}}{
+    \operatorname{\mathsf{snd}}(M):{\mathsf{exp}}}}
+\end{gather}\]</span></p>
+<p>Then, the language is accorded a simple big-step operational semantics via the <span class="math">\({{{\color{MidnightBlue}{M}}}\mathbin{\Rightarrow}{{\color{Maroon}{N}}}}\)</span> judgement:</p>
+<p><span class="math">\[\begin{gather}
+  {\dfrac{\matrix{
+    M:{\mathsf{exp}}&amp;
+    N:{\mathsf{val}}}}{
+    {{{\color{MidnightBlue}{M}}}\mathbin{\Rightarrow}{{\color{Maroon}{N}}}}:{\mathbf{type}}}}\\[6pt]
+    {\dfrac{\matrix{
+  }}{
+    {{{\color{MidnightBlue}{{{\color{Gray}\uparrow}M}}}}\mathbin{\Rightarrow}{{\color{Maroon}{M}}}}
+  }{\Rightarrow_{\uparrow}}}
+  \quad
+  {\dfrac{\matrix{
+    {{{\color{MidnightBlue}{L}}}\mathbin{\Rightarrow}{{\color{Maroon}{\operatorname{\mathsf{\lambda}}[x]E(x)}}}} &amp;
+    {{{\color{MidnightBlue}{E(M)}}}\mathbin{\Rightarrow}{{\color{Maroon}{N}}}}
+  }}{
+    {{{\color{MidnightBlue}{{\mathsf{ap}}(L;M)}}}\mathbin{\Rightarrow}{{\color{Maroon}{N}}}}
+  }{\Rightarrow_{{\mathsf{ap}}}}}\\[6pt]
+    {\dfrac{\matrix{
+    {{{\color{MidnightBlue}{M}}}\mathbin{\Rightarrow}{{\color{Maroon}{\operatorname{\mathsf{pair}}(M_1;M_2)}}}} &amp;
+    {{{\color{MidnightBlue}{M_1}}}\mathbin{\Rightarrow}{{\color{Maroon}{M_1&#39;}}}}
+  }}{
+    {{{\color{MidnightBlue}{\operatorname{\mathsf{fst}}(M)}}}\mathbin{\Rightarrow}{{\color{Maroon}{M_1&#39;}}}}
+  }{\Rightarrow_{\operatorname{\mathsf{fst}}}}}
+  \quad
+  {\dfrac{\matrix{
+    {{{\color{MidnightBlue}{M}}}\mathbin{\Rightarrow}{{\color{Maroon}{\operatorname{\mathsf{pair}}(M_1;M_2)}}}} &amp;
+    {{{\color{MidnightBlue}{M_2}}}\mathbin{\Rightarrow}{{\color{Maroon}{M_2&#39;}}}}
+  }}{
+    {{{\color{MidnightBlue}{\operatorname{\mathsf{snd}}(M)}}}\mathbin{\Rightarrow}{{\color{Maroon}{M_2&#39;}}}}
+  }{\Rightarrow_{\operatorname{\mathsf{snd}}}}}
+\end{gather}\]</span></p>
+<h2 id="the-naïve-higher-order-approach">The Naïve Higher-Order Approach</h2>
+<p>Informally, there are four basic categorical judgements in MLTT 1979:</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Form</th>
+<th align="left">Pronunciation</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left"><span class="math">\({{{\color{MidnightBlue}{A}}}\;\mathit{set}}\)</span></td>
+<td align="left"><span class="math">\(A\)</span> is a set</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math">\({{{\color{MidnightBlue}{A}}}={{\color{MidnightBlue}{B}}}\;\mathit{set}}\)</span></td>
+<td align="left"><span class="math">\(A\)</span> and <span class="math">\(B\)</span> are equal sets</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math">\({{{\color{MidnightBlue}{M}}}\in{{\color{MidnightBlue}{A}}}}\)</span></td>
+<td align="left"><span class="math">\(M\)</span> is a member of <span class="math">\(A\)</span></td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math">\({{{\color{MidnightBlue}{M}}}={{\color{MidnightBlue}{N}}}\in{{\color{MidnightBlue}{A}}}}\)</span></td>
+<td align="left"><span class="math">\(M\)</span> and <span class="math">\(N\)</span> are equal members of <span class="math">\(A\)</span></td>
+</tr>
+</tbody>
+</table>
+<p>The subjects of these judgements are terms of sort <span class="math">\({\mathsf{exp}}\)</span>. However, implicit in Martin-Löf’s presentation are four prior judgements which operate only on canonical forms (i.e. terms of sort <span class="math">\({\mathsf{val}}\)</span>). We will therefore introduce the following LF signature to account for this:</p>
+<p><span class="math">\[\begin{gather}
+  {\dfrac{\matrix{
+    A:{\mathsf{val}}}}{
+    {{{\color{MidnightBlue}{A}}}\;\mathit{set}_\mathsf{v}}:{\mathbf{type}}}}\quad
+  {\dfrac{\matrix{
+    A:{\mathsf{val}}&amp;
+    B:{\mathsf{val}}}}{
+    {{{\color{MidnightBlue}{A}}}={{\color{MidnightBlue}{B}}}\;\mathit{set}_\mathsf{v}}:{\mathbf{type}}}}\quad
+  {\dfrac{\matrix{
+    M:{\mathsf{val}}&amp;
+    A:{\mathsf{val}}}}{
+    {{{\color{MidnightBlue}{M}}}\in_\mathsf{v}{{\color{MidnightBlue}{A}}}}:{\mathbf{type}}}}\quad
+  {\dfrac{\matrix{
+    M:{\mathsf{val}}&amp;
+    N:{\mathsf{val}}&amp;
+    A:{\mathsf{val}}}}{
+    {{{\color{MidnightBlue}{M}}}={{\color{MidnightBlue}{N}}}\in_\mathsf{v}{{\color{MidnightBlue}{A}}}}:{\mathbf{type}}}}\\[6pt]
+  {\dfrac{\matrix{
+    A:{\mathsf{val}}}}{
+    {{{\color{MidnightBlue}{A}}}\;\mathit{set}}:{\mathbf{type}}}}\quad
+  {\dfrac{\matrix{
+    A:{\mathsf{exp}}&amp;
+    B:{\mathsf{exp}}}}{
+    {{{\color{MidnightBlue}{A}}}={{\color{MidnightBlue}{B}}}\;\mathit{set}}:{\mathbf{type}}}}\quad
+  {\dfrac{\matrix{
+    M:{\mathsf{exp}}&amp;
+    A:{\mathsf{exp}}}}{
+    {{{\color{MidnightBlue}{M}}}\in{{\color{MidnightBlue}{A}}}}:{\mathbf{type}}}}\quad
+  {\dfrac{\matrix{
+    M:{\mathsf{exp}}&amp;
+    N:{\mathsf{exp}}&amp;
+    A:{\mathsf{exp}}}}{
+    {{{\color{MidnightBlue}{M}}}={{\color{MidnightBlue}{N}}}\in{{\color{MidnightBlue}{A}}}}:{\mathbf{type}}}}
+\end{gather}\]</span></p>
+<p>Then, we will give the meanings of the judgements which deal with non-canonical forms first, anticipating the explanations of the canonical forms judgements.</p>
+<p><span class="math">\[\begin{gather}
+  {\dfrac{\matrix{
+    {{{\color{MidnightBlue}{A}}}\mathbin{\Rightarrow}{{\color{Maroon}{A&#39;}}}} &amp;
+    {{{\color{MidnightBlue}{A&#39;}}}\;\mathit{set}_\mathsf{v}}
+  }}{
+    {{{\color{MidnightBlue}{A}}}\;\mathit{set}}
+  }}\quad
+  {\dfrac{\matrix{
+    \begin{array}{c}
+      {{{\color{MidnightBlue}{A}}}\mathbin{\Rightarrow}{{\color{Maroon}{A&#39;}}}} \\
+      {{{\color{MidnightBlue}{B}}}\mathbin{\Rightarrow}{{\color{Maroon}{B&#39;}}}}
+    \end{array} &amp;
+    {{{\color{MidnightBlue}{A&#39;}}}={{\color{MidnightBlue}{B&#39;}}}\;\mathit{set}_\mathsf{v}}
+  }}{
+    {{{\color{MidnightBlue}{A}}}={{\color{MidnightBlue}{B}}}\;\mathit{set}}
+  }}\\[6pt]
+  {\dfrac{\matrix{
+    \begin{array}{c}
+      {{{\color{MidnightBlue}{M}}}\mathbin{\Rightarrow}{{\color{Maroon}{M&#39;}}}}\\
+      {{{\color{MidnightBlue}{A}}}\mathbin{\Rightarrow}{{\color{Maroon}{A&#39;}}}}
+    \end{array} &amp;
+    {{{\color{MidnightBlue}{M&#39;}}}\in_\mathsf{v}{{\color{MidnightBlue}{A&#39;}}}}
+  }}{
+    {{{\color{MidnightBlue}{M}}}\in{{\color{MidnightBlue}{A}}}}
+  }}\quad
+  {\dfrac{\matrix{
+    \begin{array}{c}
+      {{{\color{MidnightBlue}{M}}}\mathbin{\Rightarrow}{{\color{Maroon}{M&#39;}}}} \\
+      {{{\color{MidnightBlue}{N}}}\mathbin{\Rightarrow}{{\color{Maroon}{N&#39;}}}} \\
+      {{{\color{MidnightBlue}{A}}}\mathbin{\Rightarrow}{{\color{Maroon}{A&#39;}}}}
+    \end{array} &amp;
+    {{{\color{MidnightBlue}{M&#39;}}}={{\color{MidnightBlue}{N&#39;}}}\in_\mathsf{v}{{\color{MidnightBlue}{A&#39;}}}}
+  }}{
+    {{{\color{MidnightBlue}{M}}}={{\color{MidnightBlue}{N}}}\in{{\color{MidnightBlue}{A}}}}
+  }}
+\end{gather}\]</span></p>
+<p>Following Martin-Löf, we give an extensional equality for all types (i.e. two types are equal when they have the same membership and equivalence relations); we could choose an intensional/structural equality for types, but this question is orthogonal to the technique being demonstrated.</p>
+<p><span class="math">\[\begin{gather}
+  {\dfrac{\matrix{
+    \begin{array}{l}
+      {\vert_{M}\;{{{\color{MidnightBlue}{M}}}\in_\mathsf{v}{{\color{MidnightBlue}{A}}}}\to{{{\color{MidnightBlue}{M}}}\in_\mathsf{v}{{\color{MidnightBlue}{B}}}}}\\
+      {\vert_{M}\;{{{\color{MidnightBlue}{M}}}\in_\mathsf{v}{{\color{MidnightBlue}{B}}}}\to{{{\color{MidnightBlue}{M}}}\in_\mathsf{v}{{\color{MidnightBlue}{A}}}}}\\
+      {\vert_{M,N}\;{{{\color{MidnightBlue}{M}}}={{\color{MidnightBlue}{N}}}\in_\mathsf{v}{{\color{MidnightBlue}{A}}}}\to{{{\color{MidnightBlue}{M}}}={{\color{MidnightBlue}{N}}}\in_\mathsf{v}{{\color{MidnightBlue}{B}}}}}\\
+      {\vert_{M,N}\;{{{\color{MidnightBlue}{M}}}={{\color{MidnightBlue}{N}}}\in_\mathsf{v}{{\color{MidnightBlue}{B}}}}\to{{{\color{MidnightBlue}{M}}}={{\color{MidnightBlue}{N}}}\in_\mathsf{v}{{\color{MidnightBlue}{A}}}}}
+    \end{array}
+  }}{
+    {{{\color{MidnightBlue}{A}}}={{\color{MidnightBlue}{B}}}\;\mathit{set}_\mathsf{v}}
+  }}
+\end{gather}\]</span></p>
+<p>Then, all we have to do is define the remaining canonical forms judgements with respect to our syntax. For the base types, this is trivial:</p>
+<p><span class="math">\[\begin{gather}
+  {\dfrac{\matrix{
+  }}{
+    {{{\color{MidnightBlue}{{\mathsf{void}}}}}\;\mathit{set}_\mathsf{v}}
+  }}\quad
+  {\dfrac{\matrix{
+  }}{
+    {{{\color{MidnightBlue}{{\mathsf{unit}}}}}\;\mathit{set}_\mathsf{v}}
+  }}\quad
+  {\dfrac{\matrix{
+  }}{
+    {{{\color{MidnightBlue}{{\mathsf{ax}}}}}\in_\mathsf{v}{{\color{MidnightBlue}{{\mathsf{unit}}}}}}
+  }}\quad
+  {\dfrac{\matrix{
+  }}{
+    {{{\color{MidnightBlue}{{\mathsf{ax}}}}}={{\color{MidnightBlue}{{\mathsf{ax}}}}}\in_\mathsf{v}{{\color{MidnightBlue}{{\mathsf{unit}}}}}}
+  }}
+\end{gather}\]</span></p>
+<p>But for terms which involve binding, the rules will become more complicated. Informally, Martin-Löf gives the following formation rule for <span class="math">\(\mathsf\Pi\)</span> using hypothetico-general judgement: <span class="math">\[
+  {\dfrac{\matrix{
+    {{{\color{MidnightBlue}{A}}}\;\mathit{set}} &amp;
+    {{{\color{MidnightBlue}{B(x)}}}\;\mathit{set}}\;({{{\color{MidnightBlue}{x}}}\in{{\color{MidnightBlue}{A}}}})
+  }}{
+    {{{\color{MidnightBlue}{(\mathsf{\Pi}x\in A)B}}}\;\mathit{set}_\mathsf{v}}
+  }*}
+\]</span> So we might be tempted to do something similar in the LF, as follows: <span class="math">\[
+  {\dfrac{\matrix{
+    {{{\color{MidnightBlue}{A}}}\;\mathit{set}} &amp;
+    {\vert_{x}\;{{{\color{MidnightBlue}{x}}}\in{{\color{MidnightBlue}{A}}}}\to{{{\color{MidnightBlue}{B(x)}}}\;\mathit{set}}}
+  }}{
+    {{{\color{MidnightBlue}{\operatorname{\mathsf{pi}}(A;[x]B(x))}}}\;\mathit{set}_\mathsf{v}}
+  }*&#39;}
+\]</span></p>
+<p>This encoding, however, is not adequate, since the meaning of hypothetico-general judgement in Martin-Löf’s informal metalangauge is not captured by the above attempt. Recall that hypothetico-general judgement in type theory implicitly requires <em>functionality</em> of type and term families; therefore, in order for our definition to be correct, we would have to adjust the rule to include functionality: <span class="math">\[
+  {\dfrac{\matrix{
+    {{{\color{MidnightBlue}{A}}}\;\mathit{set}} &amp;
+    \begin{array}{l}
+      {\vert_{x}\;{{{\color{MidnightBlue}{x}}}\in{{\color{MidnightBlue}{A}}}}\to{{{\color{MidnightBlue}{B(x)}}}\;\mathit{set}}}\\
+      {\vert_{x,y}\;{{{\color{MidnightBlue}{x}}}={{\color{MidnightBlue}{y}}}\in{{\color{MidnightBlue}{A}}}}\to{{{\color{MidnightBlue}{B(x)}}}={{\color{MidnightBlue}{B(y)}}}\;\mathit{set}}}\\
+    \end{array}
+  }}{
+    {{{\color{MidnightBlue}{\operatorname{\mathsf{pi}}(A;[x]B(x))}}}\;\mathit{set}_\mathsf{v}}
+  }}
+\]</span></p>
+<p>We have at least got closer, but even this is not really satisfactory; we were unable to factor out the functionality constraints, and must be careful to place them in all the right places in each and every rule. Contrast this with Martin-Löf’s definition of hypothetico-general judgement, which includes functionality from the start, allowing the other judgements to use this “off the shelf”.</p>
+<h2 id="explicit-contexts-à-la-crary">Explicit Contexts à la Crary</h2>
+<p>In order to factor out functionality constraints, it will be necessary to consider the use of contexts in the encoding, and then recast the judgements above as being sequents, i.e. judgements with respect to a context. Crary’s first-order encoding of explicit contexts in the LF is essentially the following:</p>
+<p><span class="math">\[\begin{gather}
+  {\dfrac{\matrix{}}{{\mathsf{ctx}}:{\mathbf{type}}}}
+  \quad
+  {\dfrac{\matrix{}}{\cdot:{\mathsf{ctx}}}}
+  \quad
+  {\dfrac{\matrix{
+    \Gamma:{\mathsf{ctx}}&amp;
+    X:{\mathsf{exp}}&amp;
+    A:{\mathsf{exp}}}}{
+    (\Gamma,X:A):{\mathsf{ctx}}}}\\[6pt]
+  {\dfrac{\matrix{
+    X:{\mathsf{exp}}&amp;
+    I:{\mathbb{N}}}}{
+    {\operatorname{\mathsf{isvar}}({{\color{MidnightBlue}{X}}};{{\color{Maroon}{I}}})} : {\mathbf{type}}}}
+  \quad
+  {\dfrac{\matrix{
+    X:{\mathsf{exp}}&amp;
+    Y:{\mathsf{exp}}}}{
+    {\operatorname{\mathsf{precedes}}({{\color{MidnightBlue}{X}}};{{\color{MidnightBlue}{Y}}})}: {\mathbf{type}}}}\quad
+  {\dfrac{\matrix{
+    {\operatorname{\mathsf{isvar}}({{\color{MidnightBlue}{X}}};{{\color{Maroon}{I}}})} &amp;
+    {\operatorname{\mathsf{isvar}}({{\color{MidnightBlue}{Y}}};{{\color{Maroon}{J}}})} &amp;
+    {{{\color{MidnightBlue}{I}}}&lt; {{\color{MidnightBlue}{J}}}}
+  }}{
+    {\operatorname{\mathsf{precedes}}({{\color{MidnightBlue}{X}}};{{\color{MidnightBlue}{Y}}})}
+  }}\\[6pt]
+  {\dfrac{\matrix{
+    \Gamma:{\mathsf{ctx}}&amp;
+    X:{\mathsf{exp}}}}{
+    {\operatorname{\mathsf{bounded}}({{\color{MidnightBlue}{\Gamma}}};{{\color{MidnightBlue}{X}}})}:{\mathbf{type}}}}
+  \quad
+  {\dfrac{\matrix{
+    {\operatorname{\mathsf{isvar}}({{\color{MidnightBlue}{X}}};{{\color{Maroon}{I}}})}
+  }}{
+    {\operatorname{\mathsf{bounded}}({{\color{MidnightBlue}{\cdot}}};{{\color{MidnightBlue}{X}}})}
+  }}
+  \quad
+  {\dfrac{\matrix{
+    {\operatorname{\mathsf{precedes}}({{\color{MidnightBlue}{Y}}};{{\color{MidnightBlue}{X}}})} &amp;
+    {\operatorname{\mathsf{bounded}}({{\color{MidnightBlue}{G}}};{{\color{MidnightBlue}{Y}}})}
+  }}{
+    {\operatorname{\mathsf{bounded}}({{\color{MidnightBlue}{\Gamma,Y:A}}};{{\color{MidnightBlue}{X}}})}
+  }}
+  \\[6pt]
+  {\dfrac{\matrix{
+    \Gamma:{\mathsf{ctx}}}}{
+    {\operatorname{\mathsf{ordered}}({{\color{MidnightBlue}{\Gamma}}})}:{\mathbf{type}}}}
+  \quad
+  {\dfrac{\matrix{}}{{\operatorname{\mathsf{ordered}}({{\color{MidnightBlue}{\cdot}}})}}}
+  \quad
+  {\dfrac{\matrix{
+    {\operatorname{\mathsf{bounded}}({{\color{MidnightBlue}{\Gamma}}};{{\color{MidnightBlue}{X}}})}
+  }}{
+    {\operatorname{\mathsf{ordered}}({{\color{MidnightBlue}{\Gamma,X:A}}})}
+  }}
+  \\[6pt]
+\end{gather}\]</span></p>
+<p>Note that the well-formedness constraints above do not in practice protrude into the definitions of judgements which  explicit contexts; they are only used in metatheorems. This encoding is very practical for certain calculi, but it is concerning in our case for a few reasons:</p>
+<ol style="list-style-type: decimal">
+<li><p>The adequacy of this encoding depends very strongly on its <em>use</em>: this only truly encodes contexts if in every case an LF-variable is used for <span class="math">\(X\)</span>. Moreover, the various well-formedness constraints are a bit inelegant, as is the concept of mapping LF variables to De Bruijn indices.</p></li>
+<li><p>It is not possible to construct such a context on its own as a syntactic object of (LF-)type <span class="math">\({\mathsf{ctx}}\)</span>, where variables bound earlier in the context may appear free later in the context. This can be done otherwise by constructing an object of type <span class="math">\({\mathsf{ctx}}\)</span> in an extended LF-context; the well-formedness of such a context is still an extrinsic property, though.</p></li>
+<li><p>A straightforward higher-order encoding is preferable (if possible) when working in the LF.</p></li>
+</ol>
+<h2 id="encoding-telescopes-in-higher-order-abstract-syntax">Encoding Telescopes in Higher-Order Abstract Syntax</h2>
+<p>More precisely, it seems that what we really need is an encoding of <em>telescopes</em>, in the sense of De Bruijn<a href="#fn3" class="footnoteRef" id="fnref3"><sup>3</sup></a>. A telescope is a sequence of type assignments, where variables bound earlier may appear free later; for instance: <span class="math">\[
+  \cdot,x_1:A_1, x_2:A_2(x_1), x_3:A_3(x_1,x_2), \dots, x_n:A_n(x_1,\dots,x_{n-1})
+\]</span></p>
+<p>To encode this in a straightforward, higher-order manner, we shall first stipulate that each variable in the telescope will be an LF-variable. Then, each type <span class="math">\(A_i\)</span> in the telescope will be a term with <span class="math">\(i-1\)</span> LF-bindings (i.e. it will be an <span class="math">\((i-1)\)</span>-ary <span class="math">\(\lambda\)</span>-abstraction). We’ll define by mutual induction a sort for telescopes <span class="math">\({\mathsf{tele}}\)</span>, and a sort for open terms with respect to a telescope <span class="math">\({[\Psi]{\mathsf{exp}}}\)</span>:</p>
+<p><span class="math">\[\begin{gather}
+  {\dfrac{\matrix{}}{{\mathsf{tele}}:{\mathbf{type}}}}
+  \quad
+  {\dfrac{\matrix{
+    \Psi:{\mathsf{tele}}}}{
+    {[\Psi]{\mathsf{exp}}}:{\mathbf{type}}}}\\[6pt]
+  {\dfrac{\matrix{}}{\cdot:{\mathsf{tele}}}}
+  \quad
+  {\dfrac{\matrix{
+    \Psi:{\mathsf{tele}}&amp;
+    A:{[\Psi]{\mathsf{exp}}}
+  }}{
+    \Psi,A:{\mathsf{tele}}}}\\[6pt]
+  {\dfrac{\matrix{
+    M:{\mathsf{exp}}}}{
+    {{\color{Gray}!}M}:{[\cdot]{\mathsf{exp}}}
+  }}
+  \quad
+  {\dfrac{\matrix{
+    M:{\mathsf{exp}}\to{[\Psi]{\mathsf{exp}}} &amp;
+    A:{[\Psi]{\mathsf{exp}}}
+  }}{
+    {{\color{Gray}@}[x]M(x)}:{[\Psi,A]{\mathsf{exp}}}
+  }}
+\end{gather}\]</span></p>
+<p>Note that we do not put any well-typedness constraints on the arguments of the bound term constructors; we wish to separate object syntax from object judgements; this is particularly important for an object theory which does not have decidable type checking.</p>
+<p>Closed expressions may be weakened by extraneous variables: <span class="math">\[\begin{gather}
+  {\dfrac{\matrix{
+    \Psi:{\mathsf{tele}}&amp;
+    M:{\mathsf{exp}}&amp;
+    M&#39;:{[\Psi]{\mathsf{exp}}}
+  }}{
+    {\mathsf{wk}_{{{\color{MidnightBlue}{\Psi}}}}\,{{\color{MidnightBlue}{M}}}\leadsto{{\color{Maroon}{M&#39;}}}}:{\mathbf{type}}}}\\[6pt]
+  {\dfrac{\matrix{
+  }}{
+    {\mathsf{wk}_{{{\color{MidnightBlue}{\cdot}}}}\,{{\color{MidnightBlue}{M}}}\leadsto{{\color{Maroon}{{{\color{Gray}!}M}}}}}
+  }}\quad
+  {\dfrac{\matrix{
+    {\mathsf{wk}_{{{\color{MidnightBlue}{\Psi}}}}\,{{\color{MidnightBlue}{M}}}\leadsto{{\color{Maroon}{M&#39;}}}}
+  }}{
+    {\mathsf{wk}_{{{\color{MidnightBlue}{\Psi,A}}}}\,{{\color{MidnightBlue}{M}}}\leadsto{{\color{Maroon}{{{\color{Gray}@}[x]M&#39;}}}}}
+  }}
+\end{gather}\]</span></p>
+<p>A more general definition of weakening can be given, but the simple one above suffices for our use-case.</p>
+<h2 id="encoding-functional-hypothetico-general-judgement">Encoding Functional Hypothetico-General Judgement</h2>
+<p>Henceforth I shall use the term “functional sequent judgement” to mean a hypothetico-general judgement which also requires functionality. First, before we get to the full sequent judgement, we will need the concept of a “general judgement”; this is a judgement which has variables from a telescope free in it.</p>
+<h3 id="codes-for-general-judgements">Codes for General Judgements</h3>
+<p>We will define <em>codes</em> for such judgements and then interpret them into proper object judgements (LF-types) later.</p>
+<p><span class="math">\[\begin{gather}
+  {\dfrac{\matrix{
+    \Psi:{\mathsf{tele}}}}{
+    {[\Psi]{\mathsf{judg}}}:{\mathbf{type}}}}\\[6pt]
+  {\dfrac{\matrix{
+    A:{[\Psi]{\mathsf{exp}}}
+  }}{
+    {A\;`\mathit{set}}:{[\Psi]{\mathsf{judg}}}
+  }}
+  \quad
+  {\dfrac{\matrix{
+    A:{[\Psi]{\mathsf{exp}}} &amp;
+    B:{[\Psi]{\mathsf{exp}}}
+  }}{
+    {A=B\;`\mathit{set}}:{[\Psi]{\mathsf{judg}}}
+  }}\\[6pt]
+  {\dfrac{\matrix{
+    M:{[\Psi]{\mathsf{exp}}} &amp;
+    A:{[\Psi]{\mathsf{exp}}}
+  }}{
+    {M\;`\in A}:{[\Psi]{\mathsf{judg}}}
+  }}
+  \quad
+  {\dfrac{\matrix{
+    M:{[\Psi]{\mathsf{exp}}} &amp;
+    N:{[\Psi]{\mathsf{exp}}} &amp;
+    A:{[\Psi]{\mathsf{exp}}}
+  }}{
+    {M=N\;`\in A}:{[\Psi]{\mathsf{judg}}}
+  }}
+\end{gather}\]</span></p>
+<h3 id="extensionality">Extensionality</h3>
+<p>The next thing to do is to specify how each of these judgement(-codes) behaves operationally (i.e. by substituting its outermost variable); we will do so by extending the LF signature with a new algorithmic judgement <span class="math">\({{{\color{MidnightBlue}{{\mathcal{J}}}}}\triangleright{{\color{Maroon}{{\mathcal{J}}&#39;}}}}\)</span> and making it evident on all inputs:</p>
+<p><span class="math">\[\begin{gather}
+  {\dfrac{\matrix{
+    {\mathcal{J}}:{[\Psi,A]{\mathsf{judg}}} &amp;
+    {\mathcal{J}}&#39;: {\mathsf{exp}}\to{[\Psi]{\mathsf{judg}}}
+  }}{
+    {{{\color{MidnightBlue}{{\mathcal{J}}}}}\triangleright{{\color{Maroon}{[x]{\mathcal{J}}&#39;(x)}}}}:{\mathbf{type}}}}\\[6pt]
+  {\dfrac{\matrix{
+  }}{
+    {{{\color{MidnightBlue}{
+      {{{\color{Gray}@}[x]A(x)}\;`\mathit{set}}
+    }}}\triangleright{{\color{Maroon}{
+      [x]\; {A(x)\;`\mathit{set}}
+    }}}}
+  }}\\[6pt]
+  {\dfrac{\matrix{
+  }}{
+    {{{\color{MidnightBlue}{
+      {{{\color{Gray}@}[x]A(x)}={{\color{Gray}@}[x]B(x)}\;`\mathit{set}}
+    }}}\triangleright{{\color{Maroon}{
+      [x]\; {A(x)=B(x)\;`\mathit{set}}
+    }}}}
+  }}\\[6pt]
+  {\dfrac{\matrix{
+  }}{
+    {{{\color{MidnightBlue}{
+      {{{\color{Gray}@}[x]M(x)}\;`\in {{\color{Gray}@}[x]A(x)}}
+    }}}\triangleright{{\color{Maroon}{
+      [x]\; {M(x)\;`\in A(x)}
+    }}}}
+  }}\\[6pt]
+  {\dfrac{\matrix{
+  }}{
+    {{{\color{MidnightBlue}{
+      {{{\color{Gray}@}[x]M(x)}={{\color{Gray}@}[x]N(x)}\;`\in {{\color{Gray}@}[x]A(x)}}
+    }}}\triangleright{{\color{Maroon}{
+      [x]\; {M(x)=N(x)\;`\in A(x)}
+    }}}}
+  }}
+\end{gather}\]</span></p>
+<p>Next, we will do something similar in order to show how each of these judgement(-codes) behaves extensionally, by introducing another algorithmic judgement <span class="math">\({{{\color{MidnightBlue}{{\mathcal{J}}}}}\ltimes{{\color{Maroon}{{\mathcal{J}}^=}}}}\)</span>. Intuitively, this judgement describes what happens when you substitute two purportedly equal expressions in for the judgement-code’s outermost variable.</p>
+<p><span class="math">\[\begin{gather}
+  {\dfrac{\matrix{
+    {\mathcal{J}}:{[\Psi,A]{\mathsf{judg}}} &amp;
+    {\mathcal{J}}&#39;: {\mathsf{exp}}\to{\mathsf{exp}}\to{[\Psi]{\mathsf{judg}}}
+  }}{
+    {{{\color{MidnightBlue}{{\mathcal{J}}}}}\ltimes{{\color{Maroon}{[x][y]{\mathcal{J}}&#39;(x)(y)}}}}:{\mathbf{type}}}}\\[6pt]
+  {\dfrac{\matrix{
+  }}{
+    {{{\color{MidnightBlue}{
+      {{{\color{Gray}@}[x]A(x)}\;`\mathit{set}}
+    }}}\ltimes{{\color{Maroon}{
+      [x][y]\; {A(x)=A(y)\;`\mathit{set}}
+    }}}}
+  }}\\[6pt]
+  {\dfrac{\matrix{
+  }}{
+    {{{\color{MidnightBlue}{
+      {{{\color{Gray}@}[x]A(x)}={{\color{Gray}@}[x]B(x)}\;`\mathit{set}}
+    }}}\ltimes{{\color{Maroon}{
+      [x][y]\; {A(x)=B(y)\;`\mathit{set}}
+    }}}}
+  }}\\[6pt]
+  {\dfrac{\matrix{
+  }}{
+    {{{\color{MidnightBlue}{
+      {{{\color{Gray}@}[x]M(x)}\;`\in {{\color{Gray}@}[x]A(x)}}
+    }}}\ltimes{{\color{Maroon}{
+      [x][y]\; {M(x)=M(y)\;`\in A(x)}
+    }}}}
+  }}\\[6pt]
+  {\dfrac{\matrix{
+  }}{
+    {{{\color{MidnightBlue}{
+      {{{\color{Gray}@}[x]M(x)}={{\color{Gray}@}[x]N(x)}\;`\in {{\color{Gray}@}[x]A(x)}}
+    }}}\ltimes{{\color{Maroon}{
+      [x][y]\; {M(x)=N(y)\;`\in A(x)}
+    }}}}
+  }}
+\end{gather}\]</span></p>
+<p>The judgement <span class="math">\({{{\color{MidnightBlue}{{\mathcal{J}}}}}\triangleright{{\color{Maroon}{{\mathcal{J}}&#39;}}}}\)</span> may be considered as defining the behavior of <span class="math">\({\mathcal{J}}\)</span> with one hole punched in it; <span class="math">\([x]\;{\mathcal{J}}(x)\)</span> could be called the “one-hole application of <span class="math">\({\mathcal{J}}\)</span>”. Likewise, <span class="math">\({{{\color{MidnightBlue}{{\mathcal{J}}}}}\ltimes{{\color{Maroon}{{\mathcal{J}}^=}}}}\)</span> may be thought of as defining the behavior <span class="math">\({\mathcal{J}}\)</span> with two holes punched in it, and <span class="math">\([x][y]\; {\mathcal{J}}^=(x,y)\)</span> could be called the “two-hole application of <span class="math">\({\mathcal{J}}\)</span>”.</p>
+<h3 id="the-functional-sequent-judgement">The Functional Sequent Judgement</h3>
+<p>We finally have built up enough machinery to give an immediate and elegant encoding to Martin-Löf’s functional sequent judgement <span class="math">\({\mathcal{J}}\ (\Psi)\)</span>; we will notate it <span class="math">\({{{\color{MidnightBlue}{\Psi}}}\gg{{\color{MidnightBlue}{{\mathcal{J}}}}}}\)</span>, or <span class="math">\({\gg{{\color{MidnightBlue}{{\mathcal{J}}}}}}\)</span> when <span class="math">\(\Psi\)</span> is the empty telescope. First we will define it, and then we’ll go back and show some corresponding examples between our system and the informal rules of MLTT 1979.</p>
+<p><span class="math">\[\begin{gather}
+  {\dfrac{\matrix{
+    \Psi:{\mathsf{tele}}&amp;
+    {\mathcal{J}}:{[\Psi]{\mathsf{judg}}}
+  }}{
+    {{{\color{MidnightBlue}{\Psi}}}\gg{{\color{MidnightBlue}{{\mathcal{J}}}}}}:{\mathbf{type}}}}
+  \quad
+  {\dfrac{\matrix{
+  }}{
+    {\gg{{\color{MidnightBlue}{{\mathcal{J}}}}}} \equiv {{{\color{MidnightBlue}{\cdot}}}\gg{{\color{MidnightBlue}{{\mathcal{J}}}}}} : {\mathbf{type}}}}
+\end{gather}\]</span></p>
+<p>The interpretations of the judgement codes in the empty context are trivial:</p>
+<p><span class="math">\[\begin{gather}
+  {\dfrac{\matrix{
+    {{{\color{MidnightBlue}{A}}}\;\mathit{set}}
+  }}{
+    {\gg{{\color{MidnightBlue}{{{{\color{Gray}!}A}\;`\mathit{set}}}}}}
+  }{\gg_\mathsf{set}}}
+  \quad
+  {\dfrac{\matrix{
+    {{{\color{MidnightBlue}{A}}}={{\color{MidnightBlue}{B}}}\;\mathit{set}}
+  }}{
+    {\gg{{\color{MidnightBlue}{{{{\color{Gray}!}A}={{\color{Gray}!}B}\;`\mathit{set}}}}}}
+  }{\gg_{\mathsf{set}_=}}}\\[6pt]
+  {\dfrac{\matrix{
+    {{{\color{MidnightBlue}{M}}}\in{{\color{MidnightBlue}{A}}}}
+  }}{
+    {\gg{{\color{MidnightBlue}{{{{\color{Gray}!}M}\;`\in {{\color{Gray}!}A}}}}}}
+  }{\gg_\in}}
+  \quad
+  {\dfrac{\matrix{
+    {{{\color{MidnightBlue}{M}}}={{\color{MidnightBlue}{N}}}\in{{\color{MidnightBlue}{A}}}}
+  }}{
+    {\gg{{\color{MidnightBlue}{{{{\color{Gray}!}M}={{\color{Gray}!}N}\;`\in {{\color{Gray}!}A}}}}}}
+  }{\gg_{\in_=}}}
+\end{gather}\]</span></p>
+<p>The interpretations in open contexts may be done in one fell swoop using the machinery that we have built up so far:</p>
+<p><span class="math">\[\begin{gather}
+  {\dfrac{\matrix{
+    \begin{array}{c}
+      {{{\color{MidnightBlue}{{\mathcal{J}}}}}\triangleright{{\color{Maroon}{[x]{\mathcal{J}}&#39;(x)}}}}\\
+      {{{\color{MidnightBlue}{{\mathcal{J}}}}}\ltimes{{\color{Maroon}{[x][y]{\mathcal{J}}^=(x)(y)}}}}\\
+      {\vert_{x,x&#39;}\;
+        {\mathsf{wk}_{{{\color{MidnightBlue}{\Psi}}}}\,{{\color{MidnightBlue}{x}}}\leadsto{{\color{Maroon}{x&#39;}}}}
+        \to{{{\color{MidnightBlue}{\Psi}}}\gg{{\color{MidnightBlue}{{x&#39;\;`\in A}}}}}
+        \to{{{\color{MidnightBlue}{\Psi}}}\gg{{\color{MidnightBlue}{{\mathcal{J}}&#39;(x)}}}}
+      }\\
+      {\vert_{x,x&#39;,y,y&#39;}\;
+        {\mathsf{wk}_{{{\color{MidnightBlue}{\Psi}}}}\,{{\color{MidnightBlue}{x}}}\leadsto{{\color{Maroon}{x&#39;}}}}
+        \to{\mathsf{wk}_{{{\color{MidnightBlue}{\Psi}}}}\,{{\color{MidnightBlue}{y}}}\leadsto{{\color{Maroon}{y&#39;}}}}
+        \to{{{\color{MidnightBlue}{\Psi}}}\gg{{\color{MidnightBlue}{{x&#39;=y&#39;\;`\in A}}}}}
+        \to{{{\color{MidnightBlue}{\Psi}}}\gg{{\color{MidnightBlue}{{\mathcal{J}}^=(x)(y)}}}}
+      }\\
+    \end{array}
+  }}{
+    {{{\color{MidnightBlue}{\Psi,A}}}\gg{{\color{MidnightBlue}{{\mathcal{J}}}}}}
+  }}
+\end{gather}\]</span></p>
+<h2 id="the-definitions-of-the-types">The Definitions of the Types</h2>
+<p>It is now possible to give the definitions of the types; recall that we will only be causing judgements of the following forms to become evident: <span class="math">\({{{\color{MidnightBlue}{A}}}\;\mathit{set}_\mathsf{v}}\)</span>, <span class="math">\({{{\color{MidnightBlue}{M}}}\in_\mathsf{v}{{\color{MidnightBlue}{A}}}}\)</span>, <span class="math">\({{{\color{MidnightBlue}{M}}}={{\color{MidnightBlue}{N}}}\in_\mathsf{v}{{\color{MidnightBlue}{A}}}}\)</span>; all other forms of judgement have been fully explained. The “spirit” of Martin-Löf’s type theory lies in the concept of evaluation of closed terms to canonical form, and as such, defining a type means only describing how its canonical verifications behave.</p>
+<p>Let us recall Martin-Löf’s informal rules and we will show how they are encoded in the logical framework. First, he defines the cartesian product of a family of sets by the following rules:</p>
+<p><span class="math">\[\begin{gather}
+  {\dfrac{\matrix{
+    {{{\color{MidnightBlue}{A}}}\;\mathit{set}} &amp;
+    {{{\color{MidnightBlue}{B(x)}}}\;\mathit{set}}\;({{{\color{MidnightBlue}{x}}}\in{{\color{MidnightBlue}{A}}}})
+  }}{
+    {{{\color{MidnightBlue}{(\mathsf{\Pi}x\in A)B}}}\;\mathit{set}}
+  }}\quad
+  {\dfrac{\matrix{
+    {{{\color{MidnightBlue}{b}}}\in{{\color{MidnightBlue}{B}}}}\ ({{{\color{MidnightBlue}{x}}}\in{{\color{MidnightBlue}{A}}}})
+  }}{
+    {{{\color{MidnightBlue}{(\lambda x)b}}}\in{{\color{MidnightBlue}{(\mathsf{\Pi}x\in A)B}}}}
+  }}\quad
+  {\dfrac{\matrix{
+    {{{\color{MidnightBlue}{b}}}={{\color{MidnightBlue}{d}}}\in{{\color{MidnightBlue}{B}}}}\ (x\in A)
+  }}{
+    {{{\color{MidnightBlue}{(\lambda x)b}}}={{\color{MidnightBlue}{(\lambda x)d}}}\in{{\color{MidnightBlue}{(\mathsf{\Pi}x\in A)B}}}}
+  }}
+\end{gather}\]</span></p>
+<p>These rules are adequately encoded in our system as follows: <span class="math">\[\begin{gather}
+  {\dfrac{\matrix{
+    {{{\color{MidnightBlue}{A}}}\;\mathit{set}} &amp;
+    {{{\color{MidnightBlue}{\cdot,A}}}\gg{{\color{MidnightBlue}{{{{\color{Gray}@}B}\;`\mathit{set}}}}}}
+  }}{
+    {{{\color{MidnightBlue}{\operatorname{\mathsf{pi}}(A;B)}}}\;\mathit{set}_\mathsf{v}}
+  }}\quad
+  {\dfrac{\matrix{
+    {{{\color{MidnightBlue}{\cdot,A}}}\gg{{\color{MidnightBlue}{{{{\color{Gray}@}E}\;`\in {{\color{Gray}@}B}}}}}}
+  }}{
+    {{{\color{MidnightBlue}{\operatorname{\mathsf{\lambda}}E}}}\in_\mathsf{v}{{\color{MidnightBlue}{\operatorname{\mathsf{pi}}(A;B)}}}}
+  }}\quad
+  {\dfrac{\matrix{
+    {{{\color{MidnightBlue}{\cdot,A}}}\gg{{\color{MidnightBlue}{{{{\color{MidnightBlue}{{{\color{Gray}@}E}}}}={{\color{MidnightBlue}{{{\color{Gray}@}E&#39;}}}}\in_\mathsf{v}{{\color{MidnightBlue}{{{\color{Gray}@}B}}}}}}}}}
+  }}{
+    {{{\color{MidnightBlue}{\operatorname{\mathsf{\lambda}}E}}}={{\color{MidnightBlue}{\operatorname{\mathsf{\lambda}}E&#39;}}}\in_\mathsf{v}{{\color{MidnightBlue}{\operatorname{\mathsf{pi}}(A;B)}}}}
+  }}
+\end{gather}\]</span></p>
+<p>The disjoint union of a family of sets is also easily encoded; first Martin-Löf’s rules:</p>
+<p><span class="math">\[\begin{gather}
+  {\dfrac{\matrix{
+    {{{\color{MidnightBlue}{A}}}\;\mathit{set}} &amp;
+    {{{\color{MidnightBlue}{B(x)}}}\;\mathit{set}}\;({{{\color{MidnightBlue}{x}}}\in{{\color{MidnightBlue}{A}}}})
+  }}{
+    {{{\color{MidnightBlue}{(\mathsf{\Sigma}x\in A)B}}}\;\mathit{set}}
+  }}\quad
+  {\dfrac{\matrix{
+    {{{\color{MidnightBlue}{a}}}\in{{\color{MidnightBlue}{A}}}} &amp;
+    {{{\color{MidnightBlue}{b}}}\in{{\color{MidnightBlue}{[a/x]B}}}}
+  }}{
+    {{{\color{MidnightBlue}{(a,b)}}}\in{{\color{MidnightBlue}{(\mathsf{\Sigma}x\in A)B}}}}
+  }}\quad
+  {\dfrac{\matrix{
+    {{{\color{MidnightBlue}{a}}}={{\color{MidnightBlue}{c}}}\in{{\color{MidnightBlue}{A}}}} &amp;
+    {{{\color{MidnightBlue}{b}}}={{\color{MidnightBlue}{d}}}\in{{\color{MidnightBlue}{[a/x]B}}}}
+  }}{
+    {{{\color{MidnightBlue}{(a,b)}}}={{\color{MidnightBlue}{(c,d)}}}\in{{\color{MidnightBlue}{(\mathsf{\Sigma}x\in A)B}}}}
+  }}
+\end{gather}\]</span></p>
+<p>and their encoding: <span class="math">\[\begin{gather}
+  {\dfrac{\matrix{
+    {{{\color{MidnightBlue}{A}}}\;\mathit{set}} &amp;
+    {{{\color{MidnightBlue}{\cdot,A}}}\gg{{\color{MidnightBlue}{{{{\color{Gray}@}B}\;`\mathit{set}}}}}}
+  }}{
+    {{{\color{MidnightBlue}{\operatorname{\mathsf{sg}}(A;B)}}}\;\mathit{set}_\mathsf{v}}
+  }}\quad
+  {\dfrac{\matrix{
+    {{{\color{MidnightBlue}{M}}}\in{{\color{MidnightBlue}{A}}}} &amp;
+    {{{\color{MidnightBlue}{N}}}\in{{\color{MidnightBlue}{B(M)}}}}
+  }}{
+    {{{\color{MidnightBlue}{\operatorname{\mathsf{pair}}(M,N)}}}\in_\mathsf{v}{{\color{MidnightBlue}{\operatorname{\mathsf{sg}}(A;B)}}}}
+  }}\quad
+  {\dfrac{\matrix{
+    {{{\color{MidnightBlue}{M}}}={{\color{MidnightBlue}{M&#39;}}}\in{{\color{MidnightBlue}{A}}}} &amp;
+    {{{\color{MidnightBlue}{N}}}={{\color{MidnightBlue}{N&#39;}}}\in{{\color{MidnightBlue}{B(M)}}}}
+  }}{
+    {{{\color{MidnightBlue}{\operatorname{\mathsf{pair}}(M;N)}}}={{\color{MidnightBlue}{\operatorname{\mathsf{pair}}(M&#39;;N&#39;)}}}\in_\mathsf{v}{{\color{MidnightBlue}{\operatorname{\mathsf{pi}}(A;B)}}}}
+  }}
+\end{gather}\]</span></p>
+<p>And what of the elimination rules? The entire point of the verificationist meaning explanations which pervade Martin-Löf’s type theory is that the elimination rules will not be part of the definitions of the types, but rather rules which are admissible, justified by the meanings of the judgements and the definitions of the types. So, only after having propounded the definitions above may we entertain <em>justifying</em> the elimination rules in the logical framework.</p>
+<h3 id="validity-of-elimination-rules">Validity of Elimination Rules</h3>
+<p>Here, we demonstrate the validity of the application rule for <span class="math">\(\operatorname{\mathsf{pi}}\)</span> sets; the validity of further elimination rules is left for future work.</p>
+<p><strong>Theorem.</strong> The standard application rule for the cartesian product of a family of sets is admissible:</p>
+<p><span class="math">\[
+  {\dfrac{\matrix{
+    {\begin{array}{c}{\mathcal{D}}\cr
+      {{{\color{MidnightBlue}{M}}}\in{{\color{MidnightBlue}{{{\color{Gray}\uparrow}\operatorname{\mathsf{pi}}(A;B)}}}}}
+    \end{array}} &amp;
+   {\begin{array}{c}{\mathcal{E}}\cr
+      {{{\color{MidnightBlue}{N}}}\in{{\color{MidnightBlue}{A}}}}
+    \end{array}}
+  }}{
+    {{{\color{MidnightBlue}{{\mathsf{ap}}(M;N)}}}\in{{\color{MidnightBlue}{B(N)}}}}
+  }\operatorname{\mathsf{pi}}_E}
+\]</span></p>
+<p><strong>Proof.</strong> By induction on the derivation <span class="math">\({\mathcal{D}}\)</span>, which must have the following canonical form: <span class="math">\[
+     {\dfrac{\matrix{
+       {\begin{array}{c}{\mathcal{D}}\cr{{{\color{MidnightBlue}{M}}}\mathbin{\Rightarrow}{{\color{Maroon}{\operatorname{\mathsf{\lambda}}E}}}}\end{array}} &amp;
+       {\dfrac{\matrix{
+         {\dfrac{\matrix{
+           {\begin{array}{c}{\mathcal{D}}&#39;&#39;\cr
+             {\vert_{x,x&#39;}\;
+               {\mathsf{wk}_{{{\color{MidnightBlue}{\cdot}}}}\,{{\color{MidnightBlue}{x}}}\leadsto{{\color{Maroon}{x&#39;}}}}
+               \to{{{\color{MidnightBlue}{\cdot}}}\gg{{\color{MidnightBlue}{{x&#39;\;`\in A}}}}}
+               \to{{{\color{MidnightBlue}{\cdot}}}\gg{{\color{MidnightBlue}{{{{\color{Gray}!}E(x)}\;`\in {{\color{Gray}!}B(x)}}}}}}
+             }
+           \end{array}} &amp;
+           {\begin{array}{c}\cr\dots\end{array}}
+         }}{
+           {{{\color{MidnightBlue}{\cdot,A}}}\gg{{\color{MidnightBlue}{{{{\color{Gray}@}E}\;`\in {{\color{Gray}@}B}}}}}}
+         }}
+       }}{
+         {{{\color{MidnightBlue}{\operatorname{\mathsf{\lambda}}E}}}\in_\mathsf{v}{{\color{MidnightBlue}{\operatorname{\mathsf{pi}}(A;B)}}}}
+       }}
+     }}{
+       {{{\color{MidnightBlue}{M}}}\in{{\color{MidnightBlue}{{{\color{Gray}\uparrow}\operatorname{\mathsf{pi}}(A;B)}}}}}
+     }{\mathcal{D}}}
+\]</span></p>
+<p>Admissibility follows from <span class="math">\({\mathcal{D}}&#39;\)</span>, <span class="math">\({\mathcal{D}}&#39;&#39;\)</span>, <span class="math">\({\mathcal{E}}\)</span>; let <span class="math">\({\mathcal{F}} \equiv {\mathcal{D}}&#39;&#39;(N,{{\color{Gray}!}N},{\mathsf{wk}_\mathsf{nil}},{\gg_\in}{\mathcal{E}})\)</span>, which must be a canonical derivation as follows: <span class="math">\[
+    {\dfrac{\matrix{
+      {\dfrac{\matrix{
+        {\begin{array}{c}{\mathcal{F}}&#39;\cr{{{\color{MidnightBlue}{E(N)}}}\mathbin{\Rightarrow}{{\color{Maroon}{X}}}}\end{array}} &amp;
+        {\begin{array}{c}{\mathcal{F}}&#39;&#39;\cr{{{\color{MidnightBlue}{B(N)}}}\mathbin{\Rightarrow}{{\color{Maroon}{C}}}}\end{array}} &amp;
+        {\begin{array}{c}{\mathcal{F}}&#39;&#39;&#39;\cr{{{\color{MidnightBlue}{X}}}\in_\mathsf{v}{{\color{MidnightBlue}{C}}}}\end{array}}
+      }}{
+        {{{\color{MidnightBlue}{E(N)}}}\in{{\color{MidnightBlue}{B(N)}}}}
+      }}
+    }}{
+      {{{\color{MidnightBlue}{\cdot}}}\gg{{\color{MidnightBlue}{{{{\color{Gray}!}E(N)}\;`\in {{\color{Gray}!}B(N)}}}}}}
+    }{\mathcal{F}}}
+\]</span></p>
+<p>Whence we may construct the goal: <span class="math">\[
+  {\dfrac{\matrix{
+    {\dfrac{\matrix{
+      {\begin{array}{c}{\mathcal{D}}&#39;\cr{{{\color{MidnightBlue}{M}}}\mathbin{\Rightarrow}{{\color{Maroon}{\operatorname{\mathsf{\lambda}}E}}}}\end{array}} &amp;
+      {\begin{array}{c}{\mathcal{F}}&#39;\cr{{{\color{MidnightBlue}{E(N)}}}\mathbin{\Rightarrow}{{\color{Maroon}{X}}}}\end{array}}
+    }}{
+      {{{\color{MidnightBlue}{{\mathsf{ap}}(M;N)}}}\mathbin{\Rightarrow}{{\color{Maroon}{X}}}}
+    }}&amp;
+    {\begin{array}{c}{\mathcal{F}}&#39;&#39;\cr{{{\color{MidnightBlue}{B(N)}}}\mathbin{\Rightarrow}{{\color{Maroon}{C}}}}\end{array}} &amp;
+    {\begin{array}{c}{\mathcal{F}}&#39;&#39;&#39;\cr{{{\color{MidnightBlue}{X}}}\in_\mathsf{v}{{\color{MidnightBlue}{C}}}}\end{array}}
+  }}{
+    {{{\color{MidnightBlue}{{\mathsf{ap}}(M;N)}}}\in{{\color{MidnightBlue}{B(N)}}}}
+  }}
+\]</span></p>
+<h2 id="conclusion">Conclusion</h2>
+<p>A rich, higher-order encoding for telescopes addresses several issues which come up when encoding Martin-Löf’s extensional type theory into the LF.</p>
+<p>First, functionality premises no longer need be directly included in every rule which uses hypothetico-general judgement. These are factored out into a separate judgement which has a compositional definition (the functional sequent judgement). Because of this, the rules in the LF will look very much like how they did in Martin-Löf’s informal presentation.</p>
+<p>Secondly, the core judgements of type theory (i.e. typehood, equality of types, membership, and equality of members) are defined first in their atomic/categorical form, and then separately they are explained with respect to a telescope, both directly and extensionally. Unlike in Martin-Löf’s presentation, the sequent judgement is, then, not defined separately at each categorical judgement, but is rather explained once and for all in terms of the novel <span class="math">\({{{\color{MidnightBlue}{{\mathcal{J}}}}}\triangleright{{\color{Maroon}{{\mathcal{J}}&#39;}}}}\)</span> and <span class="math">\({{{\color{MidnightBlue}{{\mathcal{J}}}}}\ltimes{{\color{Maroon}{{\mathcal{J}}^=}}}}\)</span> judgements.</p>
+<div class="footnotes">
+<hr />
+<ol>
+<li id="fn1"><p>Martin-Löf, P. 1982. Constructive mathematics and computer programming. In <em>Logic, Methodology and Philosophy of Science VI, Proceedings of the Sixth International Congress of Logic, Methodology and Philosophy of Science</em>, Hannover 1979, L. J. Cohen, et al, Eds. Studies in Logic and the Foundations of Mathematics, vol. 104. North-Holland, 153–175.<a href="#fnref1">↩</a></p></li>
+<li id="fn2"><p>LF signatures are presented in the style of inference rules for clarity. Object judgement forms have a  which expresses which arguments represent inputs, and which represent outputs; in our presentation, we color the inputs <span class="math">\({{\color{MidnightBlue}{MidnightBlue}}}\)</span>, and the outputs <span class="math">\({{\color{Maroon}{Maroon}}}\)</span>. Proper assignment of modes may be used to construe a judgement as having algorithmic content.<a href="#fnref2">↩</a></p></li>
+<li id="fn3"><p>De Bruijn, N. G. 1991. Telescopic mappings in typed lambda calculus. <em>Information and Computation</em> 91, 189–204.<a href="#fnref3">↩</a></p></li>
+</ol>
+</div>]]></description>
+    <pubDate>Sat, 18 Apr 2015 00:00:00 UT</pubDate>
+    <guid>http://www.jonmsterling.com//posts/2015-04-18-a-higher-order-approach-to-explicit-contexts-in-lf.html</guid>
+</item>
+<item>
     <title>Computational Type Theories as Refinement Systems</title>
     <link>http://www.jonmsterling.com//posts/2014-11-22-computational-type-theories-as-refinement-systems.html</link>
     <description><![CDATA[<p>The intrinsic and extrinsic views on types are unified by considering two categories: one of <em>syntactic</em> types and terms, and another of <em>semantic</em> types and derivations, and then a forgetful functor from the latter to the former. Following Melliès and Zeilberger’s <a href="http://noamz.org/papers/funts.pdf">Functors are Type Refinement Systems</a>, we might attempt to provide a similar characterization for computational type theories with universes, but there are some wrinkles; I attempt to provide a partial resolution to these here.</p>
