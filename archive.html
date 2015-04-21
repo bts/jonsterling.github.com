@@ -365,22 +365,6 @@ MathJax.Hub.Config({
   <article class="digest">
 
   <h3>
-    <a href="./posts/2013-04-13-inferring-evidence-for-the-stlc-in-haskell.html">Inferring Typing Derivations for the STLC in Haskell</a>
-    <span class="date">April 13, 2013</span>
-  </h3>
-
-  
-    <p>We can define the STLC at the type-level in Haskell, and then provide a type of derivations (proofs of well-typedness) which is indexed by terms. Further, we can use Haskell’s type classes to infer typing derivations for well-typed terms in the STLC.</p>
-<p>
-    <div class="read_more">
-      <a href="./posts/2013-04-13-inferring-evidence-for-the-stlc-in-haskell.html"> more …</a>
-    </div>
-  
-  </article>
-
-  <article class="digest">
-
-  <h3>
     <a href="./posts/2013-04-06-vinyl-modern-records-for-haskell.html">Vinyl: Modern Records for Haskell</a>
     <span class="date">April  6, 2013</span>
   </h3>
@@ -413,43 +397,6 @@ MathJax.Hub.Config({
   <article class="digest">
 
   <h3>
-    <a href="./posts/2012-12-27-a-pattern-for-immutability.html">A Pattern for Lightweight Immutability in Objective-C</a>
-    <span class="date">December 27, 2012</span>
-  </h3>
-
-  
-    <p>Today, I hope to introduce a more lightweight approach to immutable objects in Objective-C that sidesteps some of the problems with class clusters (such as hostility to subclassing) by making some trade-offs. The class cluster approach provides the following fronts of protection against illegal mutation:</p>
-<ol style="list-style-type: decimal">
-<li>Mutation methods only occur in the interfaces for the mutable variants. This protects us when types are preserved.</li>
-<li>Sending a mutation message to an immutable object results in an exception.</li>
-</ol>
-<p>I’m going to argue that the first force of protection (that of types) is far more important than the second (that of runtime exceptions), and that if we are willing to give it up, we can have a vastly simpler notion of immutability and mutability. Finally, I’ll discuss ways we can recover runtime exceptions in the case of an unsafe cast, and finally how we can recover the functionality of <code>-mutableCopy</code> in a subclass-friendly fashion.</p>
-
-    <div class="read_more">
-      <a href="./posts/2012-12-27-a-pattern-for-immutability.html"> more …</a>
-    </div>
-  
-  </article>
-
-  <article class="digest">
-
-  <h3>
-    <a href="./posts/2012-11-23-extensible-records-in-cpp.html">Extensible Records in C++</a>
-    <span class="date">November 23, 2012</span>
-  </h3>
-
-  
-    <p>In my view, <em>extensible records</em> are a rather good problem for gauging type system expressivity. I recently wrote an extensible records framework for Haskell called <a href="https://github.com/jonsterling/Vinyl">Vinyl</a>; today, I thought I would see what it would take to manifest something similar in C++.</p>
-
-    <div class="read_more">
-      <a href="./posts/2012-11-23-extensible-records-in-cpp.html"> more …</a>
-    </div>
-  
-  </article>
-
-  <article class="digest">
-
-  <h3>
     <a href="./posts/2012-11-10-faking-it-with-style.html">Dependent Types Today: Faking It With Style</a>
     <span class="date">November 10, 2012</span>
   </h3>
@@ -460,59 +407,6 @@ MathJax.Hub.Config({
 <p>
     <div class="read_more">
       <a href="./posts/2012-11-10-faking-it-with-style.html"> more …</a>
-    </div>
-  
-  </article>
-
-  <article class="digest">
-
-  <h3>
-    <a href="./posts/2012-08-05-static-and-dynamic-proof-inference-in-haskell.html">Static and Dynamic Proof Inference in Haskell</a>
-    <span class="date">August  5, 2012</span>
-  </h3>
-
-  
-    <p>Previously, I <a href="http://www.jonmsterling.com/posts/2012-07-22-flexibly-phased-constraints-in-haskell.html">discussed</a> using explicit proof parameters in combination with lifted proof generators in order to write code that can distribute its invariants across static and dynamic phases as appropriate. The major disadvantage to that approach is that it can sometimes be difficult and cumbersome to create proofs of certain properties manually. Today, I’ll discuss how to automate that using type classes.</p>
-<p>
-    <div class="read_more">
-      <a href="./posts/2012-08-05-static-and-dynamic-proof-inference-in-haskell.html"> more …</a>
-    </div>
-  
-  </article>
-
-  <article class="digest">
-
-  <h3>
-    <a href="./posts/2012-07-22-flexibly-phased-constraints-in-haskell.html">Flexibly-Phased Constraints in Haskell</a>
-    <span class="date">July 22, 2012</span>
-  </h3>
-
-  
-    <p>Unfortunately, Haskell’s Prelude abounds with partial functions, like <code>head</code>, <code>tail</code>, <code>read</code>, etc. There have been some attempts to resolve this by replacing them with safe variants that return <code>Maybe a</code> rather than <code>a</code>. But what about when we can make static guarantees about data?</p>
-<p>Because Haskell doesn’t have real <span class="math">\(\prod\)</span>-types, we can’t bring those invariants into our program specifications in the same way a dependently-typed language could. But with GHC 7.4’s new <code>-XDataKinds</code> extension, many data types are automatically promoted into the kind-level; this means that we can maintain a static-dynamic phase distinction at the same time as having data structures mirrored into the kind level. Combined with phantom-types, this is enough to start encoding interesting invariants into the type system. <strong>But, reusing statically verified code for dynamic values can be problematic.</strong></p>
-<p>
-    <div class="read_more">
-      <a href="./posts/2012-07-22-flexibly-phased-constraints-in-haskell.html"> more …</a>
-    </div>
-  
-  </article>
-
-  <article class="digest">
-
-  <h3>
-    <a href="./posts/2012-01-12-unifying-monoids-and-monads-with-polymorphic-kinds.html">Unifying Monoids and Monads with Polymorphic Kinds</a>
-    <span class="date">January 12, 2012</span>
-  </h3>
-
-  
-    <blockquote>
-A monad is just a monoid in the category of endofunctors, what’s the problem? — <a href="http://james-iry.blogspot.com/2009/05/brief-incomplete-and-mostly-wrong.html">James Iry</a>.
-</blockquote>
-
-<p>Building on the work of sigfpe’s <a href="http://blog.sigfpe.com/2008/11/from-monoids-to-monads.html">From Monoids to Monads</a> and monoidal’s <a href="http://monoidal.blogspot.com/2010/07/kind-polymorphism-in-action.html">Kind polymorphism in action</a> (which demonstrates kind polymorphism in the <a href="http://www.cs.uu.nl/wiki/UHC">Ultrecht Haskell Compiler</a>), we can unify Monoid and Monad under one type class in GHC 7.4.</p>
-<p>
-    <div class="read_more">
-      <a href="./posts/2012-01-12-unifying-monoids-and-monads-with-polymorphic-kinds.html"> more …</a>
     </div>
   
   </article>
