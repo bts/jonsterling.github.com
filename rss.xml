@@ -308,7 +308,7 @@
   }}
   \\[6pt]
 \end{gather}\]</span></p>
-<p>Note that the well-formedness constraints above do not in practice protrude into the definitions of judgements which  explicit contexts; they are only used in metatheorems. This encoding is very practical for certain calculi, but it is concerning in our case for a few reasons:</p>
+<p>Note that the well-formedness constraints above do not in practice protrude into the definitions of judgements which <em>use</em> explicit contexts; they are only used in metatheorems. This encoding is very practical for certain calculi, but it is concerning in our case for a few reasons:</p>
 <ol style="list-style-type: decimal">
 <li><p>The adequacy of this encoding depends very strongly on its <em>use</em>: this only truly encodes contexts if in every case an LF-variable is used for <span class="math">\(X\)</span>. Moreover, the various well-formedness constraints are a bit inelegant, as is the concept of mapping LF variables to De Bruijn indices.</p></li>
 <li><p>It is not possible to construct such a context on its own as a syntactic object of (LF-)type <span class="math">\({\mathsf{ctx}}\)</span>, where variables bound earlier in the context may appear free later in the context. This can be done otherwise by constructing an object of type <span class="math">\({\mathsf{ctx}}\)</span> in an extended LF-context; the well-formedness of such a context is still an extrinsic property, though.</p></li>
@@ -694,7 +694,7 @@
 <hr />
 <ol>
 <li id="fn1"><p>Martin-Löf, P. 1982. Constructive mathematics and computer programming. In <em>Logic, Methodology and Philosophy of Science VI, Proceedings of the Sixth International Congress of Logic, Methodology and Philosophy of Science</em>, Hannover 1979, L. J. Cohen, et al, Eds. Studies in Logic and the Foundations of Mathematics, vol. 104. North-Holland, 153–175.<a href="#fnref1">↩</a></p></li>
-<li id="fn2"><p>LF signatures are presented in the style of inference rules for clarity. Object judgement forms have a  which expresses which arguments represent inputs, and which represent outputs; in our presentation, we color the inputs <span class="math">\({{\color{MidnightBlue}{MidnightBlue}}}\)</span>, and the outputs <span class="math">\({{\color{Maroon}{Maroon}}}\)</span>. Proper assignment of modes may be used to construe a judgement as having algorithmic content.<a href="#fnref2">↩</a></p></li>
+<li id="fn2"><p>LF signatures are presented in the style of inference rules for clarity. Object judgement forms have a <em>mode</em> which expresses which arguments represent inputs, and which represent outputs; in our presentation, we color the inputs <span class="math">\({{\color{MidnightBlue}{MidnightBlue}}}\)</span>, and the outputs <span class="math">\({{\color{Maroon}{Maroon}}}\)</span>. Proper assignment of modes may be used to construe a judgement as having algorithmic content.<a href="#fnref2">↩</a></p></li>
 <li id="fn3"><p>De Bruijn, N. G. 1991. Telescopic mappings in typed lambda calculus. <em>Information and Computation</em> 91, 189–204.<a href="#fnref3">↩</a></p></li>
 </ol>
 </div>]]></description>
