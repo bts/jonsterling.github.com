@@ -6,8 +6,243 @@
         <description><![CDATA[Jon Sterling writes about type theory and philology]]></description>
         <atom:link href="http://www.jonmsterling.com//rss.xml" rel="self"
                    type="application/rss+xml" />
-        <lastBuildDate>Sat, 18 Apr 2015 00:00:00 UT</lastBuildDate>
+        <lastBuildDate>Fri, 24 Apr 2015 00:00:00 UT</lastBuildDate>
         <item>
+    <title>Note on Diaconescu’s Theorem</title>
+    <link>http://www.jonmsterling.com//posts/2015-04-24-note-on-diaconescus-theorem.html</link>
+    <description><![CDATA[<p>Briefly, Diaconescu’s theorem states that the axiom of choice &amp; extensionality together suffice to imply <em>tertium non datur</em>. In <a href="https://people.kth.se/~kurlberg/colloquium/2005/MartinLooef.pdf"><em>100 Years of Zermelo’s Axiom of Choice</em></a>, Martin-Löf distinguishes an intensional version of AC from an extensional one, and argues that whilst the former is a theorem of intuitionistic type theory, the latter leads to taboo. In this note, I hope to clarify a few matters, a demonstrate that the matter at hand is not so much extensionality, but infelicitous interpretation of quantifiers. When viewed through this lens, it becomes evident that the problem all along was setoids, not extensionality.</p>
+<!--more-->
+
+<p>Now, to begin with, Martin-Löf is operating in an intensional framework with setoids; a setoid is an “extensional set”, a set together with an equivalence relation. If <span class="math">\(I\)</span> is a setoid, then <span class="math">\({|I|}\)</span> is the set of its elements, and <span class="math">\({x\sim_{I} y}\)</span> is the set of equivalences between <span class="math">\(x,y:{|I|}\)</span>. The standard type constructors of type theory, such as <span class="math">\({(\Pi x\in A)\;B}\)</span> and <span class="math">\({(\Sigma x\in A)\;B}\)</span> operate on <em>sets</em>,<a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a> not <em>setoids</em>.</p>
+<p>Separate, derived quantifiers may be written which operate on setoids, enforcing the fact that functions between setoids should be extensional (that is, they should respect the equivalence relations of the domain and codomain). Note that for an operation to be <em>extensional</em> is the same as for it to be a <em>function</em> or <em>functional</em>; however, as you will see, it is crucial to ask, <em>«functional with respect to what?»</em>.</p>
+<p>In order to make his point, Martin-Löf needed only to define a predicate <span class="math">\({\mathsf{Ext}(f)}\)</span> which expressed the extensionality of the operation <span class="math">\(f : {|I|}\to{|S|}\)</span> where <span class="math">\(I,J\)</span> are setoids:</p>
+<p><span class="math">\[
+{{{\color{MidnightBlue}{
+  {\mathsf{Ext}(f)}
+}}}\equiv{{\color{Maroon}{
+  {(\Pi x\in {|I|})\;
+    {(\Pi y\in {|I|})\;
+      {x\sim_{I} y}\to
+      {f(x)\sim_{S} f(y)}
+    }
+  }
+}}}}
+\]</span></p>
+<p>As Martin-Löf presents it, the intensional axiom of choice (the “theorem of choice”), operates on <em>sets</em>, not necessarily setoids:</p>
+<p><span class="math">\[
+{{{\color{MidnightBlue}{
+  {\mathsf{AC}}}}}\equiv{{\color{Maroon}{
+  ({(\Pi a\in A)\;
+    {(\Sigma b\in B)\;
+      Q(a,b)
+    }
+  })\to
+  {(\Sigma f\in A\to B)\;
+    {(\Pi a\in A)\;
+      Q(a,f(a))
+    }
+  }
+}}}}
+\]</span></p>
+<p>This is evidently a theorem in ITT, witnessed by the following term:</p>
+<p><span class="math">\[\begin{align}
+{{\color{MidnightBlue}{{\mathsf{ac}}}}} &amp;: {{\color{MidnightBlue}{{\mathsf{AC}}}}}\\
+{{\color{MidnightBlue}{{\mathsf{ac}}}}} &amp;\equiv {{\color{Maroon}{
+  {(\lambda q)
+    {\langle
+      {(\lambda a){q(a)_1}}
+    ,
+      {(\lambda a){q(a)_2}}
+    \rangle}
+  }
+}}}
+\end{align}\]</span></p>
+<p>On the other hand, Martin-Löf gives another variant of the axiom of choice, which he calls <em>extensional</em>, and proves equivalent to Zermelo’s axiom: <span class="math">\[
+{{{\color{MidnightBlue}{
+  {\mathsf{AC}_\mathit{ext}}}}}\equiv{{\color{Maroon}{
+  ({(\Pi a\in {|A|})\;
+    {(\Sigma b\in {|B|})\;
+      Q(a,b)
+    }
+  })\to
+  {(\Sigma f\in {|A|}\to{|B|})\;
+    {\mathsf{Ext}(f)}
+    \times
+    {(\Pi a\in {|A|})\;
+      Q(a,f(a))
+    }
+  }
+}}}}
+\]</span></p>
+<p>Note the crucial differences between <span class="math">\({\mathsf{AC}}\)</span> and <span class="math">\({\mathsf{AC}_\mathit{ext}}\)</span>:</p>
+<ol style="list-style-type: decimal">
+<li><p><span class="math">\({\mathsf{AC}_\mathit{ext}}\)</span> is defined over <em>setoids</em>, and says that any total relation between the elements of two setoids gives rise to a choice function.</p></li>
+<li><p><span class="math">\({\mathsf{AC}}\)</span> is defined over <em>sets</em>, and says that any total relation between elements of two sets gives rise to a choice function.</p></li>
+</ol>
+<p>Now, not only is <span class="math">\({\mathsf{AC}_\mathit{ext}}\)</span> not evident in ITT, Diaconescu’s result when transported to type theory shows that it in fact <a href="https://github.com/jonsterling/Diaconescu-TT/blob/master/Diaconescu.agda">implies <em>tertium non datur</em></a>.</p>
+<h2 id="shifting-blame-rehabilitating-extensionality">Shifting Blame: Rehabilitating Extensionality</h2>
+<p>It may at first seem, then, that extensionality is at fault. This is what a naïve reading of Diaconescu’s result suggests, and this is also the conclusion that Martin-Löf came to in his paper, saying:</p>
+<blockquote>
+<p>Within an extensional foundational framework, like topos theory or constructive set theory, it is not wholly impossible to formulate a counterpart of the constructive [intensional] axiom of choice, despite its intensional character, but it becomes complicated. In topos theory, there is the axiom that there are enough projectives, which is to say that every object is the surjective image of a projective object, and, in constructive set theory, Aczel has introduced the analogous axiom that every set has a base. Roughly speaking, this is to say that every set is the surjective image of a set for which the axiom of choice holds. <span style="background-color:#FFFFD0">The technical complication of these axioms speaks to my mind for an intensional foundational framework, like constructive type theory, in which the intuitive argument why the axiom of choice holds on the Brouwer-Heyting-Kolmogorov interpretation is readily formalized, and in which whatever extensional notions that are needed can be built up, in agreement with the title of Martin Hofmann’s thesis, <a href="https://www.era.lib.ed.ac.uk/handle/1842/399">Extensional Constructs in Intensional Type Theory</a>. Extensionality does not come for free.</span></p>
+</blockquote>
+<p>However, on closer examination, I do not think that this conclusion is tenable, given the following facts which I will make evident in the sequent paragraphs:</p>
+<ol style="list-style-type: decimal">
+<li><p>From a type theoretic perspective, <span class="math">\({\mathsf{AC}_\mathit{ext}}\)</span> is mere sleight of hand and depends on an infelicitous interpretation of the quantifiers.</p></li>
+<li><p>Extensional type theory<a href="#fn2" class="footnoteRef" id="fnref2"><sup>2</sup></a> itself is not susceptible to Diaconescu’s Theorem.</p></li>
+</ol>
+<h3 id="the-art-of-disillusionment">The Art of Disillusionment</h3>
+<p>Why is <span class="math">\({\mathsf{AC}_\mathit{ext}}\)</span> not evident in intuitionistic type theory? For precisely the same reason that <em>tertium non datur</em> is not valid in ITT, which is to say that it violates the principle that something cannot be got from nothing.<a href="#fn3" class="footnoteRef" id="fnref3"><sup>3</sup></a></p>
+<p>What business does anyone have expecting an operation to be extensional when there is no evidence that this is the case? In fact, the proof of type-theoretic Diaconescu follows by encoding the decidability of an arbitrary proposition into the extensionality of an operation: if someone is offering you extensionality for free, you might as well get them to give you global choice as well. <span style="background-color:#FFFFD0">In this way, the confusion of ideas that leads one to believe in <span class="math">\({\mathsf{AC}_\mathit{ext}}\)</span> is <em>precisely</em> (not just figuratively) the same confusion of ideas which leads one to believe in <em>tertium non datur</em> (if it can be said that anyone really believes in that anyway).</span></p>
+<p>If read closely, the argument for intensional foundations which follows from this taboo may make sense from a set-theoretic point of view, but this is only because in set theory, there is no over-arching natural law which says that every object is invariant under equivalence. The weakness inherent in the set-theoretic approach is evident, in that it greatly complicates the treatment of <em>mathematical</em> (extensional) objects in a constructive manner.</p>
+<p>Intensional type theory with setoids has the exact same problem: because the entire framework is organized around intensional concepts (i.e. codes, expressions, algorithms, operations), it is easy to translate an informal mathematical statement like a type theoretic proposition inadequately:</p>
+<p><span class="math">\[
+{{\color{MidnightBlue}{\textit{«$Q$ is a total relation between setoids $A,B$»}}}}
+\gg
+{{\color{Maroon}{
+  {(\Pi a\in {|A|})\;
+    {(\Sigma b\in {|B|})\;
+      Q(a,b)
+    }
+  }
+}}}
+\tag{*}
+\]</span></p>
+<p>The above encoding, which is precisely the one in the premise of <span class="math">\({\mathsf{AC}_\mathit{ext}}\)</span>, is not adequate; it only encodes the statement <em>«<span class="math">\(Q\)</span> is a total relation between the carrier sets of setoids <span class="math">\(A, B\)</span>»</em>. Like most illusions, the magic gives way to disillusionment as soon as it is examined carefully. It should be no surprise that this <span class="math">\({\mathsf{AC}_\mathit{ext}}\)</span> is not a theorem of ITT, and this does not comprise an indictment of foundations which are overly extensional: it actually is a strong indication that ITT is <em>not extensional enough!</em></p>
+<h3 id="functionality-and-general-judgement">Functionality and General Judgement</h3>
+<p>Why is extensional type theory not susceptible to Diaconescu’s result? For the simple reason that ETT begins directly with sets that correspond to ITT’s setoids, and does not have an intensional layer at which equivalent objects of a set could be distinguished. As such, all the constructs of ETT are designed from the start to enforce the <em>natural law</em> that all definable objects are invariant under equivalence.</p>
+<p>When looking to place blame for a violation of this principle, the first place to look should be the treatment of hypothetico-general judgement, since this is the place where this principle will be won or lost. In ETT, hypothetico-general judgement is <em>posterior</em> to both the categorical judgements <span class="math">\({{{\color{MidnightBlue}{A}}}\ \textit{set}}\)</span>, <span class="math">\({{{\color{MidnightBlue}{A}}}={{\color{MidnightBlue}{B}}}\ \textit{set}}\)</span>, <span class="math">\({{{\color{MidnightBlue}{M}}}\in{{\color{MidnightBlue}{A}}}}\)</span> and <span class="math">\({{{\color{MidnightBlue}{M}}}={{\color{MidnightBlue}{N}}}\in{{\color{MidnightBlue}{A}}}}\)</span>, and the higher-order judgements <span class="math">\({\mathcal{J}_2\ \ (\mathcal{J}_1)}\)</span> and <span class="math">\({\vert_{{{\color{MidnightBlue}{x}}}}\, \mathcal{J}(x)}\)</span>.</p>
+<p>The sequent judgements <span class="math">\({{{\color{MidnightBlue}{\Gamma}}}\gg {{{\color{MidnightBlue}{A}}}\ \textit{set}}}\)</span>, <span class="math">\({{{\color{MidnightBlue}{\Gamma}}}\gg {{{\color{MidnightBlue}{A}}}={{\color{MidnightBlue}{B}}}\ \textit{set}}}\)</span>, <span class="math">\({{{\color{MidnightBlue}{\Gamma}}}\gg {{{\color{MidnightBlue}{M}}}\in{{\color{MidnightBlue}{A}}}}}\)</span> and <span class="math">\({{{\color{MidnightBlue}{\Gamma}}}\gg {{{\color{MidnightBlue}{M}}}={{\color{MidnightBlue}{N}}}\in{{\color{MidnightBlue}{A}}}}}\)</span> are defined by mutual induction on the evidence of their presupposition <span class="math">\({{{\color{MidnightBlue}{\Gamma}}}\ \textit{ctx}}\)</span> (the meaning of which is purely formal):</p>
+<p><span class="math">\[\begin{gather}
+{\dfrac{\matrix{
+}}{
+  {{{\color{MidnightBlue}{\cdot}}}\ \textit{ctx}}
+}}\qquad
+{\dfrac{\matrix{
+  {{{\color{MidnightBlue}{\Gamma}}}\ \textit{ctx}} &amp;
+  {{{\color{MidnightBlue}{\Gamma}}}\gg {{{\color{MidnightBlue}{A}}}\ \textit{set}}} &amp;
+  {{{\color{MidnightBlue}{x}}}\,\#\,{{\color{MidnightBlue}{\Gamma}}}}
+}}{
+  {{{\color{MidnightBlue}{(\Gamma,x:A)}}}\ \textit{ctx}}
+}}
+\end{gather}\]</span></p>
+<p>Then, we may give meaning explanations for the forms of sequent judgement; because they all presuppose <span class="math">\({{{\color{MidnightBlue}{\Gamma}}}\ \textit{ctx}}\)</span>, we may explain the meaning of the sequents by induction on the evidence for <span class="math">\({{{\color{MidnightBlue}{\Gamma}}}\ \textit{ctx}}\)</span>, which amounts to case analysis on whether <span class="math">\({{{\color{MidnightBlue}{\Gamma}}}\equiv{{\color{Maroon}{\cdot}}}}\)</span> or <span class="math">\({{{\color{MidnightBlue}{\Gamma}}}\equiv{{\color{Maroon}{\Delta,x:A}}}}\)</span>:</p>
+<p><span class="math">\[\begin{gather}
+{\dfrac{\matrix{
+  {{{\color{MidnightBlue}{A}}}\ \textit{set}}
+}}{
+  {{{\color{MidnightBlue}{\cdot}}}\gg {{{\color{MidnightBlue}{A}}}\ \textit{set}}}
+}}\qquad
+{\dfrac{\matrix{
+  {\vert_{{{\color{MidnightBlue}{M}}}}\, 
+    {
+      {{{\color{MidnightBlue}{\Gamma}}}\gg {{{\color{MidnightBlue}{[M/x]B}}}\ \textit{set}}}
+    \ \ (
+      {{{\color{MidnightBlue}{\Gamma}}}\gg {{{\color{MidnightBlue}{M}}}\in{{\color{MidnightBlue}{A}}}}}
+    )}
+  }\\
+  {\vert_{{{\color{MidnightBlue}{M,N}}}}\, 
+    {
+      {{{\color{MidnightBlue}{\Gamma}}}\gg {{{\color{MidnightBlue}{[M/x]B}}}={{\color{MidnightBlue}{[N/x]B}}}\ \textit{set}}}
+    \ \ (
+      {{{\color{MidnightBlue}{\Gamma}}}\gg {{{\color{MidnightBlue}{M}}}={{\color{MidnightBlue}{N}}}\in{{\color{MidnightBlue}{A}}}}}
+    )}
+  }
+}}{
+  {{{\color{MidnightBlue}{\Gamma,x:A}}}\gg {{{\color{MidnightBlue}{B}}}\ \textit{set}}}
+}}\\[6pt]
+{\dfrac{\matrix{
+  {{{\color{MidnightBlue}{A}}}={{\color{MidnightBlue}{B}}}\ \textit{set}}
+}}{
+  {{{\color{MidnightBlue}{\cdot}}}\gg {{{\color{MidnightBlue}{A}}}={{\color{MidnightBlue}{B}}}\ \textit{set}}}
+}}\qquad
+{\dfrac{\matrix{
+  {\vert_{{{\color{MidnightBlue}{M}}}}\, 
+    {
+      {{{\color{MidnightBlue}{\Gamma}}}\gg {{{\color{MidnightBlue}{[M/x]B}}}={{\color{MidnightBlue}{[M/x]C}}}\ \textit{set}}}
+    \ \ (
+      {{{\color{MidnightBlue}{\Gamma}}}\gg {{{\color{MidnightBlue}{M}}}\in{{\color{MidnightBlue}{A}}}}}
+    )}
+  }\\
+  {\vert_{{{\color{MidnightBlue}{M,N}}}}\, 
+    {
+      {{{\color{MidnightBlue}{\Gamma}}}\gg {{{\color{MidnightBlue}{[M/x]B}}}={{\color{MidnightBlue}{[N/x]C}}}\ \textit{set}}}
+    \ \ (
+      {{{\color{MidnightBlue}{\Gamma}}}\gg {{{\color{MidnightBlue}{M}}}={{\color{MidnightBlue}{N}}}\in{{\color{MidnightBlue}{A}}}}}
+    )}
+  }
+}}{
+  {{{\color{MidnightBlue}{\Gamma,x:A}}}\gg {{{\color{MidnightBlue}{B}}}={{\color{MidnightBlue}{C}}}\ \textit{set}}}
+}}\\[6pt]
+{\dfrac{\matrix{
+  {{{\color{MidnightBlue}{M}}}\in{{\color{MidnightBlue}{A}}}}
+}}{
+  {{{\color{MidnightBlue}{\cdot}}}\gg {{{\color{MidnightBlue}{M}}}\in{{\color{MidnightBlue}{A}}}}}
+}}\qquad
+{\dfrac{\matrix{
+  {\vert_{{{\color{MidnightBlue}{M}}}}\, 
+    {
+      {{{\color{MidnightBlue}{\Gamma}}}\gg {{{\color{MidnightBlue}{[M/x]N}}}\in{{\color{MidnightBlue}{[M/x]B}}}}}
+    \ \ (
+      {{{\color{MidnightBlue}{\Gamma}}}\gg {{{\color{MidnightBlue}{M}}}\in{{\color{MidnightBlue}{A}}}}}
+    )}
+  }\\
+  {\vert_{{{\color{MidnightBlue}{M,M&#39;}}}}\, 
+    {
+      {{{\color{MidnightBlue}{\Gamma}}}\gg {{{\color{MidnightBlue}{[M/x]N}}}={{\color{MidnightBlue}{[M&#39;/x]N}}}\in{{\color{MidnightBlue}{[M/x]B}}}}}
+    \ \ (
+      {{{\color{MidnightBlue}{\Gamma}}}\gg {{{\color{MidnightBlue}{M}}}={{\color{MidnightBlue}{M&#39;}}}\in{{\color{MidnightBlue}{A}}}}}
+    )}
+  }
+}}{
+  {{{\color{MidnightBlue}{\Gamma,x:A}}}\gg {{{\color{MidnightBlue}{M}}}\in{{\color{MidnightBlue}{B}}}}}
+}}\\[6pt]
+{\dfrac{\matrix{
+  {{{\color{MidnightBlue}{M}}}={{\color{MidnightBlue}{N}}}\in{{\color{MidnightBlue}{A}}}}
+}}{
+  {{{\color{MidnightBlue}{\cdot}}}\gg {{{\color{MidnightBlue}{M}}}={{\color{MidnightBlue}{N}}}\in{{\color{MidnightBlue}{A}}}}}
+}}\qquad
+{\dfrac{\matrix{
+  {\vert_{{{\color{MidnightBlue}{M}}}}\, 
+    {
+      {{{\color{MidnightBlue}{\Gamma}}}\gg {{{\color{MidnightBlue}{[M/x]N}}}={{\color{MidnightBlue}{[M/x]N&#39;}}}\in{{\color{MidnightBlue}{[M/x]B}}}}}
+    \ \ (
+      {{{\color{MidnightBlue}{\Gamma}}}\gg {{{\color{MidnightBlue}{M}}}\in{{\color{MidnightBlue}{A}}}}}
+    )}
+  }\\
+  {\vert_{{{\color{MidnightBlue}{M,M&#39;}}}}\, 
+    {
+      {{{\color{MidnightBlue}{\Gamma}}}\gg {{{\color{MidnightBlue}{[M/x]N}}}={{\color{MidnightBlue}{[M&#39;/x]N&#39;}}}\in{{\color{MidnightBlue}{[M/x]B}}}}}
+    \ \ (
+      {{{\color{MidnightBlue}{\Gamma}}}\gg {{{\color{MidnightBlue}{M}}}={{\color{MidnightBlue}{M&#39;}}}\in{{\color{MidnightBlue}{A}}}}}
+    )}
+  }
+}}{
+  {{{\color{MidnightBlue}{\Gamma,x:A}}}\gg {{{\color{MidnightBlue}{M}}}={{\color{MidnightBlue}{M&#39;}}}\in{{\color{MidnightBlue}{B}}}}}
+}}\\[6pt]
+\end{gather}\]</span></p>
+<p>Then, throughout the rest of the theory, plain general judgement <span class="math">\({\vert_{{{\color{MidnightBlue}{x}}}}\, \mathcal{J}(x)}\)</span> and hypothetical judgement <span class="math">\({\mathcal{J}_2\ \ (\mathcal{J}_1)}\)</span> are eschewed and the above sequents are used in their place: this enforces that equivalence is respected at every turn.</p>
+<p>For instance, we will say that the sethood of the cartesian product of a family of sets <span class="math">\(B\)</span> fibred over <span class="math">\(A\)</span> is a evident when we know <span class="math">\({{{\color{MidnightBlue}{A}}}\ \textit{set}}\)</span> and <span class="math">\({{{\color{MidnightBlue}{x:A}}}\gg {{{\color{MidnightBlue}{B}}}\ \textit{set}}}\)</span>; then, unfolding the meaning explanation, it suffices to say what is a canonical verification of <span class="math">\({(\Pi x\in A)\;B}\)</span> under the circumstances that the evidence of the hypotheses is known to us, and when two such canonical verifications are equal:</p>
+<blockquote>
+<p>A canonical verification of <span class="math">\({(\Pi x\in A)\;B}\)</span> (assuming <span class="math">\({{{\color{MidnightBlue}{A}}}\ \textit{set}}\)</span> and <span class="math">\({{{\color{MidnightBlue}{x:A}}}\gg {{{\color{MidnightBlue}{B}}}\ \textit{set}}}\)</span>) is a term <span class="math">\({(\lambda x)E}\)</span> such that <span class="math">\({{{\color{MidnightBlue}{x:A}}}\gg {{{\color{MidnightBlue}{E}}}\in{{\color{MidnightBlue}{B}}}}}\)</span>.</p>
+</blockquote>
+<p>The standard introduction and elimination rules at contexts <span class="math">\(\Gamma\)</span> are then admissible according to the meanings of the judgements of type theory.</p>
+<p>So, what was the purpose of this excursion? It was to demonstrate that standard interpretation of the quantifiers in ETT requires functionality with respect to a set(oid)’s equivalence relation from the start, and this is the reason that the “theorem of choice” really <em>is</em> a theorem in ETT. The problem was never, then, with extensionality; rather, the taboo arises from a failure of extensionality to be sufficiently pervasive in both set theoretic and intensional type theoretic foundations. <em><span style="background-color:#FFFFD0">Intensionality does not come for free.</span></em></p>
+<h3 id="postscript-acknowledgements">Postscript &amp; Acknowledgements</h3>
+<p>The problem which I identify is not so much one of intensional type theory, but rather with the practice of using setoids inside an intensional foundational framework. The failure of extensionality disappears whenever the setoids (or <span class="math">\(\omega\)</span>-groupoids, or whatever is the taste of the day) are internalized into the type theory; whether it is done at the judgemental level as in ETT, or at the propositional level as in <a href="http://strictlypositive.org/ott.pdf">Observational Type Theory</a> or <a href="http://homotopytypetheory.org">Homotopy Type Theory</a>, is immaterial.</p>
+<p>Thanks to Darin Morrison for getting me worried about Diaconescu’s Theorem in extensional type theory; thanks to Bob Harper for providing <em>clarity</em>, as always.</p>
+<div class="footnotes">
+<hr />
+<ol>
+<li id="fn1"><p>I’m using Martin-Löf’s current terminology, in which a <em>set</em> is a small <em>type</em>.<a href="#fnref1">↩</a></p></li>
+<li id="fn2"><p>Note that I will use the term <em>«extensional type theory»</em> and its abbreviation <em>ETT</em> in this post to refer to Martin-Löf’s type theory between 1979 and 1986, which is characterized by the verificationist meaning explanations and the modular definitions of types. I do not refer to what many (mostly non-type theorists) define as <em>intensional type theory + equality reflection</em>, which has never existed in any meaningful sense except in the imaginations of formalists.</p>
+<p>When Martin-Löf wrote down the equality reflection rule in <a href="http://www.cs.tufts.edu/~nr/cs257/archive/per-martin-lof/constructive-math.pdf"><em>Constructive Mathematics and Computer Programming</em></a>, he was giving it as an example of an evident (valid, admissible) rule under his meaning explanations; in the same way as the elimination rules do <em>not</em> have any part in defining the other types, equality reflection has nothing to do with the definition of the identity type. Moreover, the things which made ETT different from modern intensional type theory would continue to set it apart even in the absense of an identity type.<a href="#fnref2">↩</a></p></li>
+<li id="fn3"><p>Credit for the expression of this dictum belongs to Bob Harper.<a href="#fnref3">↩</a></p></li>
+</ol>
+</div>]]></description>
+    <pubDate>Fri, 24 Apr 2015 00:00:00 UT</pubDate>
+    <guid>http://www.jonmsterling.com//posts/2015-04-24-note-on-diaconescus-theorem.html</guid>
+</item>
+<item>
     <title>A Higher-Order Approach to Explicit Contexts in LF</title>
     <link>http://www.jonmsterling.com//posts/2015-04-18-a-higher-order-approach-to-explicit-contexts-in-lf.html</link>
     <description><![CDATA[<p>There are two standard techniques for representing dependently typed calculi in the LF. The first is to re-use the LF contexts for the object contexts, which can lead to difficulties when the meaning of hypothetico-general judgement in the object language is stronger than in the LF; this is, for instance, the case in MLTT 1979, where non-trivial functionality obligations are incurred in the sequent judgement.</p>
